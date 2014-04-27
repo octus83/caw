@@ -23,6 +23,8 @@ namespace bgx_caw
         public MainWindow()
         {
             InitializeComponent();
+
+            //Test
         }
     }
 }
