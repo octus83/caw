@@ -1,8 +1,16 @@
 ﻿<Window x:Class="bgx_caw_backend.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="700" Width="1300" ResizeMode="CanResizeWithGrip" WindowStyle="ThreeDBorderWindow" Background="White">
+    <StackPanel HorizontalAlignment="Left" Height="671" VerticalAlignment="Top" Width="auto" Margin="0,0,0,-1">
+        <Image Margin="0,0,2,0" Source="u172_normal.jpg" Stretch="UniformToFill" Height="297"/>
+        <StackPanel Height="auto" Width="184" Margin="0">
+            
+            <Button Content="Plan importieren" BorderThickness="1,1,1,0" Margin="0,0,0,20" Height="40" Click="Button_Click"/>
+            <Button Content="Plan Speicher" Margin="0,0,0,20" Height="40"/>
+            <Button Content="Plan Archiv" Margin="0,0,0,20" Height="40"/>
+            <Button Content="Beenden" Height="40"/>
+        </StackPanel>
+
+    </StackPanel>
 </Window>
