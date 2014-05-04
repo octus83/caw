@@ -24,6 +24,16 @@ namespace bgx_caw_backend
         {
             InitializeComponent();
             //lstView.ItemsSource = CreatePersonList();
+
+            try
+            {
+                DB_CAW.checkConnection();
+            }
+            catch(Exception exc)
+            {
+                this.Close();
+                MessageBox.Show(exc.Message + exc.StackTrace);
+            }
         }
 
             /*private List<Diagramm> CreatePersonList() 

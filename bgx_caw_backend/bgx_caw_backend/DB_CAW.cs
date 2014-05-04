@@ -14,7 +14,7 @@ namespace bgx_caw_backend
     partial class DB_CAW : IDisposable
     {
         public SqlConnection sql_connection;
-        SqlConnectionStringBuilder connection_string;
+        public SqlConnectionStringBuilder connection_string;
 
         /// <summary>
         /// default constructur builds up connection-string and calls this.connect() to connect to database
@@ -36,6 +36,18 @@ namespace bgx_caw_backend
         {
             sql_connection = new SqlConnection(connection_string.ConnectionString);
             sql_connection.Open();
+        }
+
+        public static void checkConnection()
+        {
+            SqlConnectionStringBuilder check_connection_string;
+            check_connection_string = new SqlConnectionStringBuilder();
+            check_connection_string.DataSource = "N005509\\trans_edb_p8";
+            check_connection_string.InitialCatalog = "CAW";
+            check_connection_string.IntegratedSecurity = true;
+            SqlConnection check_connection = new SqlConnection(check_connection_string.ConnectionString);
+            check_connection.Open();
+            check_connection.Close();
         }
 
         /// <summary>

@@ -43,15 +43,15 @@ namespace bgx_caw_backend
             {
                 db_caw.addDiagramm(new Diagramm
                                                 {
-                                                    Author = tbox_author.Text,
+                                                    Author = this.tbox_author.Text,
                                                     Date_init = DateTime.Now,
                                                     Date_lastchange = DateTime.Now,
-                                                    Fieldname = tbox_fieldName.Text,
-                                                    Projectname = tbox_projectName.Text,
-                                                    Projectnumber = tbox_projectNumber.Text,
-                                                    Productionplace = tbox_productionPlace.Text,
-                                                    Serialnumber = tbox_serialNumber.Text,
-                                                    Worker = tbox_worker.Text
+                                                    Fieldname = this.tbox_fieldName.Text,
+                                                    Projectname = this.tbox_projectName.Text,
+                                                    Projectnumber = this.tbox_projectNumber.Text,
+                                                    Productionplace = this.tbox_productionPlace.Text,
+                                                    Serialnumber = this.tbox_serialNumber.Text,
+                                                    Worker = this.tbox_worker.Text
                                                 });
 
             }
