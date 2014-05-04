@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
+using Microsoft.Win32;
 
 namespace bgx_caw_backend
 {
@@ -25,5 +26,38 @@ namespace bgx_caw_backend
         {
             InitializeComponent();
         }
+
+        private void btn_chooseFile_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+
+            if (fileDialog.ShowDialog().Value)
+            {
+
+            }
+        }
+
+        private void btn_import_Click(object sender, RoutedEventArgs e)
+        {
+            using (DB_CAW db_caw = new DB_CAW())
+            {
+                db_caw.addDiagramm(new Diagramm
+                                                {
+                                                    Author = tbox_author.Text,
+                                                    Date_init = DateTime.Now,
+                                                    Date_lastchange = DateTime.Now,
+                                                    Fieldname = tbox_fieldName.Text,
+                                                    Projectname = tbox_projectName.Text,
+                                                    Projectnumber = tbox_projectNumber.Text,
+                                                    Productionplace = tbox_productionPlace.Text,
+                                                    Serialnumber = tbox_serialNumber.Text,
+                                                    Worker = tbox_worker.Text
+                                                });
+
+            }
+        }
+
+
+
     }
 }
