@@ -14,25 +14,17 @@ namespace bgx_caw_backend
     partial class DB_CAW : IDisposable
     {
         public SqlConnection sql_connection;
-        public SqlConnectionStringBuilder connection_string;
+        public static SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
+        {
+            DataSource = "N005509\\trans_edb_p8",
+            InitialCatalog = "CAW",
+            IntegratedSecurity = true
+        };
 
         /// <summary>
-        /// default constructur builds up connection-string and calls this.connect() to connect to database
+        /// calls SqlConnection.Open to open connection to database
         /// </summary>
         public DB_CAW()
-        {
-            connection_string = new SqlConnectionStringBuilder();
-            connection_string.DataSource = "N005509\\trans_edb_p8";
-            connection_string.InitialCatalog = "CAW";
-            connection_string.IntegratedSecurity = true;
-
-            this.connect();
-        }
-
-        /// <summary>
-        /// private function to build SqlConnection and open it
-        /// </summary>
-        private void connect()
         {
             sql_connection = new SqlConnection(connection_string.ConnectionString);
             sql_connection.Open();
@@ -40,14 +32,9 @@ namespace bgx_caw_backend
 
         public static void checkConnection()
         {
-            SqlConnectionStringBuilder check_connection_string;
-            check_connection_string = new SqlConnectionStringBuilder();
-            check_connection_string.DataSource = "N005509\\trans_edb_p8";
-            check_connection_string.InitialCatalog = "CAW";
-            check_connection_string.IntegratedSecurity = true;
-            SqlConnection check_connection = new SqlConnection(check_connection_string.ConnectionString);
-            check_connection.Open();
-            check_connection.Close();
+            SqlConnection test_connection = new SqlConnection(connection_string.ConnectionString);
+            test_connection.Open();
+            test_connection.Close();
         }
 
         /// <summary>
@@ -75,20 +62,21 @@ namespace bgx_caw_backend
 
             while (data_reader.Read())
             {
-                result_list.Add(new Diagramm{
-                                                Author = data_reader["author"].ToString(),                                                
-                                                Date_init = DateTime.Parse(data_reader["date_init"].ToString()),
-                                                Date_lastchange = DateTime.Parse(data_reader["date_lastchange"].ToString()),
-                                                DeviceID = data_reader["deviceID"].ToString(),
-                                                Fieldname = data_reader["fieldname"].ToString(),
-                                                ID = Int32.Parse(data_reader["id"].ToString()),
-                                                IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                                                Projectname = data_reader["projectname"].ToString(),
-                                                Projectnumber = data_reader["projectnumber"].ToString(),
-                                                Productionplace = data_reader["productionplace"].ToString(),
-                                                Serialnumber = data_reader["serialnumber"].ToString(),                                             
-                                                Worker = data_reader["worker"].ToString(),                                               
-                                            });
+                result_list.Add(new Diagramm
+                {
+                    Author = data_reader["author"].ToString(),
+                    Date_init = DateTime.Parse(data_reader["date_init"].ToString()),
+                    Date_lastchange = DateTime.Parse(data_reader["date_lastchange"].ToString()),
+                    DeviceID = data_reader["deviceID"].ToString(),
+                    Fieldname = data_reader["fieldname"].ToString(),
+                    ID = Int32.Parse(data_reader["id"].ToString()),
+                    IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
+                    Projectname = data_reader["projectname"].ToString(),
+                    Projectnumber = data_reader["projectnumber"].ToString(),
+                    Productionplace = data_reader["productionplace"].ToString(),
+                    Serialnumber = data_reader["serialnumber"].ToString(),
+                    Worker = data_reader["worker"].ToString(),
+                });
             }
 
             data_reader.Close();
@@ -110,12 +98,12 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@ProjectName", SqlDbType.VarChar, 50).Value = diagramm.Projectname;
             sql_cmd.Parameters.Add("@ProjectNumber", SqlDbType.VarChar, 10).Value = diagramm.Projectnumber;
             sql_cmd.Parameters.Add("@ProductionPlace", SqlDbType.VarChar, 10).Value = diagramm.Productionplace;
-            sql_cmd.Parameters.Add("@SerialNumber", SqlDbType.VarChar, 10).Value = diagramm.Serialnumber;            
+            sql_cmd.Parameters.Add("@SerialNumber", SqlDbType.VarChar, 10).Value = diagramm.Serialnumber;
             sql_cmd.Parameters.Add("@Worker", SqlDbType.VarChar, 10).Value = diagramm.Worker;
 
             try
             {
-                sql_cmd.CommandText =   "IF NOT EXISTS (SELECT * FROM dbo.tbldiagramm WHERE serialnumber = @SerialNumber) " +
+                sql_cmd.CommandText = "IF NOT EXISTS (SELECT * FROM dbo.tbldiagramm WHERE serialnumber = @SerialNumber) " +
                                         "INSERT into dbo.tbldiagramm (author, date_init, date_lastchange, fieldname, isActive, projectname, projectnumber, productionplace, serialnumber, worker) " +
                                         "VALUES (@Author, @Date_init, @Date_lastchange, @FieldName, @IsActive, @ProjectName, @ProjectNumber, @ProductionPlace, @SerialNumber, @Worker)";
                 sql_cmd.ExecuteNonQuery();
