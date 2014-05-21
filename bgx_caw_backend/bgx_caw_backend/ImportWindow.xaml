@@ -1,35 +1,14 @@
 ﻿<Window x:Class="bgx_caw_backend.ImportWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Neuer CAW-Plan" Height="544.95" Width="856">
-    <StackPanel Orientation="Horizontal">
-        <StackPanel HorizontalAlignment="Left" Height="515" VerticalAlignment="Top" Width="343">
-            <Label Content="DXF-Ordner auswählen"/>
-            <StackPanel Height="25" Orientation="Horizontal">
-                <TextBox x:Name="tbox_sourceFolder" TextWrapping="Wrap" Text="TextBox" Width="190"/>
-                <Button x:Name="btn_chooseFolder" Content="Button" Margin="0,0,449,0" Width="69" Click="btn_chooseFolder_Click"/>
-            </StackPanel>
-            <Button x:Name="btn_import" Content="Button" Margin="115,100,127,0" Click="btn_import_Click"/>
+        Title="Neuer CAW-Plan" Height="164.95" ShowInTaskbar="False" WindowStartupLocation="Manual" ResizeMode="NoResize" Width="287"  >
+    <StackPanel HorizontalAlignment="Left" Height="146" VerticalAlignment="Top" Width="274" Margin="0,0,0,-4">
+        <Label Content="DXF-Ordner auswählen"/>
+        <StackPanel Height="25" Orientation="Horizontal">
+            <TextBox x:Name="tbox_sourceFolder" TextWrapping="Wrap" Text="TextBox" Width="190"/>
+            <Button x:Name="btn_chooseFolder" Content="Button" Margin="0,0,449,0" Width="69" Click="btn_chooseFolder_Click"/>
         </StackPanel>
-        <StackPanel Width="328">
-            <Label Content="Seriennummer" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_serialNumber" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Feldname" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_fieldName" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Projektnummer" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_projectNumber" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Projektname" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_projectName" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Auftragsnummer" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_jobNumber" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Kunde" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_customer" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Endkunde" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_endCustomer" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Konstrukteur" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_constructeur" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-            <Label Content="Datum" Margin="0,0,-15,0"/>
-            <TextBox x:Name="tbox_diagrammDate" Height="23" TextWrapping="Wrap" Text="TextBox" Margin="0,0,-15,0"/>
-        </StackPanel>
+        <Button x:Name="btn_import" Content="Button" Margin="15,50,26,0" Click="btn_import_Click"/>
     </StackPanel>
+
 </Window>

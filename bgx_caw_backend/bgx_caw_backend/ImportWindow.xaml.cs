@@ -14,9 +14,11 @@ using System.Windows.Shapes;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
 using Microsoft.Win32;
-using iTextSharp.text.pdf;
 using System.Windows.Forms;
 using System.IO;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+
 
 namespace bgx_caw_backend
 {
@@ -31,6 +33,13 @@ namespace bgx_caw_backend
         public ImportWindow()
         {
             InitializeComponent();
+        }
+
+        public ImportWindow(Window parent)
+        {
+            InitializeComponent();
+            //this.Width = parent.Width;
+            //this.
         }
 
         private void btn_chooseFolder_Click(object sender, RoutedEventArgs e)
@@ -50,8 +59,13 @@ namespace bgx_caw_backend
 
             using (DB_CAW db_caw = new DB_CAW())
             {
-
+                
                 db_caw.addDiagramm(dxf_parser.Diagramm);
+                //pgb_load.IsIndeterminate = false;
+
+
+
+                this.DialogResult = true;
             }
 
         }

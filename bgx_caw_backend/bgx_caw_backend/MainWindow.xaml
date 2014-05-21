@@ -1,16 +1,89 @@
-﻿<Window x:Class="bgx_caw_backend.MainWindow"
+﻿<Controls:MetroWindow x:Name="metroWindow" x:Class="bgx_caw_backend.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="700" Width="1300" ResizeMode="CanResizeWithGrip" WindowStyle="ThreeDBorderWindow" Background="White" WindowState="Maximized">
-    <StackPanel HorizontalAlignment="Left" Height="671" VerticalAlignment="Top" Width="auto" Margin="0,0,0,-1">
-        <Image Margin="0,0,2,0" Source="u172_normal.jpg" Stretch="UniformToFill" Height="297"/>
-        <StackPanel Height="auto" Width="184" Margin="0">
-            
-            <Button Content="Plan importieren" BorderThickness="1,1,1,0" Margin="0,0,0,20" Height="40" Click="Button_Click"/>
-            <Button Content="Plan Speicher" Margin="0,0,0,20" Height="40"/>
-            <Button Content="Plan Archiv" Margin="0,0,0,20" Height="40"/>
-            <Button Content="Beenden" Height="40"/>
-        </StackPanel>
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:Behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
+        DataContext="{Binding ElementName=_this}"
+        Title="CAW - Computer Aided Wiring" WindowState="Maximized" Icon="CAWLogo.ico" Background="#FFCBCBCB" SizeToContent="WidthAndHeight" MinWidth="800" MinHeight="600">
 
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Name="btn_Settings" Content="Einstellungen" Click="btn_Settings_Click"/>
+            <Button Name="mnu_Import" Content="Import" Click="btn_Import_Click" Background="#FF70E439"/>
+        </Controls:WindowCommands>
+        
+    </Controls:MetroWindow.RightWindowCommands>
+
+    <Controls:MetroWindow.Flyouts>
+
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Name="flo_left" Header="Einstellungen" Position="Left" Width="300" IsPinned="True" IsModal="False">
+                <StackPanel>
+                    <Controls:Tile x:Name="btn_Details" Title="Details" Margin="0,0,10,10" Click="btn_Details_Click"/>
+                    <Controls:Tile Title="Drucken2" Margin="0,0,10,10" />
+                    <Controls:Tile x:Name="btn_Delete2" Title="Löschen" Margin="0,0,10,0"  Background="#FFF52323"/>
+                </StackPanel>
+
+            </Controls:Flyout>
+
+            <Controls:Flyout Name="flo_bottom" Height="300"  Position="Bottom" IsPinned="True" IsModal="True" Theme="Accent">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" >
+                    <Label Content="Plan importieren" FontSize="36" Foreground="White"></Label>
+                    <StackPanel Orientation="Horizontal">
+                        <Controls:Tile x:Name="flo_bottom_tle_ImportFolder"  Title="Ordner auswählen" Margin="10,10,10,10" Click="btn_Details_Click"/>
+                        <Controls:Tile x:Name="flo_bottom_tle_AddData" Title="Daten auswählen" Margin="10,10,10,10" />
+                        <Controls:Tile x:Name="flo_bottom_tle_Import" Title="Importieren" Margin="10,10,10,10"  Background="#FFF52323"/>
+                    </StackPanel>
+                    <Label Content="DXF-Ordner auswählen"/>
+                    <StackPanel Height="25" Orientation="Horizontal" Width="300">
+                        <TextBox x:Name="tbox_sourceFolder" TextWrapping="Wrap" Text="TextBox" Width="190"/>
+                        <Button x:Name="btn_chooseFolder" Content="Button" Margin="0,0,0,0" Width="69" Click="btn_chooseFolder_Click"/>
+                    </StackPanel>
+                    <Button x:Name="btn_import" Content="Button" Margin="15,50,26,0" Click="btn_import_Click"/>
+                </StackPanel>
+            </Controls:Flyout>
+
+            <Controls:Flyout Name="flo_right" Header="Details" Position="Right"  IsPinned="False" Width="350">
+                <StackPanel>
+                    <Label>Seriennummer</Label>
+                    <Label>S0123-14</Label>
+                    <Label>Feldname</Label>
+                    <Label>Heizung 1</Label>
+                    <Label>Auftragsnummer</Label>
+                    <Label>PAU-123456.10</Label>
+                    <Label>Projektnummer</Label>
+                    <Label>P9123</Label>
+                    <Label>Projektname</Label>
+                    <Label>KWG Straßfurt</Label>
+                    <Label>Kunde</Label>
+                    <Label>Siemens</Label>
+                    <Label>Endkunde</Label>
+                    <Label Name="lbl_EndCustomer">Milch Meier</Label>
+                    <Label>Adresszeile1</Label>
+                    <Label>Greylogix GmbH</Label>
+                    <Label>Adresszeile2</Label>
+                    <Label>Conrad-Rötngen-Str.</Label>
+                    <Label>Adresszeile3</Label>
+                    <Label>24943 Flensburg</Label>
+                    <Label></Label>
+                </StackPanel>
+            </Controls:Flyout>
+
+        </Controls:FlyoutsControl>
+    </Controls:MetroWindow.Flyouts>
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding ActualWidth, ElementName=metroWindow, Mode=OneWay}">
+        <!--<StackPanel Height="549" Width="auto" Margin="0">-->
+                <!--<Controls:Tile x:Name="btn_Import" Count="1" Title="Plan importieren" Click="btn_Import_Click" Foreground="#FFFBFBFB" Background="#FF6AE26A" />-->
+            <DataGrid Name="dgd_diagrammsList"  Height="450" AutoGenerateColumns="False" GridLinesVisibility="All" FontSize="16" SelectionChanged="dgd_diagrammsList_Changed">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}"/>
+                    <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}"/>
+                    <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding JobNumber}"/>
+                    <DataGridTextColumn Header="Projektname" Binding="{Binding ProjectName}"/>
+                    <DataGridTextColumn Visibility="Collapsed" Header="ID" Binding="{Binding ID}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+       <!-- </StackPanel> -->
     </StackPanel>
-</Window>
+</Controls:MetroWindow>

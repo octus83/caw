@@ -13,17 +13,7 @@ namespace bgx_caw_backend
         private String _prefix;
 
         public String D_id;
-        public String P_id
-        {
-            get
-            {
-                return D_id + _p_id;
-            }
-            set
-            {
-                _p_id = value;
-            }
-        }
+        public String P_id;
         public String BMK;
         public String PrePreFix
         {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Objects;
+using System.Windows;
 
 namespace bgx_caw_backend
 {
@@ -14,8 +15,8 @@ namespace bgx_caw_backend
     /// </summary>
     partial class DB_CAW : IDisposable
     {
-        public SqlConnection sql_connection;
-        public static SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
+        private SqlConnection sql_connection;
+        private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
         {
             DataSource = "N005509\\trans_edb_p8",
             InitialCatalog = "CAWFinal",
@@ -29,13 +30,6 @@ namespace bgx_caw_backend
         {
             sql_connection = new SqlConnection(connection_string.ConnectionString);
             sql_connection.Open();
-        }
-
-        public static void checkConnection()
-        {
-            SqlConnection test_connection = new SqlConnection(connection_string.ConnectionString);
-            test_connection.Open();
-            test_connection.Close();
         }
 
         /// <summary>
@@ -54,30 +48,38 @@ namespace bgx_caw_backend
     {
         SqlCommand sql_cmd;
 
+        public DataSet getDiagrammsSet()
+        {
+            string queryString = "SELECT * FROM dbo.tbldiagramm";
+            SqlDataAdapter adapter = new SqlDataAdapter(queryString, sql_connection);
+
+            DataSet customers = new DataSet();
+            adapter.Fill(customers, "Diagramm");
+
+            return customers;
+        }
+        
+
         public List<Diagramm> getDiagramms()
         {
-
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm");
+            sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
-
             List<Diagramm> result_list = new List<Diagramm>();
 
             while (data_reader.Read())
             {
                 result_list.Add(new Diagramm
                 {
-                    //Author = data_reader["author"].ToString(),
-                    Date_init = DateTime.Parse(data_reader["date_init"].ToString()),
-                    Date_lastchange = DateTime.Parse(data_reader["date_lastchange"].ToString()),
-                    //DeviceID = data_reader["deviceID"].ToString(),
-                    Fieldname = data_reader["fieldname"].ToString(),
-                    //ID = Int32.Parse(data_reader["id"].ToString()),
-                    IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                    Projectname = data_reader["projectname"].ToString(),
-                    Projectnumber = data_reader["projectnumber"].ToString(),
-                    Productionplace = data_reader["productionplace"].ToString(),
-                    Serialnumber = data_reader["serialnumber"].ToString(),
-                    //Worker = data_reader["worker"].ToString(),
+                    ID = data_reader["D_id"].ToString(),
+                    SerialNumber = data_reader["serialnumber"].ToString(),
+                    FieldName = data_reader["fieldname"].ToString(),
+                    JobNumber = data_reader["JobNumber"].ToString(),
+                    ProjectNumber = data_reader["projectnumber"].ToString(),
+                    ProjectName = data_reader["projectname"].ToString(),
+                    Date_Init = DateTime.Parse(data_reader["date_init"].ToString()),
+                    Date_LastChange = DateTime.Parse(data_reader["date_lastchange"].ToString()),
+                    IsActive = Boolean.Parse(data_reader["isActive"].ToString())
                 });
             }
 
@@ -86,46 +88,43 @@ namespace bgx_caw_backend
             return result_list;
         }
 
-        public Diagramm getDiagramm2(String serialNumber)
+        public Diagramm getDiagramm(String id)
         {
-            sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE SerialNumber = " + serialNumber);
+            sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
-
-            Diagramm result;
+            Diagramm result = new Diagramm();
 
             while (data_reader.Read())
             {
                 result = new Diagramm
                 {
-                    //Author = data_reader["author"].ToString(),
-                    Date_init = DateTime.Parse(data_reader["date_init"].ToString()),
-                    Date_lastchange = DateTime.Parse(data_reader["date_lastchange"].ToString()),
-                    //DeviceID = data_reader["deviceID"].ToString(),
-                    Fieldname = data_reader["fieldname"].ToString(),
-                    //ID = Int32.Parse(data_reader["id"].ToString()),
+                    ID = data_reader["D_id"].ToString(),
+                    Customer = data_reader["Customer"].ToString(),
+                    Endcustomer = data_reader["EndCustomer"].ToString(),
+                    FieldName = data_reader["FieldName"].ToString(),
+                    JobNumber = data_reader["JobNumber"].ToString(),
+                    SerialNumber = data_reader["SerialNumber"].ToString(),
+                    ProjectNumber = data_reader["ProjectNumber"].ToString(),
+                    ProjectName = data_reader["ProjectName"].ToString(),
+                    SiteRow1 = data_reader["AddressRow1"].ToString(),
+                    SiteRow2 = data_reader["AddressRow2"].ToString(),
+                    SiteRow3 = data_reader["AddressRow3"].ToString(),
+                    Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
+                    Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
+                    ProductionPlace = data_reader["ProductionPlace"].ToString(),
                     IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                    Projectname = data_reader["projectname"].ToString(),
-                    Projectnumber = data_reader["projectnumber"].ToString(),
-                    Productionplace = data_reader["productionplace"].ToString(),
-                    Serialnumber = data_reader["serialnumber"].ToString(),
-                    //Worker = data_reader["worker"].ToString(),
+                    SourceFolder = data_reader["SourceFolder"].ToString()
                 };
             }
 
             data_reader.Close();
 
-            return new Diagramm();
-        }
-
-        public void safeDiagramm(Diagramm diagramm)
-        {
-            //tblDiagramm tbl_diag = diagramm;
-            
+            return result;
         }
 
         public void addDiagramm(Diagramm diagramm)
         {
-
             sql_cmd = new SqlCommand();
             sql_cmd.Connection = sql_connection;
 
@@ -133,17 +132,16 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.VarChar, 50).Value = diagramm.ID;
             sql_cmd.Parameters.Add("@Customer", SqlDbType.VarChar, 50).Value = diagramm.Customer;
             sql_cmd.Parameters.Add("@EndCustomer", SqlDbType.VarChar, 50).Value = diagramm.Endcustomer;
-            sql_cmd.Parameters.Add("@FieldName", SqlDbType.VarChar, 50).Value = diagramm.Fieldname;
-            sql_cmd.Parameters.Add("@JobNumber", SqlDbType.VarChar, 50).Value = diagramm.Jobumber;
-            sql_cmd.Parameters.Add("@SerialNumber", SqlDbType.VarChar, 50).Value = diagramm.Serialnumber;
-            sql_cmd.Parameters.Add("@ProjectNumber", SqlDbType.VarChar, 50).Value = diagramm.Projectnumber;
-            sql_cmd.Parameters.Add("@ProjectName", SqlDbType.VarChar, 50).Value = diagramm.Projectname;
+            sql_cmd.Parameters.Add("@FieldName", SqlDbType.VarChar, 50).Value = diagramm.FieldName;
+            sql_cmd.Parameters.Add("@JobNumber", SqlDbType.VarChar, 50).Value = diagramm.JobNumber;
+            sql_cmd.Parameters.Add("@SerialNumber", SqlDbType.VarChar, 50).Value = diagramm.SerialNumber;
+            sql_cmd.Parameters.Add("@ProjectNumber", SqlDbType.VarChar, 50).Value = diagramm.ProjectNumber;
+            sql_cmd.Parameters.Add("@ProjectName", SqlDbType.VarChar, 50).Value = diagramm.ProjectName;
             sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.SiteRow1;
             sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.SiteRow2;
             sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.SiteRow3;
-            sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_init;
-            sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_lastchange;
-            //sql_cmd.Parameters.Add("@ProductionPlace", SqlDbType.VarChar, 10).Value = diagramm.Productionplace;
+            sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = DateTime.Now;
+            sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = DateTime.Now;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
             sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = diagramm.SourceFolder;
 
@@ -158,6 +156,7 @@ namespace bgx_caw_backend
             catch
             {
                 throw;
+                //Delete all Data to this Diagramm
             }
 
             for (int i = 0; i < diagramm.pages_List.Count; i++ ) //Für jede Seite fügen einen Eintrag hinzu
@@ -166,7 +165,7 @@ namespace bgx_caw_backend
                 sql_cmd.Connection = sql_connection;
 
                 sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.VarChar, 50).Value = diagramm.ID;
-                sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_init;
+                sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
                 sql_cmd.Parameters.Add("@Page_ID", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].P_id;
                 sql_cmd.Parameters.Add("@Title", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Title;
                 sql_cmd.Parameters.Add("@PrePreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].PrePreFix;
@@ -183,6 +182,7 @@ namespace bgx_caw_backend
                 catch
                 {
                     throw;
+                    //Delete all Data to this Diagramm
                 }
 
                 //Für jedes Bauteil dieser Seite, füge in Bauteil in DB ein, wenn nicht vorhanden
@@ -191,8 +191,6 @@ namespace bgx_caw_backend
                     sql_cmd = new SqlCommand();
                     sql_cmd.Connection = sql_connection;
 
-                    //sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.Int).Value = nextID.ToString();
-                    //sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_init;
                     sql_cmd.Parameters.Add("@Part_BMK", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Parts_List[ii].BMK;
                     sql_cmd.Parameters.Add("@Part_PrePreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Parts_List[ii].PrePreFix;
                     sql_cmd.Parameters.Add("@Part_PreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Parts_List[ii].PreFix;
@@ -208,6 +206,7 @@ namespace bgx_caw_backend
                     catch
                     {
                         throw;
+                        //Delete all Data to this Diagramm
                     }
                 }
 
@@ -217,8 +216,6 @@ namespace bgx_caw_backend
                     sql_cmd = new SqlCommand();
                     sql_cmd.Connection = sql_connection;
 
-                    
-                    //sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.Int).Value = nextID.ToString();
                     sql_cmd.Parameters.Add("@Potential_Name", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Potential_List[iii].Name;
                     sql_cmd.Parameters.Add("@Potential_PrePreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Potential_List[iii].PrePreFix;
                     sql_cmd.Parameters.Add("@Potential_PreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Potential_List[iii].PreFix;
@@ -234,9 +231,9 @@ namespace bgx_caw_backend
                     catch
                     {
                         throw;
+                        //Delete all Data to this Diagramm
                     }
-                }
-                
+                }                
             }
         }
     }

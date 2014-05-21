@@ -31,7 +31,7 @@ namespace bgx_caw_backend
 
         public DXF_Parser(DirectoryInfo folderPath)
         {
-            Diagramm = new Diagramm();
+            Diagramm = new Diagramm(Guid.NewGuid());
 
             foreach (FileInfo file in folderPath.GetFiles().OrderBy(f => int.Parse(Path.GetFileNameWithoutExtension(f.ToString()))))
             {
@@ -73,11 +73,11 @@ namespace bgx_caw_backend
             {
                 switch (rowsList[i])
                 {
-                    case "EPLAN420":
+                    case "EPLAN420": //Eigenschaftsplazierung.Anschlussbezeichnung
                         break;
-                    case "EPLAN442":
+                    case "EPLAN442": //Eigenschaftsplazierung.Abbruchstellenplatzierung
                         break;
-                    case "EPLAN451":
+                    case "EPLAN451": //Sondertexte.Projekte
 
                         if (int.Parse(rowsList[i + 1]) == 62) //wenn echter block und nicht definition
                         {
@@ -89,17 +89,17 @@ namespace bgx_caw_backend
                                 {
                                     case "14_10011":    //Feldname
                                         //MessageBox.Show("Seite " + pageCounter + " hat den Feldnamen " + rowsList[i + 14]);
-                                        Diagramm.Fieldname = rowsList[i + 14];
+                                        Diagramm.FieldName = rowsList[i + 14];
                                         break;
 
                                     case "14_40001":    //Projektnummer
                                         //MessageBox.Show("Seite " + pageCounter + " hat die Projektnummer " + rowsList[i + 14]);
-                                        Diagramm.Projectnumber = rowsList[i + 14];
+                                        Diagramm.ProjectNumber = rowsList[i + 14];
                                         break;
 
                                     case "14_40002":    //Auftragsnummer
                                         //MessageBox.Show("Seite " + pageCounter + " hat die Auftragsnummer " + rowsList[i + 14]);
-                                        Diagramm.Jobumber = rowsList[i + 14];
+                                        Diagramm.JobNumber = rowsList[i + 14];
                                         break;
 
                                     case "14_40003":    //Kunde
@@ -150,12 +150,12 @@ namespace bgx_caw_backend
 
                                     case "4_40107":     //Projektname
                                         //MessageBox.Show("Seite " + pageCounter + " hat den Projektnamen " + rowsList[i + 14]);
-                                        Diagramm.Projectname = rowsList[i + 14];
+                                        Diagramm.ProjectName = rowsList[i + 14];
                                         break;
 
                                     case "4_40108":     //Seriennummer
-                                        MessageBox.Show("Seite " + pageCounter + " hat die Seriennummer " + rowsList[i + 14]);
-                                        Diagramm.Serialnumber = rowsList[i + 14];
+                                        //MessageBox.Show("Seite " + pageCounter + " hat die Seriennummer " + rowsList[i + 14]);
+                                        Diagramm.SerialNumber = rowsList[i + 14];
                                         break;
 
                                     case "4_11011":
@@ -288,7 +288,6 @@ namespace bgx_caw_backend
 
                                 case "4_11000":
                                     //MessageBox.Show("Seite" + pageCounter + " hat die Seitenzahl " + rowsList[i + 14]);
-
                                     Diagramm.pages_List[pageCounter].OriginNumber = rowsList[i + 14];
                                     break;
                             }

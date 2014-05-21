@@ -8,7 +8,7 @@ namespace bgx_caw_backend
 {
     class Page
     {
-
+        private String _author;
         public String D_id;
         public String P_id
         {
@@ -19,7 +19,22 @@ namespace bgx_caw_backend
         public String PrePreFix;
         public String PreFix;
         public String OriginNumber;
-        public String Author;
+        public String Author
+        {
+            get
+            {
+                if (_author == null)
+                {
+                    _author = "";
+                }
+
+                return _author;
+            }
+            set
+            {
+                _author = value;
+            }
+        }
         public String Source_Green;
         public String Source_Grey;
         public String Source_Red;

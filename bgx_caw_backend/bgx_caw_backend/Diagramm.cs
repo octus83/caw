@@ -14,38 +14,51 @@ namespace bgx_caw_backend
     {
         public List<Page> pages_List;       
         private String _endCustomer = "";
+        private String _sourceFolder;
+        private String _serialNumber;
 
         public String ID
         {
             get;
-            private set;
+            set;
         }
 
-        public String Serialnumber
+        public String SerialNumber
+        {
+            get
+            {
+                if (_serialNumber == null)
+                {
+                    return "";
+                }
+
+                return _serialNumber;
+            }
+            set
+            {
+                _serialNumber = value;
+            }
+        }
+
+        public String FieldName
         {
             get;
             set;
         }
 
-        public String Fieldname
+        public String ProjectNumber
         {
             get;
             set;
         }
 
-        public String Projectnumber
+        public String ProjectName
         {
             get;
             set;
         }
 
-        public String Projectname
-        {
-            get;
-            set;
-        }
-
-        public String Jobumber
+        public String JobNumber
         {
             get;
             set;
@@ -87,19 +100,19 @@ namespace bgx_caw_backend
             set;
         }
 
-        public DateTime Date_init
+        public DateTime Date_Init
         {
             get;
             set;
         }
 
-        public DateTime Date_lastchange
+        public DateTime Date_LastChange
         {
             get;
             set;
         }
 
-        public String Productionplace
+        public String ProductionPlace
         {
             get;
             set;
@@ -113,10 +126,8 @@ namespace bgx_caw_backend
 
         public String SourceFolder
         {
-            get
-            {
-                return "c:\\caw\\" + ID + "\\";
-            }
+            get;
+            set;
         }
 
         public Diagramm(DirectoryInfo directory)
@@ -127,7 +138,14 @@ namespace bgx_caw_backend
 
         public Diagramm()
         {
-            ID = Guid.NewGuid().ToString();
+            //ID = Guid.NewGuid().ToString();
+            pages_List = new List<Page>();
+        }
+
+        public Diagramm(Guid id)
+        {
+            ID = id.ToString();
+            SourceFolder = "c:\\caw\\" + ID + "\\";
             pages_List = new List<Page>();
         }
     }

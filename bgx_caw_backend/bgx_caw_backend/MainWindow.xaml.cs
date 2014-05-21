@@ -12,52 +12,148 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls.Dialogs;
+using MahApps.Metro.Controls;
+using System.Data;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.IO;
+
 
 namespace bgx_caw_backend
 {
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
+        private List<Diagramm> diagrammsList;
+        private DataSet diagrammsSet;
+
+        private DXF_Parser dxf_parser;
+        private DirectoryInfo sourceFolder;
+
         public MainWindow()
         {
             InitializeComponent();
-            //lstView.ItemsSource = CreatePersonList();
+            refreshDiagrammList();
 
+            flo_right.IsOpen = false;       
+        }
+
+        private void refreshDiagrammList()
+        {
             try
             {
-                DB_CAW.checkConnection();
+                using (DB_CAW db_caw = new DB_CAW())
+                {
+                    diagrammsList = db_caw.getDiagramms();
+                    //diagrammsSet = db_caw.getDiagrammsSet();
+
+                    dgd_diagrammsList.ItemsSource = diagrammsList;
+                    
+                }
             }
-            catch(Exception exc)
+            catch (Exception exc)
             {
                 this.Close();
-                MessageBox.Show(exc.Message + exc.StackTrace);
+                System.Windows.MessageBox.Show(exc.Message + exc.StackTrace);
+            } 
+        }
+
+        private void btn_Import_Click(object sender, RoutedEventArgs e)
+        {
+            flo_left.IsOpen = false;
+            flo_right.IsOpen = false;
+            flo_bottom.IsOpen = true;
+            /*this.ShowOverlay();
+            ImportWindow importWindow = new ImportWindow();
+            importWindow.ShowDialog();
+
+            if (importWindow.DialogResult == true)
+            {
+                refreshDiagrammList();
+                this.HideOverlay();
+            }
+            else
+            {
+                this.HideOverlay();
+            }*/
+        }
+
+        private void btn_Details_Click(object sender, RoutedEventArgs e)
+        {
+            //new DetailsWindow(diagrammsList[lstView.SelectedIndex].ID).ShowDialog();
+            //this.ShowProgressAsync("Please wait...", "Progress message");
+
+            var mySettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "Hi",
+                NegativeButtonText = "Go away!",
+                FirstAuxiliaryButtonText = "Cancel",
+               ColorScheme = MetroDialogColorScheme.Accented
+            };
+
+            //this.ShowMessageAsync("Hello!", "Welcome to the world of metro! ",
+              //  MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, mySettings);
+
+            flo_right.IsOpen = true;
+            
+        }
+
+        private void btn_Settings_Click(object sender, RoutedEventArgs e)
+        {
+            var mySettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "Cancel",
+                ColorScheme = MetroDialogColorScheme.Accented
+            };
+            this.ShowMessageAsync("Bitte warten...", "Schaltplan wird importiert ",
+            MessageDialogStyle.Affirmative, mySettings);
+
+
+        }
+
+        private void dgd_diagrammsList_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            //MessageBox.Show(dgd_diagrammsList.SelectedIndex.ToString());
+            
+            flo_left.IsOpen = true;
+            //flo_left.Header = 
+            //flo_right.IsOpen = true;
+        }
+
+        private void btn_chooseFolder_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog folderDialog = new FolderBrowserDialog();
+
+            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                sourceFolder = new DirectoryInfo(folderDialog.SelectedPath);
+                tbox_sourceFolder.Text = folderDialog.SelectedPath;
             }
         }
 
-            /*private List<Diagramm> CreatePersonList() 
-            {
-                List<Diagramm> liste = new List<Diagramm>();
-                liste.Add(new Diagramm { ID = 1, SerialNumber = "S0001-14", FieldName = "+GH01", ProjectName = "HTI - Austausch", ProjectNumber = "P9876", ProductionPlace = "1", DeviceID = "ah45Gi",  isActive = true});
-                liste.Add(new Diagramm { ID = 2, SerialNumber = "S0002-14", FieldName = "Pumpe 1", ProjectName = "Verdichterhaus", ProjectNumber = "P1234", ProductionPlace = "4", DeviceID = "ad4dsi", isActive = true });
-                liste.Add(new Diagramm { ID = 3, SerialNumber = "S0012-14", FieldName = "Lastteil 400V", ProjectName = "Schule am Hindenburgdamm", ProjectNumber = "P4433", ProductionPlace = "7", DeviceID = "bw657i", isActive = false });
-                liste.Add(new Diagramm { ID = 4, SerialNumber = "S0023-14", FieldName = "Einspeisung", ProjectName = "Neubau Hansdorf", ProjectNumber = "P1191", ProductionPlace = "9", DeviceID = "1h35fi", isActive = false });
-                liste.Add(new Diagramm { ID = 5, SerialNumber = "S0045-14", FieldName = "+UV110", ProjectName = "Intern GLX", ProjectNumber = "P7654", ProductionPlace = "5", DeviceID = "nn4524", isActive = false });
-                liste.Add(new Diagramm { ID = 6, SerialNumber = "S0056-14", FieldName = "+HGCC23-1", ProjectName = "Kaverne Ottersheim", ProjectNumber = "P1100", ProductionPlace = "2", DeviceID = "e3aa5Gi", isActive = false });
-                liste.Add(new Diagramm { ID = 1, SerialNumber = "S0001-14", FieldName = "+GH01", ProjectName = "HTI - Austausch", ProjectNumber = "P9876", ProductionPlace = "1", DeviceID = "ah45Gi", isActive = true });
-                liste.Add(new Diagramm { ID = 2, SerialNumber = "S0002-14", FieldName = "Pumpe 1", ProjectName = "Verdichterhaus", ProjectNumber = "P1234", ProductionPlace = "4", DeviceID = "ad4dsi", isActive = true });
-                liste.Add(new Diagramm { ID = 3, SerialNumber = "S0012-14", FieldName = "Lastteil 400V", ProjectName = "Schule am Hindenburgdamm", ProjectNumber = "P4433", ProductionPlace = "7", DeviceID = "bw657i", isActive = false });
-                liste.Add(new Diagramm { ID = 4, SerialNumber = "S0023-14", FieldName = "Einspeisung", ProjectName = "Neubau Hansdorf", ProjectNumber = "P1191", ProductionPlace = "9", DeviceID = "1h35fi", isActive = false });
-                liste.Add(new Diagramm { ID = 5, SerialNumber = "S0045-14", FieldName = "+UV110", ProjectName = "Intern GLX", ProjectNumber = "P7654", ProductionPlace = "5", DeviceID = "nn4524", isActive = false });
-                liste.Add(new Diagramm { ID = 6, SerialNumber = "S0056-14", FieldName = "+HGCC23-1", ProjectName = "Kaverne Ottersheim", ProjectNumber = "P1100", ProductionPlace = "2", DeviceID = "e3aa5Gi", isActive = false });
-                return liste;
-            }*/
+        private void btn_import_Click(object sender, RoutedEventArgs e)
+        {
+            dxf_parser = new DXF_Parser(sourceFolder);
 
-            private void Button_Click(object sender, RoutedEventArgs e)
+            using (DB_CAW db_caw = new DB_CAW())
             {
-                var win2 = new ImportWindow();
-                win2.Show();
+
+                db_caw.addDiagramm(dxf_parser.Diagramm);
+                //pgb_load.IsIndeterminate = false;
+                flo_bottom.IsOpen = false;
+                this.ShowProgressAsync("Please wait...", "Progress message");
+
+                
+
+
+                //this.DialogResult = true;
             }
+
+        }
+
+        
     }
 }
