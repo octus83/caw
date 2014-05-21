@@ -11,7 +11,7 @@
             <Button Name="btn_Settings" Content="Einstellungen" Click="btn_Settings_Click"/>
             <Button Name="mnu_Import" Content="Import" Click="btn_Import_Click" Background="#FF70E439"/>
         </Controls:WindowCommands>
-        
+
     </Controls:MetroWindow.RightWindowCommands>
 
     <Controls:MetroWindow.Flyouts>
@@ -74,16 +74,16 @@
 
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="{Binding ActualWidth, ElementName=metroWindow, Mode=OneWay}">
         <!--<StackPanel Height="549" Width="auto" Margin="0">-->
-                <!--<Controls:Tile x:Name="btn_Import" Count="1" Title="Plan importieren" Click="btn_Import_Click" Foreground="#FFFBFBFB" Background="#FF6AE26A" />-->
-            <DataGrid Name="dgd_diagrammsList"  Height="450" AutoGenerateColumns="False" GridLinesVisibility="All" FontSize="16" SelectionChanged="dgd_diagrammsList_Changed">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}"/>
-                    <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}"/>
-                    <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding JobNumber}"/>
-                    <DataGridTextColumn Header="Projektname" Binding="{Binding ProjectName}"/>
-                    <DataGridTextColumn Visibility="Collapsed" Header="ID" Binding="{Binding ID}"/>
-                </DataGrid.Columns>
-            </DataGrid>
-       <!-- </StackPanel> -->
+        <!--<Controls:Tile x:Name="btn_Import" Count="1" Title="Plan importieren" Click="btn_Import_Click" Foreground="#FFFBFBFB" Background="#FF6AE26A" />-->
+        <DataGrid Name="dgd_diagrammsList"  Height="450" AutoGenerateColumns="False" GridLinesVisibility="All" FontSize="16" SelectionChanged="dgd_diagrammsList_Changed">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}"/>
+                <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}"/>
+                <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding JobNumber}"/>
+                <DataGridTextColumn Header="Projektname" Binding="{Binding ProjectName}"/>
+                <DataGridTextColumn Visibility="Collapsed" Header="ID" Binding="{Binding ID}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <!-- </StackPanel> -->
     </StackPanel>
 </Controls:MetroWindow>
