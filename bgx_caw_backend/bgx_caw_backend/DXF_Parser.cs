@@ -109,22 +109,22 @@ namespace bgx_caw_backend
 
                                     case "14_40004":    //Endkunde
                                         //MessageBox.Show("Seite " + pageCounter + " hat den Endkunden " + rowsList[i + 14]);
-                                        Diagramm.Endcustomer = rowsList[i + 14];
+                                        Diagramm.EndCustomer = rowsList[i + 14];
                                         break;
 
                                     case "14_40005":    //Aufstellungsort Zeile 1
                                         //MessageBox.Show("Seite " + pageCounter + " hat den Aufstellungsort 1 " + rowsList[i + 14]);
-                                        Diagramm.SiteRow1 = rowsList[i + 14];
+                                        Diagramm.AddressRow1 = rowsList[i + 14];
                                         break;
 
                                     case "14_40005/1":  //Aufstellungsort Zeile 2
                                         //MessageBox.Show("Seite " + pageCounter + " hat den Aufstellungsort 2 " + rowsList[i + 14]);
-                                        Diagramm.SiteRow2 = rowsList[i + 14];
+                                        Diagramm.AddressRow2 = rowsList[i + 14];
                                         break;
 
                                     case "14_40005/2":  //Aufstellungsort Zeile 3
                                         //MessageBox.Show("Seite " + pageCounter + " hat den Aufstellungsort 3 " + rowsList[i + 14]);
-                                        Diagramm.SiteRow3 = rowsList[i + 14];
+                                        Diagramm.AddressRow3 = rowsList[i + 14];
                                         break;
                                 }
                             }

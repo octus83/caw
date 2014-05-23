@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace bgx_caw_backend
 {
-    class Page
+    public class Page
     {
         private String _author;
         public String D_id;

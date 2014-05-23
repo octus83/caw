@@ -3,17 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:Behaviours="clr-namespace:MahApps.Metro.Behaviours;assembly=MahApps.Metro"
-        DataContext="{Binding ElementName=_this}"
-        Title="CAW - Computer Aided Wiring" Icon="CAWLogo.ico" Background="#FFCBCBCB"  Width="1200" Height="750" MinWidth="1200" MinHeight="750" WindowStartupLocation="CenterScreen">
-     <Controls:MetroWindow.RightWindowCommands>
-    <Controls:WindowCommands>
-        <Button Name="btn_Settings" Content="Einstellungen" Click="btn_Settings_Click" Margin="0,0,5,0"/>
-        <Button Name="mnu_Import" Content="Import" Click="btn_Import_Click" Background="#FF70E439"/>
-
+        Title="CAW - Computer Aided Wiring" Icon="CAWLogo.ico" Background="#FFCBCBCB"  Width="1100" Height="750" MinWidth="1100" MinHeight="750" WindowStartupLocation="CenterScreen">
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
+            <Button Name="btn_Settings" Content="Einstellungen" Click="btn_Settings_Click" Margin="0,0,5,0"/>
+            <Button Name="mnu_Import" Content="Import" Click="btn_Import_Click" Background="#FF70E439"/>
         </Controls:WindowCommands>
-
-</Controls:MetroWindow.RightWindowCommands>
-
+    </Controls:MetroWindow.RightWindowCommands>
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -21,14 +17,15 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-
-    <Controls:MetroWindow.Flyouts>
-
-    <Controls:FlyoutsControl>
-        <Controls:Flyout Name="flo_left" Header="Einstellungen" Position="Left" Width="300" IsPinned="True" IsModal="False">
-            <StackPanel>
-                    <Controls:Tile x:Name="btn_Details" Title="Details" Margin="10,10,10,10" Click="btn_Details_Click">
-                        <Rectangle Width="55" Height="50">
+    
+     <Controls:MetroWindow.Flyouts>
+        <Controls:FlyoutsControl>
+            
+            <Controls:Flyout Name="flo_Menu" Position="Left" Width="180" IsPinned="False" IsModal="False" >
+                <StackPanel VerticalAlignment="Center">
+                    
+                    <Controls:Tile x:Name="flo_Menu_tle_Details" Title="Details" Margin="10,10,10,10" Height="80" Width="80" Click="flo_Menu_tle_Details_Click">
+                        <Rectangle Width="28" Height="25">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
                             </Rectangle.Resources>
@@ -37,8 +34,9 @@
                             </Rectangle.Fill>
                         </Rectangle>
                     </Controls:Tile>
-                    <Controls:Tile Title="Drucken" Margin="10,10,10,10">
-                        <Rectangle Width="55" Height="50">
+                    
+                    <Controls:Tile x:Name="flo_Menu_tle_Print" Title="Drucken" Margin="10,10,10,10" Height="80" Width="80" Click="flo_Menu_tle_Print_Click">
+                        <Rectangle Width="28" Height="25">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
                             </Rectangle.Resources>
@@ -47,8 +45,9 @@
                             </Rectangle.Fill>
                         </Rectangle>                       
                     </Controls:Tile>
-                    <Controls:Tile Title="Export" Margin="10,10,10,10">
-                        <Rectangle Width="55" Height="50">
+                    
+                    <Controls:Tile x:Name="flo_Menu_tle_Export" Title="Export" Margin="10,10,10,10" Height="80" Width="80" Click="flo_Menu_tle_Export_Click">
+                        <Rectangle Width="28" Height="25">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
                             </Rectangle.Resources>
@@ -57,8 +56,9 @@
                             </Rectangle.Fill>
                         </Rectangle>
                     </Controls:Tile>
-                    <Controls:Tile x:Name="btn_Delete" Title="Löschen" Margin="10,10,10,10"  Background="#FFF52323">
-                        <Rectangle Width="55" Height="50">
+                    
+                    <Controls:Tile x:Name="flo_Menu_tle_Delete" Title="Löschen" Margin="10,10,10,10" Background="#FFF52323" Height="80" Width="80" Click="flo_Menu_tle_Delete_Click">
+                        <Rectangle Width="28" Height="25">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
                             </Rectangle.Resources>
@@ -68,15 +68,15 @@
                         </Rectangle>
                     </Controls:Tile>
             </StackPanel>
-
         </Controls:Flyout>
 
-        <Controls:Flyout Name="flo_bottom" Height="300"  Position="Bottom" IsPinned="True" IsModal="True" Theme="Accent">
+        <Controls:Flyout Name="flo_bottom" Height="200"  Position="Bottom" IsPinned="True" IsModal="True" Theme="Accent">
             <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <Label Content="Plan importieren" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Controls:Tile x:Name="flo_bottom_tle_ImportFolder"  Title="Ordner auswählen" Margin="10,10,10,10" Click="flo_bottom_tle_ImportFolder_Click">
-                            <Rectangle Width="55" Height="50">
+                        
+                    <Controls:Tile x:Name="flo_bottom_tle_ImportFolder"  Title="Ordner auswählen" Margin="10,10,10,10" Height="80" Width="80" Click="flo_bottom_tle_ImportFolder_Click">
+                            <Rectangle Width="28" Height="25">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
                                 </Rectangle.Resources>
@@ -85,39 +85,168 @@
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Controls:Tile>
-                        <Controls:Tile x:Name="flo_bottom_tle_AddData" Title="Daten auswählen" Margin="10,10,10,10"  />
-                    <Controls:Tile x:Name="flo_bottom_tle_Import" Title="Importieren" Margin="10,10,10,10"  Background="#FFF52323"/>
+                        
+                    <Controls:Tile x:Name="flo_bottom_tle_AddData" Title="Daten auswählen" Margin="10,10,10,10" Height="80" Width="80">
+                            <Rectangle Width="28" Height="25"> 
+                                <Rectangle.Resources>
+                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                </Rectangle.Resources>
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_edit_add}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Controls:Tile>
+                        
+                    <Controls:Tile x:Name="flo_bottom_tle_Import" Title="Importieren" Margin="10,10,10,10" Background="#FFF52323" Height="80" Width="80">
+                            <Rectangle Width="55" Height="50">
+                                <Rectangle.Resources>
+                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                </Rectangle.Resources>
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_inbox_in}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Controls:Tile>
+                    
+                    </StackPanel>
+            </StackPanel>
+        </Controls:Flyout>
+
+        <Controls:Flyout Name="flo_details" Header="Details" Position="Left" Width="450" IsModal="True" FlowDirection="LeftToRight">
+                <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
+                    <Label FontSize="24">Allgemein</Label>
+                    <StackPanel Background="DarkGray">
+                        
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Seriennummer</Label>
+                            <Label Name="flo_details_lbl_SerialNumber" Content="{Binding RecentDiagramm.SerialNumber}" />
+                        </StackPanel>
+                    
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Feldname</Label>
+                            <Label Name="flo_details_lbl_FieldName" Content="{Binding RecentDiagramm.FieldName}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Auftragsnummer</Label>
+                            <Label Name="flo_details_lbl_JobNumber" Content="{Binding RecentDiagramm.JobNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektnummer</Label>
+                            <Label Name="flo_details_lbl_ProjectNumber" Content="{Binding RecentDiagramm.ProjectNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektname</Label>
+                            <Label Name="flo_details_lbl_ProjectName" Content="{Binding RecentDiagramm.ProjectName}" />
+                        </StackPanel>
+                        
+                    </StackPanel>
+
+                    <Label FontSize="24">Kunde</Label>
+                    <StackPanel Background="DarkGray">
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Kunde</Label>
+                            <Label Name="flo_details_lbl_Customer" Content="{Binding RecentDiagramm.Customer}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Endkunde</Label>
+                            <Label Name="flo_details_lbl_EndCustomer" Content="{Binding RecentDiagramm.EndCustomer}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Adresszeile1</Label>
+                            <Label Name="flo_details_lbl_AdressRow1" Content="{Binding RecentDiagramm.AddressRow1}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Adresszeile2</Label>
+                            <Label Name="flo_details_lbl_AdressRow2" Content="{Binding RecentDiagramm.AddressRow2}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Adresszeile3</Label>
+                            <Label Name="flo_details_lbl_AdressRow3" Content="{Binding RecentDiagramm.AddressRow3}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Label FontSize="24">Metadaten</Label>
+                    <StackPanel Background="DarkGray">
+                            
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Diagramm ID</Label>
+                            <Label Name="flo_details_lbl_ID" Content="{Binding RecentDiagramm.ID}" />                            
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Importiert</Label>
+                            <Label Name="flo_details_lbl_Date_Init" Content="{Binding RecentDiagramm.Date_Init}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Geändert:</Label>
+                            <Label Name="flo_details_lbl_Date_LastChange" Content="{Binding RecentDiagramm.Date_LastChange}" />
+                        </StackPanel>
+                    </StackPanel>                   
                 </StackPanel>
-            </StackPanel>
-        </Controls:Flyout>
+            </Controls:Flyout>
 
-        <Controls:Flyout Name="flo_right" Header="Details" Position="Right"  IsPinned="False" Width="350">
-            <StackPanel>
-                <Label>Seriennummer</Label>
-                <Label>S0123-14</Label>
-                <Label>Feldname</Label>
-                <Label>Heizung 1</Label>
-                <Label>Auftragsnummer</Label>
-                <Label>PAU-123456.10</Label>
-                <Label>Projektnummer</Label>
-                <Label>P9123</Label>
-                <Label>Projektname</Label>
-                <Label>KWG Straßfurt</Label>
-                <Label>Kunde</Label>
-                <Label>Siemens</Label>
-                <Label>Endkunde</Label>
-                <Label Name="lbl_EndCustomer">Milch Meier</Label>
-                <Label>Adresszeile1</Label>
-                <Label>Greylogix GmbH</Label>
-                <Label>Adresszeile2</Label>
-                <Label>Conrad-Rötngen-Str.</Label>
-                <Label>Adresszeile3</Label>
-                <Label>24943 Flensburg</Label>
-                <Label></Label>
-            </StackPanel>
-        </Controls:Flyout>
+            <Controls:Flyout Name="flo_Print" Header="Drucken" Position="Left" Width="450" IsModal="True">
+                <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
+                    <Label FontSize="24">Allgemein</Label>
+                    <StackPanel Background="DarkGray">
 
-    </Controls:FlyoutsControl>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Seriennummer</Label>
+                            <Label Name="flo_Print_lbl_SerialNumber" Content="{Binding RecentDiagramm.SerialNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Feldname</Label>
+                            <Label Name="flo_Print_lbl_FieldName" Content="{Binding RecentDiagramm.FieldName}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Auftragsnummer</Label>
+                            <Label Name="flo_Print_lbl_JobNumber" Content="{Binding RecentDiagramm.JobNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektnummer</Label>
+                            <Label Name="flo_Print_lbl_ProjectNumber" Content="{Binding RecentDiagramm.ProjectNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektname</Label>
+                            <Label Name="flo_Print_lbl_ProjectName" Content="{Binding RecentDiagramm.ProjectName}" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Label FontSize="24">Optionen</Label>
+                    <StackPanel Background="DarkGray">
+                        <StackPanel Orientation="Horizontal">
+                        <Label>Rotstift drucken</Label>
+                        <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Grünstift drucken</Label>
+                        <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />
+                    </StackPanel>
+
+                    
+                        <StackPanel Orientation="Horizontal">
+                            <Label>Graustift drucken</Label>
+                            <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />
+                        </StackPanel>
+                    </StackPanel>
+
+                </StackPanel>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
 </Controls:MetroWindow.Flyouts>
 
 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SizeChanged="StackPanel_SizeChanged_1" Name="stp_Main" >
@@ -132,8 +261,19 @@
                             ScaleY="{Binding ElementName=metroWindow, Path=ScaleValue}"/>
         </StackPanel.LayoutTransform>
 
-        <StackPanel Margin="50,180,50,100">
-            <DataGrid Name="dgd_diagrammsList" Height="500" Width="822" AutoGenerateColumns="False" GridLinesVisibility="All" FontSize="16" SelectionChanged="dgd_diagrammsList_Changed" SelectionMode="Single">
+        <StackPanel Margin="90,180,0,100">
+            <DataGrid Name="dgd_diagrammsList" 
+                      Height="515" 
+                      Width="828" 
+                      AutoGenerateColumns="False" 
+                      GridLinesVisibility="All" 
+                      FontSize="16" 
+                      SelectionChanged="dgd_diagrammsList_Changed" 
+                      SelectionMode="Single"
+                      Style="{StaticResource AzureDataGrid}"
+                      ItemsSource="{Binding}"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}"/>
                     <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}"/>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace bgx_caw_backend
 {
-    class Part
+    public class Part
     {
         private String _p_id;
         private String _preprefix;

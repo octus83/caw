@@ -25,98 +25,115 @@ namespace bgx_caw_backend
     /// <summary>
     /// Interaktionslogik für MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : INotifyPropertyChanged
     {
-        private List<Diagramm> diagrammsList;
-        private DataSet diagrammsSet;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         private DXF_Parser dxf_parser;
         private DirectoryInfo sourceFolder;
+        
+        private List<Diagramm> _diagrammsList;
+        private List<Diagramm> DiagrammsList
+        {
+            get
+            {
+                return _diagrammsList;
+            }
+            set
+            {
+                _diagrammsList = value;
+                OnPropertyChanged("diagrammsList");
+            }
+        }
+
+        private Diagramm _recentDiagramm;       
+        public Diagramm RecentDiagramm
+        {
+            get
+            {
+                return _recentDiagramm;
+            }
+            set
+            {
+                _recentDiagramm = value;
+                OnPropertyChanged("RecentDiagramm");
+            }
+        }
+
+        private String _diagrammID;
+        public String DiagrammID
+        {
+            get
+            {
+                return _diagrammID;
+            }
+            set
+            {
+                _diagrammID = value;
+                OnPropertyChanged("DiagrammID");
+            }
+        }
 
         public MainWindow()
         {
+            
             InitializeComponent();
-            refreshDiagrammList();      
+            refreshDiagrammList();
+            dgd_diagrammsList.DataContext = DiagrammsList;            
+            this.DataContext = this; 
         }
 
         private void refreshDiagrammList()
         {
-            try
+            using (DB_CAW db_caw = new DB_CAW())
             {
-                using (DB_CAW db_caw = new DB_CAW())
-                {
-                    diagrammsList = db_caw.getDiagramms();
-                    dgd_diagrammsList.ItemsSource = diagrammsList;
-                    
-                }
-            }
-            catch (Exception exc)
-            {
-                this.Close();
-                System.Windows.MessageBox.Show(exc.Message + exc.StackTrace);
+                DiagrammsList = db_caw.getDiagramms();                    
             } 
         }
 
         private void btn_Import_Click(object sender, RoutedEventArgs e)
         {
-            flo_left.IsOpen = false;
-            flo_right.IsOpen = false;
+            flo_Menu.IsOpen = false;
+            flo_details.IsOpen = false;
             flo_bottom.IsOpen = true;
-            /*this.ShowOverlay();
-            ImportWindow importWindow = new ImportWindow();
-            importWindow.ShowDialog();
-
-            if (importWindow.DialogResult == true)
-            {
-                refreshDiagrammList();
-                this.HideOverlay();
-            }
-            else
-            {
-                this.HideOverlay();
-            }*/
         }
 
-        private void btn_Details_Click(object sender, RoutedEventArgs e)
+        private void flo_Menu_tle_Details_Click(object sender, RoutedEventArgs e)
         {
-            //new DetailsWindow(diagrammsList[lstView.SelectedIndex].ID).ShowDialog();
-            //this.ShowProgressAsync("Please wait...", "Progress message");
+            flo_details.IsOpen = true;
+        }
 
-            var mySettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "Hi",
-                NegativeButtonText = "Go away!",
-                FirstAuxiliaryButtonText = "Cancel",
-               ColorScheme = MetroDialogColorScheme.Accented
-            };
+        private void flo_Menu_tle_Print_Click(object sender, RoutedEventArgs e)
+        {
+            flo_Print.IsOpen = true;
+        }
 
-            //this.ShowMessageAsync("Hello!", "Welcome to the world of metro! ",
-              //  MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, mySettings);
+        private void flo_Menu_tle_Export_Click(object sender, RoutedEventArgs e)
+        {
+            //Flyout open export
+        }
 
-            //flo_right.IsOpen = true;
-            
+        private void flo_Menu_tle_Delete_Click(object sender, RoutedEventArgs e)
+        {
+            //Flyout open Delete
         }
 
         private void btn_Settings_Click(object sender, RoutedEventArgs e)
         {
-            var mySettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "Cancel",
-                ColorScheme = MetroDialogColorScheme.Accented
-            };
-            //this.ShowMessageAsync("Bitte warten...", "Schaltplan wird importiert ",
-            //MessageDialogStyle.Affirmative, mySettings);
-
 
         }
 
         private void dgd_diagrammsList_Changed(object sender, SelectionChangedEventArgs e)
         {
-            //MessageBox.Show(dgd_diagrammsList.SelectedIndex.ToString());
-            
-            flo_left.IsOpen = true;
-            //flo_left.Header = 
-            //flo_right.IsOpen = true;
+            using (DB_CAW db_caw = new DB_CAW())
+            {
+                List<Diagramm> recentList = new List<Diagramm>();
+                
+                RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
+                recentList.Add(RecentDiagramm);
+                
+            }
+            flo_Menu.IsOpen = true;
         }
 
         private void btn_chooseFolder_Click(object sender, RoutedEventArgs e)
@@ -126,7 +143,6 @@ namespace bgx_caw_backend
             if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 sourceFolder = new DirectoryInfo(folderDialog.SelectedPath);
-                //tbox_sourceFolder.Text = folderDialog.SelectedPath;
             }
         }
 
@@ -136,10 +152,8 @@ namespace bgx_caw_backend
 
             using (DB_CAW db_caw = new DB_CAW())
             {
-
-                db_caw.addDiagramm(dxf_parser.Diagramm);
+                db_caw.addDiagramm(dxf_parser.Diagramm);              
             }
-
         }
 
         private void flo_bottom_tle_ImportFolder_Click(object sender, RoutedEventArgs e)
@@ -149,18 +163,12 @@ namespace bgx_caw_backend
             if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 sourceFolder = new DirectoryInfo(folderDialog.SelectedPath);
-                //tbox_sourceFolder.Text = folderDialog.SelectedPath;
             }
         }
 
         private void ttl_mnu_Import_Click(object sender, RoutedEventArgs e)
         {
             flo_bottom.IsOpen = true;
-        }
-
-        private void FlipView_SelectionChanged_1(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         #region ScaleValue Depdency Property
@@ -217,10 +225,29 @@ namespace bgx_caw_backend
         private void CalculateScale()
         {
             double yScale = ActualHeight / 750.0d;
-            double xScale = ActualWidth / 1200.0d;
+            double xScale = ActualWidth / 1100.0d;
             double value = Math.Min(xScale, yScale);
             ScaleValue = (double)OnCoerceScaleValue(stp_Main, value);
         }
- 
+
+        
+
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+                //System.Windows.Forms.MessageBox.Show("NICHTNULL");
+            }            
+        }
+
+
+
+        
+
+        
+
     }
 }

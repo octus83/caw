@@ -88,6 +88,14 @@ namespace bgx_caw_backend
             return result_list;
         }
 
+        public int getPageAmount(String id)
+        {
+            sql_cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.tblpages WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+
+            return Convert.ToInt32(sql_cmd.ExecuteScalar());
+        }
+
         public Diagramm getDiagramm(String id)
         {
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_id = '" + id + "'");
@@ -101,15 +109,15 @@ namespace bgx_caw_backend
                 {
                     ID = data_reader["D_id"].ToString(),
                     Customer = data_reader["Customer"].ToString(),
-                    Endcustomer = data_reader["EndCustomer"].ToString(),
+                    EndCustomer = data_reader["EndCustomer"].ToString(),
                     FieldName = data_reader["FieldName"].ToString(),
                     JobNumber = data_reader["JobNumber"].ToString(),
                     SerialNumber = data_reader["SerialNumber"].ToString(),
                     ProjectNumber = data_reader["ProjectNumber"].ToString(),
                     ProjectName = data_reader["ProjectName"].ToString(),
-                    SiteRow1 = data_reader["AddressRow1"].ToString(),
-                    SiteRow2 = data_reader["AddressRow2"].ToString(),
-                    SiteRow3 = data_reader["AddressRow3"].ToString(),
+                    AddressRow1 = data_reader["AddressRow1"].ToString(),
+                    AddressRow2 = data_reader["AddressRow2"].ToString(),
+                    AddressRow3 = data_reader["AddressRow3"].ToString(),
                     Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
                     Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
                     ProductionPlace = data_reader["ProductionPlace"].ToString(),
@@ -131,15 +139,15 @@ namespace bgx_caw_backend
             //Parameters for tblDiagramm
             sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.VarChar, 50).Value = diagramm.ID;
             sql_cmd.Parameters.Add("@Customer", SqlDbType.VarChar, 50).Value = diagramm.Customer;
-            sql_cmd.Parameters.Add("@EndCustomer", SqlDbType.VarChar, 50).Value = diagramm.Endcustomer;
+            sql_cmd.Parameters.Add("@EndCustomer", SqlDbType.VarChar, 50).Value = diagramm.EndCustomer;
             sql_cmd.Parameters.Add("@FieldName", SqlDbType.VarChar, 50).Value = diagramm.FieldName;
             sql_cmd.Parameters.Add("@JobNumber", SqlDbType.VarChar, 50).Value = diagramm.JobNumber;
             sql_cmd.Parameters.Add("@SerialNumber", SqlDbType.VarChar, 50).Value = diagramm.SerialNumber;
             sql_cmd.Parameters.Add("@ProjectNumber", SqlDbType.VarChar, 50).Value = diagramm.ProjectNumber;
             sql_cmd.Parameters.Add("@ProjectName", SqlDbType.VarChar, 50).Value = diagramm.ProjectName;
-            sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.SiteRow1;
-            sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.SiteRow2;
-            sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.SiteRow3;
+            sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.AddressRow1;
+            sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.AddressRow2;
+            sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.AddressRow3;
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = DateTime.Now;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = DateTime.Now;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
