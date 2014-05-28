@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.Objects;
 using System.Windows;
+using System.Configuration;
 
 namespace bgx_caw_backend
 {
@@ -15,19 +16,23 @@ namespace bgx_caw_backend
     /// </summary>
     partial class DB_CAW : IDisposable
     {
-        private SqlConnection sql_connection;
-        private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
-        {
-            DataSource = "N005509\\trans_edb_p8",
-            InitialCatalog = "CAWFinal",
-            IntegratedSecurity = true
-        };
+        private Configuration config;
 
+        private SqlConnection sql_connection;
+        private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder();
+
+       
         /// <summary>
         /// calls SqlConnection.Open to open connection to database
         /// </summary>
         public DB_CAW()
         {
+            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            connection_string.DataSource = config.AppSettings.Settings["DataSource"].Value;
+            connection_string.InitialCatalog = config.AppSettings.Settings["InitialCatalog"].Value;
+            connection_string.IntegratedSecurity = true;
+
             sql_connection = new SqlConnection(connection_string.ConnectionString);
             sql_connection.Open();
         }

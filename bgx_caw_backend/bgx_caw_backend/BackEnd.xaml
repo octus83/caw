@@ -1,4 +1,4 @@
-﻿ <Controls:MetroWindow x:Name="metroWindow" x:Class="bgx_caw_backend.MainWindow"
+﻿ <Controls:MetroWindow x:Name="metroWindow" x:Class="bgx_caw_backend.BackEnd"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
@@ -70,49 +70,93 @@
             </StackPanel>
         </Controls:Flyout>
 
-        <Controls:Flyout Name="flo_bottom" Height="200"  Position="Bottom" IsPinned="True" IsModal="True" Theme="Accent">
+        <Controls:Flyout Name="flo_bottom" Height="300"  Position="Bottom">
             <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
                 <Label Content="Plan importieren" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        
-                    <Controls:Tile x:Name="flo_bottom_tle_ImportFolder"  Title="Ordner auswählen" Margin="10,10,10,10" Height="80" Width="80" Click="flo_bottom_tle_ImportFolder_Click">
-                            <Rectangle Width="28" Height="25">
-                                <Rectangle.Resources>
-                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
-                                </Rectangle.Resources>
-                                <Rectangle.Fill>
-                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_folder_open}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Controls:Tile>
-                        
-                    <Controls:Tile x:Name="flo_bottom_tle_AddData" Title="Daten auswählen" Margin="10,10,10,10" Height="80" Width="80">
-                            <Rectangle Width="28" Height="25"> 
-                                <Rectangle.Resources>
-                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
-                                </Rectangle.Resources>
-                                <Rectangle.Fill>
-                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_edit_add}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Controls:Tile>
-                        
-                    <Controls:Tile x:Name="flo_bottom_tle_Import" Title="Importieren" Margin="10,10,10,10" Background="#FFF52323" Height="80" Width="80">
-                            <Rectangle Width="55" Height="50">
-                                <Rectangle.Resources>
-                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
-                                </Rectangle.Resources>
-                                <Rectangle.Fill>
-                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_inbox_in}" />
-                                </Rectangle.Fill>
-                            </Rectangle>
-                        </Controls:Tile>
-                    
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                    <StackPanel Orientation="Vertical" Margin="0,0,20,0" >
+                        <Label FontSize="16">DXF-Ordner auswählen</Label>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="250" FlowDirection="RightToLeft" Text="{Binding DXFDialog.SelectedPath}" Margin="0,0,5,0"></TextBox>
+                            <Button Name="flo_import_btn_dxf" Click="flo_import_btn_dxf_Click">
+                                    <Rectangle Width="20" Height="20">
+                                        <Rectangle.Resources>
+                                            <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                        </Rectangle.Resources>
+                                        <Rectangle.Fill>
+                                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_folder}" />
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Button>
+                        </StackPanel>
+                        <Label FontSize="16">PDF auswählen</Label>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Width="250" FlowDirection="RightToLeft" Text="{Binding PDFDialog.FileName}" Margin="0,0,5,0" ></TextBox>
+                                <Button Name="flo_import_btn_pdf" Click="flo_import_btn_pdf_Click" Background="#FF007ACC">
+                                    <Rectangle Width="20" Height="20">
+                                        <Rectangle.Resources>
+                                            <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                        </Rectangle.Resources>
+                                        <Rectangle.Fill>
+                                            <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_folder}" />
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Button>
+                            </StackPanel>
                     </StackPanel>
-            </StackPanel>
-        </Controls:Flyout>
+                        <StackPanel Background="Black" >
+                        <StackPanel Orientation="Horizontal" >
+                            <Label Width="100">Seriennummer</Label>
+                            <Label Content="{Binding ImportDiagramm.SerialNumber}" />
+                        </StackPanel>
 
-        <Controls:Flyout Name="flo_details" Header="Details" Position="Left" Width="450" IsModal="True" FlowDirection="LeftToRight">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Feldname</Label>
+                            <Label Content="{Binding ImportDiagramm.FieldName}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Auftragsnummer</Label>
+                            <Label Content="{Binding ImportDiagramm.JobNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektnummer</Label>
+                            <Label Content="{Binding ImportDiagramm.ProjectNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektname</Label>
+                            <Label Content="{Binding ImportDiagramm.ProjectName}" />
+                        </StackPanel>
+                    </StackPanel>                       
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">                     
+                        <Controls:Tile x:Name="flo_import_tle_del" Title="Löschen" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_del_Click">
+                            <Rectangle Width="20" Height="20">
+                                <Rectangle.Resources>
+                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                </Rectangle.Resources>
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_app_remove}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Controls:Tile>
+                        <Controls:Tile x:Name="flo_import_tle_import" Title="Import" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_import_Click" >
+                            <Rectangle Width="20" Height="20">
+                                <Rectangle.Resources>
+                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                </Rectangle.Resources>
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_cabinet_in}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Controls:Tile>
+                    </StackPanel>                        
+                </StackPanel>                
+            </Controls:Flyout>
+
+            <Controls:Flyout Name="flo_details" Header="Details" Position="Left" Width="450" IsModal="True" FlowDirection="LeftToRight">
                 <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
                     <Label FontSize="24">Allgemein</Label>
                     <StackPanel Background="DarkGray">
@@ -226,10 +270,10 @@
                     </StackPanel>
 
                     <Label FontSize="24">Optionen</Label>
-                    <StackPanel Background="DarkGray">
+                    <StackPanel Background="#FF086F9E">
                         <StackPanel Orientation="Horizontal">
                         <Label>Rotstift drucken</Label>
-                        <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />
+                        <Controls:ToggleSwitch  />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
