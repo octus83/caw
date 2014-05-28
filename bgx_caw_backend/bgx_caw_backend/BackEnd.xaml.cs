@@ -339,8 +339,8 @@ namespace bgx_caw_backend
 
                 //Create DiagrammFolder (ID)
                 String folderName = @"e:\programme\caw\projects\";
-                string pathString = System.IO.Path.Combine(folderName, ImportDiagramm.ID);
-                System.IO.Directory.CreateDirectory(pathString);
+                string diagrammPath = System.IO.Path.Combine(folderName, ImportDiagramm.ID);
+                System.IO.Directory.CreateDirectory(diagrammPath);
                 await Task.Delay(200);
                 int counter = 0;
                 
@@ -348,8 +348,8 @@ namespace bgx_caw_backend
                 foreach(Page page in ImportDiagramm.pages_List)
                 {
                     controller.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
-                    string pagePathString = System.IO.Path.Combine(pathString, page.P_id);
-                    System.IO.Directory.CreateDirectory(pagePathString);
+                    string pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
+                    System.IO.Directory.CreateDirectory(pagePath);
                     await Task.Delay(200);                    
                     counter++;
                     controller.SetProgress((0.7/ImportDiagramm.pages_List.Count) * counter);
@@ -357,6 +357,10 @@ namespace bgx_caw_backend
 
 
                 //Kopiere pdf in project - Ordner
+                controller.SetMessage("PDF wird kopiert");
+                System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID+".pdf"));
+                await Task.Delay(300);
+                controller.SetProgress(1.0);
 
                 await controller.CloseAsync();
             }
