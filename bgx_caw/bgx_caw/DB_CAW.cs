@@ -18,7 +18,7 @@ namespace bgx_caw
         private SqlConnection sql_connection;
         private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
         {
-            DataSource = "UNKNOWN\\SQLEXPRESS",
+            DataSource = "N005509\\trans_edb_p8",
             InitialCatalog = "CAWFinal",
             IntegratedSecurity = true
         };

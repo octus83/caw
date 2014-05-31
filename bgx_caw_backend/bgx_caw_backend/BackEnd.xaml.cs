@@ -31,6 +31,8 @@ namespace bgx_caw_backend
     public partial class BackEnd : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        //Überprüfen ob Key existiert
 
         private DXF_Parser dxf_parser;
         private DirectoryInfo sourceFolder;
@@ -106,6 +108,52 @@ namespace bgx_caw_backend
         }
 
         private PdfReader pdfReader;
+        public PdfReader PDFReader
+        {
+            get;
+            set;
+        }
+
+        public String DataSource
+        {
+            get
+            {
+                return config.AppSettings.Settings["DataSource"].Value;
+            }
+            set
+            {
+                if (config.AppSettings.Settings["InitialCatalog"] != null)
+                {
+                    //Key existiert. Löschen des Keys zum "überschreiben"
+                    config.AppSettings.Settings.Remove("InitialCatalog");
+                }
+                //Anlegen eines neuen KeyValue-Paars
+                config.AppSettings.Settings.Add("DataSource", value);
+                
+                //Speichern der aktualisierten AppSettings
+                config.Save(ConfigurationSaveMode.Modified);
+            }
+        }
+
+        public String InitialCatalog
+        {
+            get
+            {
+                return config.AppSettings.Settings["InitialCatalog"].Value;
+            }
+            set
+            {
+                if (config.AppSettings.Settings["InitialCatalog"] != null)
+                {
+                    //Key existiert. Löschen des Keys zum "überschreiben"
+                    config.AppSettings.Settings.Remove("InitialCatalog");
+                }
+                //Anlegen eines neuen KeyValue-Paars
+                config.AppSettings.Settings.Add("InitialCatalog", value);
+                //Speichern der aktualisierten AppSettings
+                config.Save(ConfigurationSaveMode.Modified);
+            }
+        }
 
 
         public BackEnd()
@@ -116,21 +164,7 @@ namespace bgx_caw_backend
             Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
             //Überprüfen ob Key existiert
             
-            if (config.AppSettings.Settings["DataSource"] != null)
-            {
-                //Key existiert. Löschen des Keys zum "überschreiben"
-                config.AppSettings.Settings.Remove("DataSource");
-            }
-            if (config.AppSettings.Settings["InitialCatalog"] != null)
-            {
-                //Key existiert. Löschen des Keys zum "überschreiben"
-                config.AppSettings.Settings.Remove("InitialCatalog");
-            }
-            //Anlegen eines neuen KeyValue-Paars
-            config.AppSettings.Settings.Add("DataSource", "N005509\\trans_edb_p8");
-            config.AppSettings.Settings.Add("InitialCatalog", "CAWFinal");
-            //Speichern der aktualisierten AppSettings
-            config.Save(ConfigurationSaveMode.Modified);
+            
             ///////////////////////////////
 
 
@@ -141,6 +175,16 @@ namespace bgx_caw_backend
             this.DataContext = this; 
         }
 
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
         private void refreshDiagrammList()
         {
             using (DB_CAW db_caw = new DB_CAW())
@@ -149,11 +193,19 @@ namespace bgx_caw_backend
             } 
         }
 
-        private void btn_Import_Click(object sender, RoutedEventArgs e)
+        private void win_Comm_btn_Import_Click(object sender, RoutedEventArgs e)
         {
             flo_Menu.IsOpen = false;
             flo_details.IsOpen = false;
-            flo_bottom.IsOpen = true;
+            flo_Settings.IsOpen = false;
+            flo_bottom.IsOpen ^= true;
+        }
+
+        private void win_Comm_btn_Settings_Click(object sender, RoutedEventArgs e)
+        {
+            flo_bottom.IsOpen = false;
+            flo_Settings.IsOpen ^= true;
+            //flo_Settings.IsOpen = flo_Settings.IsOpen == false ? true : false;
         }
 
         private void flo_Menu_tle_Details_Click(object sender, RoutedEventArgs e)
@@ -176,135 +228,22 @@ namespace bgx_caw_backend
             this.ShowProgressAsync("Please wait...", "Progress message");
         }
 
-        private void btn_Settings_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void dgd_diagrammsList_Changed(object sender, SelectionChangedEventArgs e)
         {
             using (DB_CAW db_caw = new DB_CAW())
             {
-                List<Diagramm> recentList = new List<Diagramm>();
-                
+                //List<Diagramm> recentList = new List<Diagramm>();
+
                 RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
-                recentList.Add(RecentDiagramm);
-                
+                //recentList.Add(RecentDiagramm);
+
             }
             flo_Menu.IsOpen = true;
-        }
-
-        private void btn_chooseFolder_Click(object sender, RoutedEventArgs e)
-        {
-            FolderBrowserDialog folderDialog = new FolderBrowserDialog();
-
-            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                sourceFolder = new DirectoryInfo(folderDialog.SelectedPath);
-            }
-        }
-
-        private void btn_import_Click(object sender, RoutedEventArgs e)
-        {
-            dxf_parser = new DXF_Parser(sourceFolder);
-
-            using (DB_CAW db_caw = new DB_CAW())
-            {
-                db_caw.addDiagramm(dxf_parser.Diagramm);              
-            }
-        }
-
-        private void flo_bottom_tle_ImportFolder_Click(object sender, RoutedEventArgs e)
-        {
-            FolderBrowserDialog folderDialog = new FolderBrowserDialog();
-
-            if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                sourceFolder = new DirectoryInfo(folderDialog.SelectedPath);
-            }
-        }
-
-        private void ttl_mnu_Import_Click(object sender, RoutedEventArgs e)
-        {
-            flo_bottom.IsOpen = true;
-        }
-
-        #region ScaleValue Depdency Property
-        public static readonly DependencyProperty ScaleValueProperty = DependencyProperty.Register("ScaleValue", typeof(double), typeof(BackEnd), new UIPropertyMetadata(1.0, new PropertyChangedCallback(OnScaleValueChanged), new CoerceValueCallback(OnCoerceScaleValue)));
-
-        private static object OnCoerceScaleValue(DependencyObject o, object value)
-        {
-            BackEnd mainWindow = o as BackEnd;
-            if (mainWindow != null)
-                return mainWindow.OnCoerceScaleValue((double)value);
-            else
-                return value;
-        }
-
-        private static void OnScaleValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
-        {
-            BackEnd mainWindow = o as BackEnd;
-            if (mainWindow != null)
-                mainWindow.OnScaleValueChanged((double)e.OldValue, (double)e.NewValue);
-        }
-
-        protected virtual double OnCoerceScaleValue(double value)
-        {
-            if (double.IsNaN(value))
-                return 1.0d;
-
-            value = Math.Max(0.1, value);
-            return value;
-        }
-
-        protected virtual void OnScaleValueChanged(double oldValue, double newValue)
-        {
-
-        }
-
-        public double ScaleValue
-        {
-            get
-            {
-                return (double)GetValue(ScaleValueProperty);
-            }
-            set
-            {
-                SetValue(ScaleValueProperty, value);
-            }
-        }
-        #endregion
-
-        private void StackPanel_SizeChanged_1(object sender, EventArgs e)
-        {
-            CalculateScale();
-        }
-
-        private void CalculateScale()
-        {
-            double yScale = ActualHeight / 750.0d;
-            double xScale = ActualWidth / 1100.0d;
-            double value = Math.Min(xScale, yScale);
-            ScaleValue = (double)OnCoerceScaleValue(stp_Main, value);
-        }
-
-        
-
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }            
         }
 
         private void flo_import_btn_dxf_Click(object sender, RoutedEventArgs e)
         {
             DXFDialog = new FolderBrowserDialog();
-
-
 
             if (DXFDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -318,7 +257,7 @@ namespace bgx_caw_backend
         {
             PDFDialog = new OpenFileDialog();
 
-            if(PDFDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (PDFDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 OnPropertyChanged("PDFDialog");
             }
@@ -326,48 +265,71 @@ namespace bgx_caw_backend
 
         private async void flo_import_tle_import_Click(object sender, RoutedEventArgs e)
         {
-            pdfReader = new PdfReader(PDFDialog.FileName);
+            String projectFolder = @"e:\programme\caw\projects\";
+            String diagrammPath = System.IO.Path.Combine(projectFolder, ImportDiagramm.ID);
+            String pagePath;
 
-            flo_bottom.IsOpen = false;            
-
-            if (ImportDiagramm.pages_List.Count == pdfReader.NumberOfPages)
+            try
             {
-                this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Theme;
+                pdfReader = new PdfReader(PDFDialog.FileName);
 
-                var controller = await this.ShowProgressAsync("Schaltplan wird importiert", "Diagram Ordner " + ImportDiagramm.ID  + " wird erstellt");           
-                controller.SetProgress(0.1);
-
-                //Create DiagrammFolder (ID)
-                String folderName = @"e:\programme\caw\projects\";
-                string diagrammPath = System.IO.Path.Combine(folderName, ImportDiagramm.ID);
-                System.IO.Directory.CreateDirectory(diagrammPath);
-                await Task.Delay(200);
-                int counter = 0;
-                
-                //Create PageFolder (P_id) containing Overlays                
-                foreach(Page page in ImportDiagramm.pages_List)
+                if (ImportDiagramm.pages_List.Count == pdfReader.NumberOfPages)
                 {
-                    controller.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
-                    string pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
-                    System.IO.Directory.CreateDirectory(pagePath);
-                    await Task.Delay(200);                    
-                    counter++;
-                    controller.SetProgress((0.7/ImportDiagramm.pages_List.Count) * counter);
+                    //try
+                    //{
+                    this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+                    var progressDialog = await this.ShowProgressAsync("Schaltplan wird importiert", "Diagram Ordner " + ImportDiagramm.ID + " wird erstellt");
+
+                    progressDialog.SetProgress(0.1);
+
+                    //Create DiagrammFolder (ID)                    
+                    System.IO.Directory.CreateDirectory(diagrammPath);
+
+                    await Task.Delay(200);
+
+                    int counter = 0;
+
+                    //Create PageFolder (P_id) containing Overlays                
+                    foreach (Page page in ImportDiagramm.pages_List)
+                    {
+                        progressDialog.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
+                        pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
+                        System.IO.Directory.CreateDirectory(pagePath);
+
+                        await Task.Delay(100);
+
+                        counter++;
+                        progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
+                    }
+
+                    //Kopiere pdf in project - Ordner
+                    progressDialog.SetMessage("PDF wird kopiert");
+                    System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
+
+                    await Task.Delay(300);
+                    progressDialog.SetProgress(1.0);
+
+                    await progressDialog.CloseAsync();
+
+                    flo_bottom.IsOpen = false;
                 }
-
-
-                //Kopiere pdf in project - Ordner
-                controller.SetMessage("PDF wird kopiert");
-                System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID+".pdf"));
-                await Task.Delay(300);
-                controller.SetProgress(1.0);
-
-                await controller.CloseAsync();
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Das PDF hat " + pdfReader.NumberOfPages + " Seiten und das DXF " + ImportDiagramm.pages_List.Count);
+                }
             }
-            else
+            catch
             {
-                System.Windows.Forms.MessageBox.Show("Das PDF hat " + pdfReader.NumberOfPages + " Seiten und das DXF " + ImportDiagramm.pages_List.Count);
+
             }
+            finally
+            {
+                ImportDiagramm = null;
+                dxf_parser = null;
+                DXFDialog = null;
+                PDFDialog = null;
+            }
+            
         }
 
         private void flo_import_tle_del_Click(object sender, RoutedEventArgs e)
@@ -376,5 +338,90 @@ namespace bgx_caw_backend
             PDFDialog = null;
             ImportDiagramm = null;
         }
+
+        #region ScaleValue Depdency Property
+        public static readonly DependencyProperty ScaleValueProperty = DependencyProperty.Register("ScaleValue", typeof(double), typeof(BackEnd), new UIPropertyMetadata(1.0, new PropertyChangedCallback(OnScaleValueChanged), new CoerceValueCallback(OnCoerceScaleValue)));
+
+        public double ScaleValue
+        {
+            get
+            {
+                return (double)GetValue(ScaleValueProperty);
+            }
+            set
+            {
+                SetValue(ScaleValueProperty, value);
+            }
+        }
+
+        private static object OnCoerceScaleValue(DependencyObject o, object value)
+        {
+            BackEnd mainWindow = o as BackEnd;
+            if (mainWindow != null)
+            {
+                return mainWindow.OnCoerceScaleValue((double)value);
+            }
+            else
+            {
+                return value;
+            }                     
+        }
+
+        private static void OnScaleValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            BackEnd mainWindow = o as BackEnd;
+            if (mainWindow != null)
+            {
+                mainWindow.OnScaleValueChanged((double)e.OldValue, (double)e.NewValue);
+            }               
+        }
+
+        protected virtual double OnCoerceScaleValue(double value)
+        {
+            if (double.IsNaN(value))
+            {
+                return 1.0d;
+            }
+                
+            return Math.Max(0.1, value);
+        }
+
+        protected virtual void OnScaleValueChanged(double oldValue, double newValue)
+        {
+
+        }
+       
+        #endregion
+
+        private void StackPanel_SizeChanged(object sender, EventArgs e)
+        {
+            CalculateScale();
+        }
+
+        private void CalculateScale()
+        {
+            double yScale = ActualHeight / 750.0d;
+            double xScale = ActualWidth / 1100.0d;
+            double value = Math.Min(xScale, yScale);
+            ScaleValue = (double)OnCoerceScaleValue(stp_Main, value);
+        }
+
+        private async void showMessage()
+        {
+            await this.ShowMessageAsync("Fehler", "");
+        }
+
+        private void dgd_diagrammsList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            using (DB_CAW db_caw = new DB_CAW())
+            {
+                //List<Diagramm> recentList = new List<Diagramm>();
+
+                RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
+                //recentList.Add(RecentDiagramm);
+
+            }
+            flo_Menu.IsOpen = true;
+        }      
     }
 }
