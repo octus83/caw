@@ -32,22 +32,17 @@ namespace bgx_caw_backend
     {
         public event PropertyChangedEventHandler PropertyChanged;
         Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-        //Überprüfen ob Key existiert
 
         private DXF_Parser dxf_parser;
-        private DirectoryInfo sourceFolder;
-        
-        private List<Diagramm> _diagrammsList;
-        private List<Diagramm> DiagrammsList
+
+        public BindingList<Diagramm> DiagrammsList
         {
             get
             {
-                return _diagrammsList;
-            }
-            set
-            {
-                _diagrammsList = value;
-                OnPropertyChanged("diagrammsList");
+                using(DB_CAW db_caw = new DB_CAW())
+                {
+                    return new BindingList<Diagramm>(db_caw.getDiagramms()); 
+                }
             }
         }
 
@@ -61,7 +56,7 @@ namespace bgx_caw_backend
             set
             {
                 _recentDiagramm = value;
-                OnPropertyChanged("RecentDiagramm");
+                propertyChanged("RecentDiagramm");
             }
         }
 
@@ -75,7 +70,7 @@ namespace bgx_caw_backend
             set
             {
                 _importDiagramm = value;
-                OnPropertyChanged("ImportDiagramm");
+                propertyChanged("ImportDiagramm");
             }
         }
 
@@ -89,7 +84,7 @@ namespace bgx_caw_backend
             set
             {
                 _dxfdialog = value;
-                OnPropertyChanged("DXFDialog");
+                propertyChanged("DXFDialog");
             }
         }
 
@@ -103,7 +98,7 @@ namespace bgx_caw_backend
             set
             {
                 _pdfdialog = value;
-                OnPropertyChanged("PDFDialog"); 
+                propertyChanged("PDFDialog"); 
             }
         }
 
@@ -150,18 +145,15 @@ namespace bgx_caw_backend
             }
         }
 
-
         public BackEnd()
         {           
             InitializeComponent();
-            DataSource = "N005509\\trans_edb_p8";
-            InitialCatalog = "CAWFinal";
-            refreshDiagrammList();
-            dgd_diagrammsList.DataContext = DiagrammsList;            
+            /*Remove before Release*/DataSource = "N005509\\trans_edb_p8";
+            /*Remove before Release*/InitialCatalog = "CAWFinal";           
             this.DataContext = this; 
         }
 
-        protected void OnPropertyChanged(string name)
+        protected void propertyChanged(String name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
 
@@ -169,14 +161,6 @@ namespace bgx_caw_backend
             {
                 handler(this, new PropertyChangedEventArgs(name));
             }
-        }
-
-        private void refreshDiagrammList()
-        {
-            using (DB_CAW db_caw = new DB_CAW())
-            {
-                DiagrammsList = db_caw.getDiagramms();                    
-            } 
         }
 
         private void win_Comm_btn_Import_Click(object sender, RoutedEventArgs e)
@@ -189,145 +173,39 @@ namespace bgx_caw_backend
 
         private void win_Comm_btn_Settings_Click(object sender, RoutedEventArgs e)
         {
+            flo_Menu.IsOpen = false;
+            flo_details.IsOpen = false;
             flo_bottom.IsOpen = false;
             flo_Settings.IsOpen ^= true;
         }
 
-        private void flo_Menu_tle_Details_Click(object sender, RoutedEventArgs e)
-        {
-            flo_details.IsOpen = true;
-        }
-
-        private void flo_Menu_tle_Print_Click(object sender, RoutedEventArgs e)
-        {
-            flo_Print.IsOpen = true;
-        }
-
-        private void flo_Menu_tle_Export_Click(object sender, RoutedEventArgs e)
-        {
-            flo_Export.IsOpen = true;
-        }
-
-        private void flo_Menu_tle_Delete_Click(object sender, RoutedEventArgs e)
-        {
-            using(DB_CAW db_caw = new DB_CAW())
-            {
-                db_caw.deleteDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
-            }
-
-            refreshDiagrammList();
-        }
-
-        private void dgd_diagrammsList_Changed(object sender, SelectionChangedEventArgs e)
+        private void dgd_diagrammsList_Select(object sender, SelectionChangedEventArgs e)
         {
             using (DB_CAW db_caw = new DB_CAW())
             {
-                //List<Diagramm> recentList = new List<Diagramm>();
-                RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
-                //recentList.Add(RecentDiagramm);
-
+                if(dgd_diagrammsList.SelectedItem != null)
+                {
+                    RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
+                }
             }
+
             flo_Menu.IsOpen = true;
         }
 
-        private void flo_import_btn_dxf_Click(object sender, RoutedEventArgs e)
+        private void dgd_diagrammsList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            DXFDialog = new FolderBrowserDialog();
-
-            if (DXFDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            using (DB_CAW db_caw = new DB_CAW())
             {
-                OnPropertyChanged("DXFDialog");
-                dxf_parser = new DXF_Parser(new DirectoryInfo(DXFDialog.SelectedPath));
-                ImportDiagramm = dxf_parser.Diagramm;
-            }
-        }
-
-        private void flo_import_btn_pdf_Click(object sender, RoutedEventArgs e)
-        {
-            PDFDialog = new OpenFileDialog();
-
-            if (PDFDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                OnPropertyChanged("PDFDialog");
-            }
-        }
-
-        private async void flo_import_tle_import_Click(object sender, RoutedEventArgs e)
-        {
-            String projectFolder = @"e:\programme\caw\projects\";
-            String diagrammPath = System.IO.Path.Combine(projectFolder, ImportDiagramm.ID);
-            String pagePath;
-
-            try
-            {
-                pdfReader = new PdfReader(PDFDialog.FileName);
-
-                if (ImportDiagramm.pages_List.Count == pdfReader.NumberOfPages)
+                if (dgd_diagrammsList.SelectedItem != null)
                 {
-                    //try
-                    //{
-                    this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-                    var progressDialog = await this.ShowProgressAsync("Schaltplan wird importiert", "Diagram Ordner " + ImportDiagramm.ID + " wird erstellt");
-
-                    progressDialog.SetProgress(0.1);
-
-                    //Create DiagrammFolder (ID)                    
-                    System.IO.Directory.CreateDirectory(diagrammPath);
-
-                    await Task.Delay(200);
-
-                    int counter = 0;
-
-                    //Create PageFolder (P_id) containing Overlays                
-                    foreach (Page page in ImportDiagramm.pages_List)
-                    {
-                        progressDialog.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
-                        pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
-                        System.IO.Directory.CreateDirectory(pagePath);
-
-                        await Task.Delay(100);
-
-                        counter++;
-                        progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
-                    }
-
-                    //Kopiere pdf in project - Ordner
-                    progressDialog.SetMessage("PDF wird kopiert");
-                    System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
-
-                    await Task.Delay(300);
-                    progressDialog.SetProgress(1.0);
-
-                    await progressDialog.CloseAsync();
-
-                    flo_bottom.IsOpen = false;
-                }
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("Das PDF hat " + pdfReader.NumberOfPages + " Seiten und das DXF " + ImportDiagramm.pages_List.Count);
+                    RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
                 }
             }
-            catch
-            {
 
-            }
-            finally
-            {
-                ImportDiagramm = null;
-                dxf_parser = null;
-                DXFDialog = null;
-                PDFDialog = null;
-            }
-            
+            flo_Menu.IsOpen = true;
         }
 
-        private void flo_import_tle_del_Click(object sender, RoutedEventArgs e)
-        {
-            DXFDialog = null;
-            PDFDialog = null;
-            ImportDiagramm = null;
-        }
-
+        
         #region ScaleValue Depdency Property
         public static readonly DependencyProperty ScaleValueProperty = DependencyProperty.Register("ScaleValue", typeof(double), typeof(BackEnd), new UIPropertyMetadata(1.0, new PropertyChangedCallback(OnScaleValueChanged), new CoerceValueCallback(OnCoerceScaleValue)));
 
@@ -400,42 +278,6 @@ namespace bgx_caw_backend
             await this.ShowMessageAsync("Fehler", "");
         }
 
-        private void dgd_diagrammsList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            using (DB_CAW db_caw = new DB_CAW())
-            {
-                //List<Diagramm> recentList = new List<Diagramm>();
-                RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
-                //recentList.Add(RecentDiagramm);
-
-            }
-            flo_Menu.IsOpen = true;
-        }
-
-        private void flo_Settings_tle_sve_Click(object sender, RoutedEventArgs e)
-        {
-            this.DataSource = flo_Settings_tbx_dsc.Text;
-            this.InitialCatalog = flo_Settings_tbx_inc.Text;
-
-            refreshDiagrammList();
-
-            flo_Settings.IsOpen = false;
-        }
-
-        private void flo_Settings_tle_ccl_Click(object sender, RoutedEventArgs e)
-        {
-            flo_Settings_tbx_dsc.Text = this.DataSource;
-            flo_Settings_tbx_inc.Text = this.InitialCatalog;
-        }
-
-        private void flo_Print_tle_Print_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void flo_Export_tle_Export_Click(object sender, RoutedEventArgs e)
-        {
-
-        }      
+                      
     }
 }

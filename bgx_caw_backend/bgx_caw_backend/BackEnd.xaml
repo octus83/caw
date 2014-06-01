@@ -405,14 +405,15 @@
                       AutoGenerateColumns="False" 
                       GridLinesVisibility="All" 
                       FontSize="16" 
-                      SelectionChanged="dgd_diagrammsList_Changed" 
-                      
+                      CanUserAddRows="False"
+                      DataContext="{Binding DiagrammsList}"
                       SelectionMode="Single"
                       Style="{StaticResource AzureDataGrid}"
                       ItemsSource="{Binding}"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" 
-                      MouseLeftButtonDown="dgd_diagrammsList_MouseLeftButtonDown">
+                      MouseLeftButtonDown="dgd_diagrammsList_MouseLeftButtonDown"
+                      SelectionChanged="dgd_diagrammsList_Select">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}" IsReadOnly="True"/>
