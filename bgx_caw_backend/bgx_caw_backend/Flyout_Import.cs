@@ -37,8 +37,8 @@ namespace bgx_caw_backend
 
         private async void flo_import_tle_import_Click(object sender, RoutedEventArgs e)
         {
-            String projectFolder = @"e:\programme\caw\projects\";
-            String diagrammPath = System.IO.Path.Combine(projectFolder, ImportDiagramm.ID);
+            //String projectFolder = @"e:\programme\caw\projects\";
+            String diagrammPath = System.IO.Path.Combine(ProgrammPath, ImportDiagramm.ID);
             String pagePath;
 
             try

@@ -200,7 +200,7 @@
             <Controls:Flyout Name="flo_details" Header="Details" Position="Left" Width="450" IsModal="True" FlowDirection="LeftToRight">
                 <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
                     <Label FontSize="24">Allgemein</Label>
-                    <StackPanel Background="DarkGray">
+                    <StackPanel Background="Black">
                         
                         <StackPanel Orientation="Horizontal">
                             <Label Width="100">Seriennummer</Label>
@@ -230,7 +230,7 @@
                     </StackPanel>
 
                     <Label FontSize="24">Kunde</Label>
-                    <StackPanel Background="DarkGray">
+                    <StackPanel Background="Black">
 
                         <StackPanel Orientation="Horizontal">
                             <Label Width="100">Kunde</Label>
@@ -259,7 +259,7 @@
                     </StackPanel>
 
                     <Label FontSize="24">Metadaten</Label>
-                    <StackPanel Background="DarkGray">
+                    <StackPanel Background="Black">
                             
                         <StackPanel Orientation="Horizontal">
                             <Label Width="100">Diagramm ID</Label>
@@ -282,7 +282,7 @@
             <Controls:Flyout Name="flo_Print" Header="Drucken" Position="Left" Width="450" IsModal="True">
                 <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
                     <Label FontSize="24">Allgemein</Label>
-                    <StackPanel Background="DarkGray">
+                    <StackPanel Background="Black">
 
                         <StackPanel Orientation="Horizontal">
                             <Label Width="100">Seriennummer</Label>
@@ -344,7 +344,7 @@
             <Controls:Flyout Name="flo_Export" Header="Drucken" Position="Left" Width="450" IsModal="True">
                 <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
                     <Label FontSize="24">Allgemein</Label>
-                    <StackPanel Background="DarkGray">
+                    <StackPanel Background="Black">
 
                         <StackPanel Orientation="Horizontal">
                             <Label Width="100">Seriennummer</Label>

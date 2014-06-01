@@ -21,6 +21,8 @@ using System.IO;
 using System.Configuration;
 using iTextSharp.text.pdf;
 using System.Threading;
+using GhostscriptSharp;
+using GhostscriptSharp.Settings;
 
 
 namespace bgx_caw_backend
@@ -145,11 +147,30 @@ namespace bgx_caw_backend
             }
         }
 
+        public String ProgrammPath
+        {
+            get
+            {
+                return config.AppSettings.Settings["ProgrammPath"].Value;
+            }
+            set
+            {
+                if (config.AppSettings.Settings["ProgrammPath"] != null)
+                {
+                    config.AppSettings.Settings.Remove("ProgrammPath");
+                }
+                config.AppSettings.Settings.Add("ProgrammPath", value);
+
+                config.Save(ConfigurationSaveMode.Modified);
+            }
+        }
+
         public BackEnd()
         {           
             InitializeComponent();
             /*Remove before Release*/DataSource = "N005509\\trans_edb_p8";
-            /*Remove before Release*/InitialCatalog = "CAWFinal";           
+            /*Remove before Release*/InitialCatalog = "CAWFinal";
+            /*Remove before Release*/ProgrammPath = "e:\\programme\\caw\\projects\\";
             this.DataContext = this; 
         }
 
@@ -278,6 +299,35 @@ namespace bgx_caw_backend
             await this.ShowMessageAsync("Fehler", "");
         }
 
+        private static void GetPdfThumbnail(string sourcePdfFilePath, string destinationPngFilePath)
+        {
+            // Use GhostscriptSharp to convert the pdf to a png
+            GhostscriptWrapper.GenerateOutput(sourcePdfFilePath, destinationPngFilePath,
+                new GhostscriptSettings
+                {
+                    Device = GhostscriptDevices.pngalpha,
+                    Page = new GhostscriptPages
+                    {
+                        // Only make a thumbnail of the first page
+                        Start = 1,
+                        End = 10,
+                        AllPages = true
+                    },
+                    Resolution = new System.Drawing.Size
+                    {
+                        // Render at 72x72 dpi
+                        Height = 200,
+                        Width = 200
+                    },
+                    Size = new GhostscriptPageSize
+                    {
+                        // The dimentions of the incoming PDF must be
+                        // specified. The example PDF is US Letter sized.
+                        Native = GhostscriptPageSizes.a4
+                    }
+                }
+            );
+        }
                       
     }
 }

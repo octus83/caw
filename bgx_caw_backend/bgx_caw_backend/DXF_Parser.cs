@@ -266,28 +266,23 @@ namespace bgx_caw_backend
 
                             switch (rowsList[filecount + 2])
                             {
-                                case "4_40101":
-                                    //MessageBox.Show("Seite " + pageCounter + " hat den Konstrukteur " + rowsList[i + 14]);
+                                case "4_40101": //Kosntrukteur Seite
                                     Diagramm.pages_List[pageCounter].Author = rowsList[i + 14];
                                     break;
 
-                                case "4_11011":
-                                    //MessageBox.Show("Seite" + pageCounter + " hat den Titel " + rowsList[i + 14]);
+                                case "4_11011": //Seitentitel
                                     Diagramm.pages_List[pageCounter].Title = rowsList[i + 14];
                                     break;
 
-                                case "4_1120":
-                                    //MessageBox.Show("Seite" + pageCounter + " hat das Anlagenkennzeichen " + rowsList[i + 14]);
+                                case "4_1120": //Anlagenkennzeichen Seite
                                     Diagramm.pages_List[pageCounter].PrePreFix = rowsList[i + 14];
                                     break;
 
-                                case "4_1220":
-                                    //MessageBox.Show("Seite" + pageCounter + " hat das Ortskennzeichen " + rowsList[i + 14]);
+                                case "4_1220": //Ortskennzeichen Seite
                                     Diagramm.pages_List[pageCounter].PreFix = rowsList[i + 14];
                                     break;
 
-                                case "4_11000":
-                                    //MessageBox.Show("Seite" + pageCounter + " hat die Seitenzahl " + rowsList[i + 14]);
+                                case "4_11000": //Original Seitenzahl
                                     Diagramm.pages_List[pageCounter].OriginNumber = rowsList[i + 14];
                                     break;
                             }
