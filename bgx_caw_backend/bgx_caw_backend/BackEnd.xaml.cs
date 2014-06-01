@@ -122,15 +122,12 @@ namespace bgx_caw_backend
             }
             set
             {
-                if (config.AppSettings.Settings["InitialCatalog"] != null)
+                if (config.AppSettings.Settings["DataSource"] != null)
                 {
-                    //Key existiert. Löschen des Keys zum "überschreiben"
-                    config.AppSettings.Settings.Remove("InitialCatalog");
+                    config.AppSettings.Settings.Remove("DataSource");
                 }
-                //Anlegen eines neuen KeyValue-Paars
                 config.AppSettings.Settings.Add("DataSource", value);
                 
-                //Speichern der aktualisierten AppSettings
                 config.Save(ConfigurationSaveMode.Modified);
             }
         }
@@ -145,31 +142,20 @@ namespace bgx_caw_backend
             {
                 if (config.AppSettings.Settings["InitialCatalog"] != null)
                 {
-                    //Key existiert. Löschen des Keys zum "überschreiben"
                     config.AppSettings.Settings.Remove("InitialCatalog");
                 }
-                //Anlegen eines neuen KeyValue-Paars
                 config.AppSettings.Settings.Add("InitialCatalog", value);
-                //Speichern der aktualisierten AppSettings
+
                 config.Save(ConfigurationSaveMode.Modified);
             }
         }
 
 
         public BackEnd()
-        {  
-            //DELETE BEFORE RELEASE
-
-            //Laden der AppSettings
-            Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            //Überprüfen ob Key existiert
-            
-            
-            ///////////////////////////////
-
-
-
+        {           
             InitializeComponent();
+            DataSource = "N005509\\trans_edb_p8";
+            InitialCatalog = "CAWFinal";
             refreshDiagrammList();
             dgd_diagrammsList.DataContext = DiagrammsList;            
             this.DataContext = this; 
@@ -205,7 +191,6 @@ namespace bgx_caw_backend
         {
             flo_bottom.IsOpen = false;
             flo_Settings.IsOpen ^= true;
-            //flo_Settings.IsOpen = flo_Settings.IsOpen == false ? true : false;
         }
 
         private void flo_Menu_tle_Details_Click(object sender, RoutedEventArgs e)
@@ -220,12 +205,17 @@ namespace bgx_caw_backend
 
         private void flo_Menu_tle_Export_Click(object sender, RoutedEventArgs e)
         {
-            //Flyout open export
+            flo_Export.IsOpen = true;
         }
 
         private void flo_Menu_tle_Delete_Click(object sender, RoutedEventArgs e)
         {
-            this.ShowProgressAsync("Please wait...", "Progress message");
+            using(DB_CAW db_caw = new DB_CAW())
+            {
+                db_caw.deleteDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
+            }
+
+            refreshDiagrammList();
         }
 
         private void dgd_diagrammsList_Changed(object sender, SelectionChangedEventArgs e)
@@ -233,7 +223,6 @@ namespace bgx_caw_backend
             using (DB_CAW db_caw = new DB_CAW())
             {
                 //List<Diagramm> recentList = new List<Diagramm>();
-
                 RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
                 //recentList.Add(RecentDiagramm);
 
@@ -416,12 +405,37 @@ namespace bgx_caw_backend
             using (DB_CAW db_caw = new DB_CAW())
             {
                 //List<Diagramm> recentList = new List<Diagramm>();
-
                 RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
                 //recentList.Add(RecentDiagramm);
 
             }
             flo_Menu.IsOpen = true;
+        }
+
+        private void flo_Settings_tle_sve_Click(object sender, RoutedEventArgs e)
+        {
+            this.DataSource = flo_Settings_tbx_dsc.Text;
+            this.InitialCatalog = flo_Settings_tbx_inc.Text;
+
+            refreshDiagrammList();
+
+            flo_Settings.IsOpen = false;
+        }
+
+        private void flo_Settings_tle_ccl_Click(object sender, RoutedEventArgs e)
+        {
+            flo_Settings_tbx_dsc.Text = this.DataSource;
+            flo_Settings_tbx_inc.Text = this.InitialCatalog;
+        }
+
+        private void flo_Print_tle_Print_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void flo_Export_tle_Export_Click(object sender, RoutedEventArgs e)
+        {
+
         }      
     }
 }

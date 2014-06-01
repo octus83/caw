@@ -21,23 +21,23 @@
      <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
 
-            <Controls:Flyout Name="flo_Settings" Position="Top" Height="220" IsModal="True">
+            <Controls:Flyout Name="flo_Settings" Position="Top" Height="300" IsModal="True">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,30,0,0">
                     <Label Content="Einstellungen" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                         <StackPanel Orientation="Vertical" Margin="0,0,20,0" >
                             <Label FontSize="16">Datenbank-Server (DataSource)</Label>
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Width="150" Text="{Binding DataSource}" Margin="0,0,5,0"></TextBox>
+                                <TextBox Name="flo_Settings_tbx_dsc" Width="150" Text="{Binding DataSource}" Margin="0,0,5,0"></TextBox>
                             </StackPanel>
                             <Label FontSize="16">Datenbank (InitialCatalog)</Label>
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Width="150" Text="{Binding InitialCatalog}" Margin="0,0,5,0" ></TextBox>      
+                                <TextBox Name="flo_Settings_tbx_inc" Width="150" Text="{Binding InitialCatalog}" Margin="0,0,5,0" ></TextBox>      
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                        <Controls:Tile x:Name="flo_import_tle_del2" Title="Löschen" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_del_Click">
+                        <Controls:Tile x:Name="flo_Settings_tle_ccl" Title="Cancel" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_ccl_Click">
                             <Rectangle Width="20" Height="20">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
@@ -47,7 +47,7 @@
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Controls:Tile>
-                        <Controls:Tile x:Name="flo_import_tle_import2" Title="Import" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_import_Click" >
+                        <Controls:Tile x:Name="flo_Settings_tle_sve" Title="Speichern" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_sve_Click">
                             <Rectangle Width="20" Height="20">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
@@ -327,7 +327,60 @@
                             <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />
                         </StackPanel>
                     </StackPanel>
+                    <Controls:Tile x:Name="flo_Print_tle_Print" Title="Print" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Print_tle_Print_Click">
+                        <Rectangle Width="20" Height="20">
+                            <Rectangle.Resources>
+                                <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                            </Rectangle.Resources>
+                            <Rectangle.Fill>
+                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_cabinet_in}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Controls:Tile>
 
+                </StackPanel>
+            </Controls:Flyout>
+
+            <Controls:Flyout Name="flo_Export" Header="Drucken" Position="Left" Width="450" IsModal="True">
+                <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
+                    <Label FontSize="24">Allgemein</Label>
+                    <StackPanel Background="DarkGray">
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Seriennummer</Label>
+                            <Label Name="flo_Export_lbl_SerialNumber" Content="{Binding RecentDiagramm.SerialNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Feldname</Label>
+                            <Label Name="flo_Export_lbl_FieldName" Content="{Binding RecentDiagramm.FieldName}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Auftragsnummer</Label>
+                            <Label Name="flo_Export_lbl_JobNumber" Content="{Binding RecentDiagramm.JobNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektnummer</Label>
+                            <Label Name="flo_Export_lbl_ProjectNumber" Content="{Binding RecentDiagramm.ProjectNumber}" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Projektname</Label>
+                            <Label Name="flo_Export_lbl_ProjectName" Content="{Binding RecentDiagramm.ProjectName}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <Controls:Tile x:Name="flo_Export_tle_Export" Title="Export" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Export_tle_Export_Click">
+                        <Rectangle Width="20" Height="20">
+                            <Rectangle.Resources>
+                                <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                            </Rectangle.Resources>
+                            <Rectangle.Fill>
+                                <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_cabinet_in}" />
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Controls:Tile>
                 </StackPanel>
             </Controls:Flyout>
         </Controls:FlyoutsControl>
@@ -358,12 +411,13 @@
                       Style="{StaticResource AzureDataGrid}"
                       ItemsSource="{Binding}"
                       HorizontalAlignment="Center"
-                      VerticalAlignment="Center" MouseLeftButtonDown="dgd_diagrammsList_MouseLeftButtonDown">
+                      VerticalAlignment="Center" 
+                      MouseLeftButtonDown="dgd_diagrammsList_MouseLeftButtonDown">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding JobNumber}"/>
-                    <DataGridTextColumn Header="Projektname" Binding="{Binding ProjectName}"/>
+                    <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding JobNumber}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Projektname" Binding="{Binding ProjectName}" IsReadOnly="True"/>
                     <DataGridTextColumn Visibility="Collapsed" Header="ID" Binding="{Binding ID}"/>
                 </DataGrid.Columns>
             </DataGrid>

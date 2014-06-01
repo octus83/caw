@@ -53,7 +53,7 @@ namespace bgx_caw_backend
     {
         SqlCommand sql_cmd;
 
-        public DataSet getDiagrammsSet()
+        /*public DataSet getDiagrammsSet()
         {
             string queryString = "SELECT * FROM dbo.tbldiagramm";
             SqlDataAdapter adapter = new SqlDataAdapter(queryString, sql_connection);
@@ -62,7 +62,7 @@ namespace bgx_caw_backend
             adapter.Fill(customers, "Diagramm");
 
             return customers;
-        }
+        }*/
         
 
         public List<Diagramm> getDiagramms()
@@ -248,6 +248,43 @@ namespace bgx_caw_backend
                     }
                 }                
             }
+        }
+
+        public void deleteDiagramm(String id)
+        {
+            List<String> pages = new List<String>();
+
+            sql_cmd = new SqlCommand("SELECT P_id FROM dbo.tblPage WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+            SqlDataReader data_reader = sql_cmd.ExecuteReader();
+            Diagramm result = new Diagramm();
+
+            while (data_reader.Read())
+            {
+                pages.Add(data_reader["P_id"].ToString());
+            }
+
+            data_reader.Close();
+
+            foreach(var page in pages)
+            {
+                sql_cmd = new SqlCommand("DELETE FROM dbo.tblPart WHERE P_id = '" + page + "'");
+                sql_cmd.Connection = sql_connection;
+                sql_cmd.ExecuteNonQuery();
+
+                sql_cmd = new SqlCommand("DELETE FROM dbo.tblPotential WHERE P_id = '" + page + "'");
+                sql_cmd.Connection = sql_connection;
+                sql_cmd.ExecuteNonQuery();
+            }
+
+            sql_cmd = new SqlCommand("DELETE FROM dbo.tblPage WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+            sql_cmd.ExecuteNonQuery();
+
+            sql_cmd = new SqlCommand("DELETE FROM dbo.tblDiagramm WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+            sql_cmd.ExecuteNonQuery();
+
         }
     }
 }
