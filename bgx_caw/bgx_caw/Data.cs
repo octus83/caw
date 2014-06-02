@@ -22,7 +22,8 @@ namespace bgx_caw
 
             foreach (var item in diagramm.pages_List)
             {
-                list.Add(item.OriginNumber);
+                list.Add(item.OriginNumber.ToString());
+               
             }
             return list;
         

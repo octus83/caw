@@ -275,6 +275,11 @@
                             <Label Width="100">Geändert:</Label>
                             <Label Name="flo_details_lbl_Date_LastChange" Content="{Binding RecentDiagramm.Date_LastChange}" />
                         </StackPanel>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Seiten:</Label>
+                            <Label Name="flo_details_lbl_PageCount" Content="{Binding RecentDiagramm.PageCount}" />
+                        </StackPanel>
                     </StackPanel>                   
                 </StackPanel>
             </Controls:Flyout>

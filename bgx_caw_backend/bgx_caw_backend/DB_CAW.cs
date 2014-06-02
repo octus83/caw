@@ -103,7 +103,7 @@ namespace bgx_caw_backend
 
         public Diagramm getDiagramm(String id)
         {
-            sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_id = '" + id + "'");
+            sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_ID ='" + id + "'");
             sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
             Diagramm result = new Diagramm();
@@ -133,6 +133,76 @@ namespace bgx_caw_backend
 
             data_reader.Close();
 
+
+            sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPage WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+
+            data_reader = sql_cmd.ExecuteReader();
+
+            while (data_reader.Read())
+            {
+                result.pages_List.Add(new Page {
+                                                    D_id = result.ID,
+                                                    Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
+                                                    Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
+                                                    OriginNumber = data_reader["OriginNumber"].ToString(),
+                                                    P_id = data_reader["P_id"].ToString(),
+                                                    PreFix = data_reader["PreFix"].ToString(),
+                                                    PrePreFix = data_reader["PrePreFix"].ToString(),
+                                                    Title = data_reader["Title"].ToString(),
+                                                    /*Version = Int32.Parse(data_reader["Version"].ToString())*/}
+                                                );                    
+            }
+
+            data_reader.Close();
+
+            foreach(var page in result.pages_List)
+            {
+                sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPotential WHERE P_id = '" + page.P_id + "'");
+                sql_cmd.Connection = sql_connection;
+
+                data_reader = sql_cmd.ExecuteReader();
+
+                result.pages_List[result.pages_List.IndexOf(page)].Potential_List = new List<Potential>();
+
+                while (data_reader.Read())
+                {
+                    result.pages_List[result.pages_List.IndexOf(page)].Potential_List.Add(new Potential
+                    {
+                        D_id = result.ID,
+                        Name = data_reader["Name"].ToString(),
+                        P_id = data_reader["P_id"].ToString(),
+                        PreFix = data_reader["PreFix"].ToString(),
+                        PrePreFix = data_reader["PrePreFix"].ToString(),
+
+                    });
+                }
+
+                data_reader.Close();
+
+                sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPart WHERE P_id = '" + page.P_id + "'");
+                sql_cmd.Connection = sql_connection;
+
+                data_reader = sql_cmd.ExecuteReader();
+
+                result.pages_List[result.pages_List.IndexOf(page)].Parts_List = new List<Part>();
+
+                while (data_reader.Read())
+                {                  
+                    result.pages_List[result.pages_List.IndexOf(page)].Parts_List.Add(new Part
+                    {
+                        D_id = result.ID,
+                        BMK = data_reader["BMK"].ToString(),
+                        P_id = data_reader["P_id"].ToString(),
+                        PreFix = data_reader["PreFix"].ToString(),
+                        PrePreFix = data_reader["PrePreFix"].ToString(),
+
+                    });
+                }
+
+                data_reader.Close();
+            }
+
             return result;
         }
 
@@ -153,8 +223,8 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.AddressRow1;
             sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.AddressRow2;
             sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.AddressRow3;
-            sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = DateTime.Now;
-            sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = DateTime.Now;
+            sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
+            sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
             sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = diagramm.SourceFolder;
 
@@ -166,10 +236,10 @@ namespace bgx_caw_backend
                                         
                 sql_cmd.ExecuteNonQuery();
             }
-            catch
+            catch(Exception exc)
             {
-                throw;
-                //Delete all Data to this Diagramm
+                //throw;
+                MessageBox.Show(exc.Message);
             }
 
             for (int i = 0; i < diagramm.pages_List.Count; i++ ) //Für jede Seite fügen einen Eintrag hinzu
@@ -179,6 +249,7 @@ namespace bgx_caw_backend
 
                 sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.VarChar, 50).Value = diagramm.ID;
                 sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
+                sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
                 sql_cmd.Parameters.Add("@Page_ID", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].P_id;
                 sql_cmd.Parameters.Add("@Title", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Title;
                 sql_cmd.Parameters.Add("@PrePreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].PrePreFix;
@@ -188,14 +259,14 @@ namespace bgx_caw_backend
 
                 try //Schreibe seitendaten , wenn nicht vorhanden,  in DB
                 {
-                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init) " +
-                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init)";
+                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange) " +
+                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange)";
                     sql_cmd.ExecuteNonQuery();
                 }
-                catch
+                catch(Exception exc)
                 {
-                    throw;
-                    //Delete all Data to this Diagramm
+                    //throw;
+                    MessageBox.Show(exc.Message);
                 }
 
                 //Für jedes Bauteil dieser Seite, füge in Bauteil in DB ein, wenn nicht vorhanden
@@ -216,10 +287,11 @@ namespace bgx_caw_backend
                                                 "VALUES (@Page_ID, @Part_BMK, @Part_PrePreFix, @Part_PreFix)";
                         sql_cmd.ExecuteNonQuery();
                     }
-                    catch
+                    catch(Exception exc)
                     {
-                        throw;
+                        //throw;
                         //Delete all Data to this Diagramm
+                        MessageBox.Show(exc.Message);
                     }
                 }
 
@@ -241,10 +313,11 @@ namespace bgx_caw_backend
                                                 "VALUES (@Page_ID, @Potential_Name, @Potential_PrePreFix, @Potential_PreFix)";
                         sql_cmd.ExecuteNonQuery();
                     }
-                    catch
+                    catch(Exception exc)
                     {
-                        throw;
+                        //throw;
                         //Delete all Data to this Diagramm
+                        MessageBox.Show(exc.Message);
                     }
                 }                
             }

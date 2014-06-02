@@ -31,7 +31,13 @@ namespace bgx_caw_backend
 
         public DXF_Parser(DirectoryInfo folderPath)
         {
-            Diagramm = new Diagramm(Guid.NewGuid());
+            //Diagramm = new Diagramm(Guid.NewGuid());
+
+            Diagramm = new Diagramm {   
+                                        ID = Guid.NewGuid().ToString(),
+                                        Date_Init = DateTime.Now,
+                                        Date_LastChange = DateTime.Now
+                                    };
 
             foreach (FileInfo file in folderPath.GetFiles().OrderBy(f => int.Parse(Path.GetFileNameWithoutExtension(f.ToString()))))
             {

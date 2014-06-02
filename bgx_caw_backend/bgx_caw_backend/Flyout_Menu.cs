@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace bgx_caw_backend
 {
@@ -22,46 +23,83 @@ namespace bgx_caw_backend
         private void flo_Menu_tle_Export_Click(object sender, RoutedEventArgs e)
         {
             flo_Export.IsOpen = true;
+
+            /*var result = await this.ShowInputAsync("Hello!", "What is your name?");
+
+            if (result == null) //user pressed cancel
+                return;
+
+            await this.ShowMessageAsync("Hello", "Hello " + result + "!");*/
         }
 
-        private void flo_Menu_tle_Delete_Click(object sender, RoutedEventArgs e)
+        private async void flo_Menu_tle_Delete_Click(object sender, RoutedEventArgs e)
         {
-            using (DB_CAW db_caw = new DB_CAW())
+            var mySettings = new MetroDialogSettings()
             {
-                db_caw.deleteDiagramm(RecentDiagramm.ID);
-            }
+                AffirmativeButtonText = "JA",
+                NegativeButtonText = "NEIN",
+                FirstAuxiliaryButtonText = "ABBRECHEN",
+                ColorScheme = MetroDialogColorScheme.Accented
+            };
 
-            MessageBox.Show(RecentDiagramm.ID);
+            MessageDialogResult result = await this.ShowMessageAsync("Achtung", "Soll der Schaltplan " + Environment.NewLine + RecentDiagramm.SerialNumber + 
+                                        Environment.NewLine + RecentDiagramm.FieldName + Environment.NewLine + Environment.NewLine + "gelöscht werden? Es gehen alle Daten verloren",
+                                        MessageDialogStyle.AffirmativeAndNegative, mySettings);
 
-            if (System.IO.File.Exists(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID)))
+            if (result == MessageDialogResult.Negative)
             {
-                // Use a try block to catch IOExceptions, to
-                // handle the case of the file already being
-                // opened by another process.
-                try
+                return;
+            } 
+
+            if (result == MessageDialogResult.Affirmative)
+            {
+                this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+                var progressDialog = await this.ShowProgressAsync("Schaltplan wird gelöscht", "Ordner " + RecentDiagramm.ID + " wird gelöscht");
+
+                await Task.Delay(800);
+
+                flo_Menu.IsOpen = false;
+
+                using (DB_CAW db_caw = new DB_CAW())
                 {
-                    MessageBox.Show(RecentDiagramm.ID);
-                    System.IO.File.Delete(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID));
+                    db_caw.deleteDiagramm(RecentDiagramm.ID);
                 }
-                catch (System.IO.IOException exc)
+
+                if (System.IO.File.Exists(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID))) //Ist es noch notwendig???
                 {
-                    //Console.WriteLine(exc.Message);
-                    //return;
+                    // Use a try block to catch IOExceptions, to
+                    // handle the case of the file already being
+                    // opened by another process.
+                    try
+                    {
+                        MessageBox.Show(RecentDiagramm.ID);
+                        System.IO.File.Delete(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID));
+                    }
+                    catch (System.IO.IOException exc)
+                    {
+                        //Console.WriteLine(exc.Message);
+                        //return;
 
-                    MessageBox.Show(exc.Message);
+                        MessageBox.Show(exc.Message);
+                    }
                 }
+                else
+                {
+                    //MessageBox.Show("Ordner nicht gefunden: " + System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID));
+                }
+
+                await progressDialog.CloseAsync();
+
+                
+
+                dgd_diagrammsList.UnselectAll();
+
+                propertyChanged("DiagrammsList");
+
+                flo_Menu.IsOpen = false;
             }
-            else
-            {
-                MessageBox.Show("Ordner nicht gefunden: " + System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID));
-            }
 
-
-            dgd_diagrammsList.UnselectAll();
-
-            propertyChanged("DiagrammsList");
-
-            flo_Menu.IsOpen = false;
+                       
         }
     }
 }

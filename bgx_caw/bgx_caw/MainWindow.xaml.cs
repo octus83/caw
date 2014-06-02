@@ -74,12 +74,19 @@ namespace bgx_caw
 
             Data data = new Data(this.ID);
 
+            DB_CAW db_caw = new DB_CAW();
+            Diagramm d = db_caw.getDiagramm(this.ID);
+
 
 
 
             List<String> list = new List<String>();
           // list= t.makeQuery(Query.getPotentialPagenumbersFromPotentialNames(tile.Title, this.ID));
-            list =data.getPotentialNamesFromPageNumber();
+          // list =data.getPotentialNamesFromPageNumber();
+           foreach (var item in d.pages_List)
+           {
+               MessageBox.Show(item.OriginNumber);
+           }
            flo_right_sites.IsOpen = true;
            foreach (var item in list)
            {

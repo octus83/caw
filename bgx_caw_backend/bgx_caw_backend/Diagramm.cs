@@ -130,15 +130,25 @@ namespace bgx_caw_backend
             set;
         }
 
+        public int PageCount
+        {
+            get
+            {
+                return pages_List.Count;
+            }
+        }
+
         public Diagramm(DirectoryInfo directory)
         {
             ID = Guid.NewGuid().ToString();
+            SourceFolder = "c:\\caw\\" + ID + "\\";
             pages_List = new List<Page>();
         }
 
         public Diagramm()
         {
             //ID = Guid.NewGuid().ToString();
+            SourceFolder = "c:\\caw\\" + ID + "\\";
             pages_List = new List<Page>();
         }
 

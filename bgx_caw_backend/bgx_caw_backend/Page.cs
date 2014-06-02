@@ -13,9 +13,10 @@ namespace bgx_caw_backend
         public String P_id
         {
             get;
-            private set;
+            set;
         }
         public String Title;
+
         public String PrePreFix;
         public String PreFix;
         public String OriginNumber;
@@ -39,11 +40,25 @@ namespace bgx_caw_backend
         public String Source_Grey;
         public String Source_Red;
         public int Version;
-        public DateTime Date_Init;
-        public DateTime Date_LastChange;
+        public DateTime Date_Init
+        {
+            get;
+            set;
+        }
+        public DateTime Date_LastChange
+        {
+            get;
+            set;
+        }
 
         public List<Part> Parts_List;
         public List<Potential> Potential_List;
+
+
+        public Page()
+        {
+
+        }
 
         public Page(String diagramm_id)
         {

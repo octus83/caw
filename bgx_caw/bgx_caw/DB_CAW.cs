@@ -5,6 +5,8 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Configuration;
 
 using System.Windows;
 
@@ -98,7 +100,7 @@ namespace bgx_caw
 
         public Diagramm getDiagramm(String id)
         {
-            sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_id = '" + id + "'");
+            sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_ID ='" + id + "'");
             sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
             Diagramm result = new Diagramm();
@@ -127,6 +129,78 @@ namespace bgx_caw
             }
 
             data_reader.Close();
+
+
+            sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPage WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+
+            data_reader = sql_cmd.ExecuteReader();
+
+            while (data_reader.Read())
+            {
+                result.pages_List.Add(new Page
+                {
+                    D_id = result.ID,
+                    Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
+                    Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
+                    OriginNumber = data_reader["OriginNumber"].ToString(),
+                    P_id = data_reader["P_id"].ToString(),
+                    PreFix = data_reader["PreFix"].ToString(),
+                    PrePreFix = data_reader["PrePreFix"].ToString(),
+                    Title = data_reader["Title"].ToString(),
+                    /*Version = Int32.Parse(data_reader["Version"].ToString())*/
+                }
+                                                );
+            }
+
+            data_reader.Close();
+
+            foreach (var page in result.pages_List)
+            {
+                sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPotential WHERE P_id = '" + page.P_id + "'");
+                sql_cmd.Connection = sql_connection;
+
+                data_reader = sql_cmd.ExecuteReader();
+
+                result.pages_List[result.pages_List.IndexOf(page)].Potential_List = new List<Potential>();
+
+                while (data_reader.Read())
+                {
+                    result.pages_List[result.pages_List.IndexOf(page)].Potential_List.Add(new Potential
+                    {
+                        D_id = result.ID,
+                        Name = data_reader["Name"].ToString(),
+                        P_id = data_reader["P_id"].ToString(),
+                        PreFix = data_reader["PreFix"].ToString(),
+                        PrePreFix = data_reader["PrePreFix"].ToString(),
+
+                    });
+                }
+
+                data_reader.Close();
+
+                sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPart WHERE P_id = '" + page.P_id + "'");
+                sql_cmd.Connection = sql_connection;
+
+                data_reader = sql_cmd.ExecuteReader();
+
+                result.pages_List[result.pages_List.IndexOf(page)].Parts_List = new List<Part>();
+
+                while (data_reader.Read())
+                {
+                    result.pages_List[result.pages_List.IndexOf(page)].Parts_List.Add(new Part
+                    {
+                        D_id = result.ID,
+                        BMK = data_reader["BMK"].ToString(),
+                        P_id = data_reader["P_id"].ToString(),
+                        PreFix = data_reader["PreFix"].ToString(),
+                        PrePreFix = data_reader["PrePreFix"].ToString(),
+
+                    });
+                }
+
+                data_reader.Close();
+            }
 
             return result;
         }
