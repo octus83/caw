@@ -16,9 +16,9 @@
 
     <controls:MetroWindow.Flyouts >
         <controls:FlyoutsControl>
-            <controls:Flyout Header="Info" Position="Right" Width="200" Name="flo_right" >
+            <controls:Flyout Header="Info" Position="Right" Width="200" Name="flo_right_info" >
                 <!-- Your custom content here -->
-                <StackPanel Name="fly_right_stackpanel">
+                <StackPanel Name="stack_right_info">
                     <controls:Tile Title="Potentiale!" 
                     TiltFactor="2"
                     Width="150" Height="50" 
@@ -27,13 +27,19 @@
                 </StackPanel>
             </controls:Flyout>
 
-            <controls:Flyout Header="Potentiale" Position="Left" Width="200" Name="flo_left_pot">
+            <controls:Flyout Header="Potentiale" Position="Left" Width="200" Name="flo_left_potential">
                 <!-- Your custom content here -->
                 <ScrollViewer>
-                    <StackPanel Name="fly_left_pot_stackpanel"></StackPanel>
+                    <StackPanel Name="stack_left_potential"></StackPanel>
                 </ScrollViewer>
             </controls:Flyout>
 
+            <controls:Flyout Header="Seiten" Position="Right" Width="200" Name="flo_right_sites">
+                <!-- Your custom content here -->
+                <ScrollViewer>
+                    <StackPanel Name="stack_right_sites"></StackPanel>
+                </ScrollViewer>
+            </controls:Flyout>
 
         </controls:FlyoutsControl>
     </controls:MetroWindow.Flyouts >
