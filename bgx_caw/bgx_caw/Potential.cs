@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace bgx_caw
 {
-    class Potential
+    public class Potential
     {
         private String _p_id;
         private String _preprefix;

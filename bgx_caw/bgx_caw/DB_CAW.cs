@@ -18,7 +18,7 @@ namespace bgx_caw
         private SqlConnection sql_connection;
         private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
         {
-            DataSource = "N005509\\trans_edb_p8",
+            DataSource = "UNKNOWN\\SQLEXPRESS",
             InitialCatalog = "CAWFinal",
             IntegratedSecurity = true
         };
@@ -41,24 +41,23 @@ namespace bgx_caw
         }
     }
 
-    /// <summary>
+     /// <summary>
     /// partial class that implements additional functions for the caw_backend
     /// </summary>
     partial class DB_CAW
     {
         SqlCommand sql_cmd;
 
-        public DataSet getDiagrammsSet()
+        /*public DataSet getDiagrammsSet()
         {
             string queryString = "SELECT * FROM dbo.tbldiagramm";
             SqlDataAdapter adapter = new SqlDataAdapter(queryString, sql_connection);
 
             DataSet customers = new DataSet();
             adapter.Fill(customers, "Diagramm");
-   
 
             return customers;
-        }
+        }*/
         
 
         public List<Diagramm> getDiagramms()
@@ -67,7 +66,7 @@ namespace bgx_caw
             sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
             List<Diagramm> result_list = new List<Diagramm>();
-        
+
             while (data_reader.Read())
             {
                 result_list.Add(new Diagramm
@@ -89,6 +88,14 @@ namespace bgx_caw
             return result_list;
         }
 
+        public int getPageAmount(String id)
+        {
+            sql_cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.tblpages WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+
+            return Convert.ToInt32(sql_cmd.ExecuteScalar());
+        }
+
         public Diagramm getDiagramm(String id)
         {
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_id = '" + id + "'");
@@ -102,15 +109,15 @@ namespace bgx_caw
                 {
                     ID = data_reader["D_id"].ToString(),
                     Customer = data_reader["Customer"].ToString(),
-                    Endcustomer = data_reader["EndCustomer"].ToString(),
+                    EndCustomer = data_reader["EndCustomer"].ToString(),
                     FieldName = data_reader["FieldName"].ToString(),
                     JobNumber = data_reader["JobNumber"].ToString(),
                     SerialNumber = data_reader["SerialNumber"].ToString(),
                     ProjectNumber = data_reader["ProjectNumber"].ToString(),
                     ProjectName = data_reader["ProjectName"].ToString(),
-                    SiteRow1 = data_reader["AddressRow1"].ToString(),
-                    SiteRow2 = data_reader["AddressRow2"].ToString(),
-                    SiteRow3 = data_reader["AddressRow3"].ToString(),
+                    AddressRow1 = data_reader["AddressRow1"].ToString(),
+                    AddressRow2 = data_reader["AddressRow2"].ToString(),
+                    AddressRow3 = data_reader["AddressRow3"].ToString(),
                     Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
                     Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
                     ProductionPlace = data_reader["ProductionPlace"].ToString(),
@@ -132,15 +139,15 @@ namespace bgx_caw
             //Parameters for tblDiagramm
             sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.VarChar, 50).Value = diagramm.ID;
             sql_cmd.Parameters.Add("@Customer", SqlDbType.VarChar, 50).Value = diagramm.Customer;
-            sql_cmd.Parameters.Add("@EndCustomer", SqlDbType.VarChar, 50).Value = diagramm.Endcustomer;
+            sql_cmd.Parameters.Add("@EndCustomer", SqlDbType.VarChar, 50).Value = diagramm.EndCustomer;
             sql_cmd.Parameters.Add("@FieldName", SqlDbType.VarChar, 50).Value = diagramm.FieldName;
             sql_cmd.Parameters.Add("@JobNumber", SqlDbType.VarChar, 50).Value = diagramm.JobNumber;
             sql_cmd.Parameters.Add("@SerialNumber", SqlDbType.VarChar, 50).Value = diagramm.SerialNumber;
             sql_cmd.Parameters.Add("@ProjectNumber", SqlDbType.VarChar, 50).Value = diagramm.ProjectNumber;
             sql_cmd.Parameters.Add("@ProjectName", SqlDbType.VarChar, 50).Value = diagramm.ProjectName;
-            sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.SiteRow1;
-            sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.SiteRow2;
-            sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.SiteRow3;
+            sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.AddressRow1;
+            sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.AddressRow2;
+            sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.AddressRow3;
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = DateTime.Now;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = DateTime.Now;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
@@ -238,6 +245,42 @@ namespace bgx_caw
             }
         }
 
+        public void deleteDiagramm(String id)
+        {
+            List<String> pages = new List<String>();
+
+            sql_cmd = new SqlCommand("SELECT P_id FROM dbo.tblPage WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+            SqlDataReader data_reader = sql_cmd.ExecuteReader();
+            Diagramm result = new Diagramm();
+
+            while (data_reader.Read())
+            {
+                pages.Add(data_reader["P_id"].ToString());
+            }
+
+            data_reader.Close();
+
+            foreach(var page in pages)
+            {
+                sql_cmd = new SqlCommand("DELETE FROM dbo.tblPart WHERE P_id = '" + page + "'");
+                sql_cmd.Connection = sql_connection;
+                sql_cmd.ExecuteNonQuery();
+
+                sql_cmd = new SqlCommand("DELETE FROM dbo.tblPotential WHERE P_id = '" + page + "'");
+                sql_cmd.Connection = sql_connection;
+                sql_cmd.ExecuteNonQuery();
+            }
+
+            sql_cmd = new SqlCommand("DELETE FROM dbo.tblPage WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+            sql_cmd.ExecuteNonQuery();
+
+            sql_cmd = new SqlCommand("DELETE FROM dbo.tblDiagramm WHERE D_id = '" + id + "'");
+            sql_cmd.Connection = sql_connection;
+            sql_cmd.ExecuteNonQuery();
+
+        }
         public List<String> makeQuery(String query)
         {
             sql_cmd = new SqlCommand(query);
@@ -249,7 +292,7 @@ namespace bgx_caw
 
                 result_list.Add(data_reader[0].ToString());
                 //Console.WriteLine(data_reader[0].ToString());
-               // MessageBox.Show(data_reader[0].ToString());
+                // MessageBox.Show(data_reader[0].ToString());
             }
 
             data_reader.Close();

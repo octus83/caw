@@ -170,7 +170,7 @@ namespace bgx_caw_backend
             InitializeComponent();
             /*Remove before Release*/DataSource = "N005509\\trans_edb_p8";
             /*Remove before Release*/InitialCatalog = "CAWFinal";
-            /*Remove before Release*/ProgrammPath = "e:\\programme\\caw\\projects\\";
+            /*Remove before Release*/ProgrammPath = "d:\\programme\\caw\\projects\\";
             this.DataContext = this; 
         }
 

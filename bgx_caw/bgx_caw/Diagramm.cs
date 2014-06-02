@@ -10,9 +10,9 @@ namespace bgx_caw
     /// <summary>
     /// struct that holds all the 
     /// </summary>
-    class Diagramm
+    public class Diagramm
     {
-        public List<Page> pages_List;       
+        public List<Page> pages_List;
         private String _endCustomer = "";
         private String _sourceFolder;
         private String _serialNumber;
@@ -70,7 +70,7 @@ namespace bgx_caw
             set;
         }
 
-        public String Endcustomer
+        public String EndCustomer
         {
             get
             {
@@ -82,19 +82,19 @@ namespace bgx_caw
             }
         }
 
-        public String SiteRow1
+        public String AddressRow1
         {
             get;
             set;
         }
 
-        public String SiteRow2
+        public String AddressRow2
         {
             get;
             set;
         }
 
-        public String SiteRow3
+        public String AddressRow3
         {
             get;
             set;

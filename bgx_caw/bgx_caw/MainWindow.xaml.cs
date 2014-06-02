@@ -71,9 +71,15 @@ namespace bgx_caw
         {
             stack_right_sites.Children.Clear();
             Tile tile = sender as Tile;
-            DB_CAW t = new DB_CAW();
+
+            Data data = new Data(this.ID);
+
+
+
+
             List<String> list = new List<String>();
-           list= t.makeQuery(Query.getPotentialPagenumbersFromPotentialNames(tile.Title, this.ID));
+          // list= t.makeQuery(Query.getPotentialPagenumbersFromPotentialNames(tile.Title, this.ID));
+            list =data.getPotentialNamesFromPageNumber();
            flo_right_sites.IsOpen = true;
            foreach (var item in list)
            {
