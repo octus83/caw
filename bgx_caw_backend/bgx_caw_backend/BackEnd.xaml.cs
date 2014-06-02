@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.Controls;
 using System.Data;
+
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
@@ -41,9 +42,16 @@ namespace bgx_caw_backend
         {
             get
             {
-                using(DB_CAW db_caw = new DB_CAW())
+                if (DataSource != null && InitialCatalog != null)
                 {
-                    return new BindingList<Diagramm>(db_caw.getDiagramms()); 
+                    using (DB_CAW db_caw = new DB_CAW())
+                    {
+                        return new BindingList<Diagramm>(db_caw.getDiagramms());
+                    }
+                }
+                else
+                {
+                    return null;
                 }
             }
         }
@@ -115,17 +123,36 @@ namespace bgx_caw_backend
         {
             get
             {
-                return config.AppSettings.Settings["DataSource"].Value;
+                if (config.AppSettings.Settings["DataSource"] != null)
+                {
+                    flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;
+                    return config.AppSettings.Settings["DataSource"].Value;
+                }
+                else
+                {
+                    flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
+                    return null;
+                }
+                
             }
             set
             {
-                if (config.AppSettings.Settings["DataSource"] != null)
+                if (!String.IsNullOrWhiteSpace(value))
                 {
-                    config.AppSettings.Settings.Remove("DataSource");
+                    if (config.AppSettings.Settings["DataSource"] != null)
+                    {
+                        flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;
+                        config.AppSettings.Settings.Remove("DataSource");
+                    }
+                    config.AppSettings.Settings.Add("DataSource", value);
+
+                    config.Save(ConfigurationSaveMode.Modified);
                 }
-                config.AppSettings.Settings.Add("DataSource", value);
+                else
+                {
+                    flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
+                }
                 
-                config.Save(ConfigurationSaveMode.Modified);
             }
         }
 
@@ -166,11 +193,28 @@ namespace bgx_caw_backend
         }
 
         public BackEnd()
-        {           
+        {
             InitializeComponent();
             /*Remove before Release*/DataSource = "N005509\\trans_edb_p8";
             /*Remove before Release*/InitialCatalog = "CAWFinal";
             /*Remove before Release*/ProgrammPath = "e:\\programme\\caw\\projects\\";
+            ///
+
+            //config.AppSettings.Settings.Remove("ProgrammPath");
+            //config.AppSettings.Settings.Remove("DataSource");
+            //config.AppSettings.Settings.Remove("InitialCatalog");
+            //config.Save(ConfigurationSaveMode.Modified);
+
+            if(DataSource == null || InitialCatalog == null || ProgrammPath == null)
+            {
+                flo_Settings.IsOpen = true;
+            }
+
+            if(ProgrammPath == null)
+            {
+
+            }
+            
             this.DataContext = this; 
         }
 
