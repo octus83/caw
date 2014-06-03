@@ -51,15 +51,18 @@ namespace bgx_caw_backend
                     {
                         Diagramm.pages_List = new List<Page>();
                     }
-                    
-                    Diagramm.pages_List.Add(new Page(Diagramm.ID)); //_p_id = pagecounter
+
+                    Diagramm.pages_List.Add(new Page{ 
+                                                        D_id = Diagramm.ID,
+                                                        PageInDiagramm = pageCounter
+                                                    }); 
 
                     while ((line = fileReader.ReadLine()) != null) //Add Row to RowsList
                     {
                         fileRows.Add(line);
                     }
 
-                    if (Path.GetFileNameWithoutExtension(file.Name.ToString()) == "1") //wenn Deckblatt
+                    if (Path.GetFileNameWithoutExtension(file.Name.ToString()) == "1" || Path.GetFileNameWithoutExtension(file.Name.ToString()) == "0") //wenn Deckblatt
                     {
                         getMainData(fileRows); //Lese Deckblatt aus
                     }
