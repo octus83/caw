@@ -212,7 +212,7 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
-            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = diagramm.SourceFolder;
+            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = System.IO.Path.Combine(config.AppSettings.Settings["ProgrammPath"].Value, diagramm.ID);
 
             try //try to INSERT Diagrammdata, when not exists
             {

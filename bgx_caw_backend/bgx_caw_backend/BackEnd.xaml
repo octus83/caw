@@ -22,18 +22,22 @@
      <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
 
-            <Controls:Flyout Name="flo_Settings" Position="Top" Height="300" IsModal="True">
+            <Controls:Flyout Name="flo_Settings" Position="Top" Height="400" IsModal="True">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,30,0,0">
                     <Label Content="Einstellungen" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
                         <StackPanel Orientation="Vertical" Margin="0,0,20,0" >
                             <Label FontSize="16">Datenbank-Server (DataSource)</Label>
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Name="flo_Settings_tbx_dsc" Width="150" Text="{Binding DataSource}" Margin="0,0,5,0"></TextBox>
+                                <TextBox Name="flo_Settings_tbx_dsc" Width="150" Text="{Binding DataSource, Mode=TwoWay}" Margin="0,0,5,0"></TextBox>
                             </StackPanel>
                             <Label FontSize="16">Datenbank (InitialCatalog)</Label>
                             <StackPanel Orientation="Horizontal">
-                                <TextBox Name="flo_Settings_tbx_inc" Width="150" Text="{Binding InitialCatalog}" Margin="0,0,5,0" ></TextBox>      
+                                <TextBox Name="flo_Settings_tbx_inc" Width="150" Text="{Binding InitialCatalog, Mode=TwoWay}" Margin="0,0,5,0" ></TextBox>      
+                            </StackPanel>
+                            <Label FontSize="16">Programm-Ordner</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Name="flo_Settings_tbx_prf" Width="150" Text="{Binding ProgrammPath, Mode=TwoWay}" Margin="0,0,5,0" ></TextBox>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>

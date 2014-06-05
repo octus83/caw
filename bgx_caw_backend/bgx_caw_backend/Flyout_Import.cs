@@ -37,7 +37,6 @@ namespace bgx_caw_backend
 
         private async void flo_import_tle_import_Click(object sender, RoutedEventArgs e)
         {
-            //String projectFolder = @"e:\programme\caw\projects\";
             String diagrammPath = System.IO.Path.Combine(ProgrammPath, ImportDiagramm.ID);
             String pagePath;
 
@@ -57,16 +56,23 @@ namespace bgx_caw_backend
 
                     await Task.Delay(200);
 
-                    int counter = 0;
+                    int counter = 1;
 
                     //Create PageFolder (P_id) containing Overlays                
                     foreach (Page page in ImportDiagramm.pages_List)
                     {
+                        //Ordner
                         progressDialog.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
                         pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
                         System.IO.Directory.CreateDirectory(pagePath);
 
-                        await Task.Delay(100);
+                        await Task.Delay(10);
+
+                        //Bild generieren und kopieren
+                        progressDialog.SetMessage("Schaltplanbild " + page.P_id + " wird generiert");
+                        GetPdfThumbnail(PDFDialog.FileName, System.IO.Path.Combine(pagePath, counter + ".png"), counter);
+
+                        await Task.Delay(10);
 
                         counter++;
                         progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
@@ -87,6 +93,8 @@ namespace bgx_caw_backend
                     {
                         db_caw.addDiagramm(ImportDiagramm);
                     }
+
+
 
                     await progressDialog.CloseAsync();
 
