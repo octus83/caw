@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,28 +66,8 @@ namespace bgx_caw_backend
                     db_caw.deleteDiagramm(RecentDiagramm.ID);
                 }
 
-                if (System.IO.File.Exists(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID))) //Ist es noch notwendig???
-                {
-                    // Use a try block to catch IOExceptions, to
-                    // handle the case of the file already being
-                    // opened by another process.
-                    try
-                    {
-                        MessageBox.Show(RecentDiagramm.ID);
-                        System.IO.File.Delete(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID));
-                    }
-                    catch (System.IO.IOException exc)
-                    {
-                        //Console.WriteLine(exc.Message);
-                        //return;
+                Directory.Delete(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID), true);
 
-                        MessageBox.Show(exc.Message);
-                    }
-                }
-                else
-                {
-                    //MessageBox.Show("Ordner nicht gefunden: " + System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID));
-                }
 
                 await progressDialog.CloseAsync();
 

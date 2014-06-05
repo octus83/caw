@@ -364,8 +364,8 @@ namespace bgx_caw_backend
                     Resolution = new System.Drawing.Size
                     {
                         // Render at 72x72 dpi
-                        Height = 144,
-                        Width = 144
+                        Height = 300,
+                        Width = 300
                     },
                     Size = new GhostscriptPageSize
                     {

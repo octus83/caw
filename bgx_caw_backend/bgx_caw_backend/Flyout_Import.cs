@@ -47,14 +47,14 @@ namespace bgx_caw_backend
                 if (ImportDiagramm.pages_List.Count == pdfReader.NumberOfPages)
                 {
                     this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-                    //var progressDialog = await this.ShowProgressAsync("Schaltplan wird importiert", "Diagram Ordner " + ImportDiagramm.ID + " wird erstellt");
+                    var progressDialog = await this.ShowProgressAsync("Schaltplan wird importiert", "Diagram Ordner " + ImportDiagramm.ID + " wird erstellt");
 
-                    //progressDialog.SetProgress(0.1);
+                    progressDialog.SetProgress(0.1);
 
                     //Create DiagrammFolder (ID)                    
                     System.IO.Directory.CreateDirectory(diagrammPath);
 
-                    //await Task.Delay(200);
+                    await Task.Delay(20);
 
                     int counter = 1;
 
@@ -62,38 +62,31 @@ namespace bgx_caw_backend
                     foreach (Page page in ImportDiagramm.pages_List)
                     {
                         //Ordner
-                        //progressDialog.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
+                        progressDialog.SetMessage("Page " + page.P_id + " wird erstellt");
                         pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
                         System.IO.Directory.CreateDirectory(pagePath);
 
-                        //await Task.Delay(10);
-
                         //Bild generieren und kopieren
-                        //progressDialog.SetMessage("Schaltplanbild " + page.P_id + " wird generiert");
                         GetPdfThumbnail(PDFDialog.FileName, System.IO.Path.Combine(pagePath, counter + ".jpg"), counter);
 
                         //Bild als Blob in Page-Objekt einfügen
-                        //progressDialog.SetMessage("BLOB " + page.P_id + " wird generiert");
-                        //page.Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
-
                         ImportDiagramm.pages_List[counter - 1].Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
 
-                        //await Task.Delay(10);
+                        await Task.Delay(50);
 
                         counter++;
-                        //progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
+                        progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
                     }
 
                     //Kopiere pdf in project - Ordner
-                    //progressDialog.SetMessage("PDF wird kopiert");
+                    progressDialog.SetMessage("PDF wird kopiert");
                     System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
 
-                    //await Task.Delay(300);
-                    //progressDialog.SetProgress(0.9);
+                    progressDialog.SetProgress(0.9);
 
-                    //progressDialog.SetMessage("Diagramm in Datenbank anlegen");
-                    //await Task.Delay(300);
-                    //progressDialog.SetProgress(1.0);
+                    progressDialog.SetMessage("Diagramm in Datenbank anlegen");
+                    await Task.Delay(100);
+                    progressDialog.SetProgress(1.0);
 
                     using (DB_CAW db_caw = new DB_CAW())
                     {
@@ -102,7 +95,7 @@ namespace bgx_caw_backend
 
 
 
-                    //await progressDialog.CloseAsync();
+                    await progressDialog.CloseAsync();
 
                     propertyChanged("DiagrammsList");
 
