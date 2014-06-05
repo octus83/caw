@@ -17,6 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+     
     
      <Controls:MetroWindow.Flyouts>
         <Controls:FlyoutsControl>
@@ -37,8 +38,8 @@
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                        <Controls:Tile x:Name="flo_Settings_tle_ccl" Title="Cancel" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_ccl_Click">
-                            <Rectangle Width="20" Height="20">
+                        <Controls:Tile x:Name="flo_Settings_tle_ccl" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_ccl_Click">
+                            <Rectangle Width="30" Height="30">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
                                 </Rectangle.Resources>
@@ -47,8 +48,8 @@
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Controls:Tile>
-                        <Controls:Tile x:Name="flo_Settings_tle_sve" Title="Speichern" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_sve_Click">
-                            <Rectangle Width="20" Height="20">
+                        <Controls:Tile x:Name="flo_Settings_tle_sve" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_sve_Click">
+                            <Rectangle Width="30" Height="30">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
                                 </Rectangle.Resources>
@@ -173,8 +174,8 @@
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                        <Controls:Tile x:Name="flo_import_tle_del" Title="Löschen" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_del_Click">
-                            <Rectangle Width="20" Height="20">
+                        <Controls:Tile x:Name="flo_import_tle_del" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_del_Click">
+                            <Rectangle Width="30" Height="30">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
                                 </Rectangle.Resources>
@@ -183,8 +184,8 @@
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Controls:Tile>
-                        <Controls:Tile x:Name="flo_import_tle_import" Title="Import" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_import_Click" >
-                            <Rectangle Width="20" Height="20">
+                        <Controls:Tile x:Name="flo_import_tle_import" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_import_tle_import_Click" >
+                            <Rectangle Width="30" Height="30">
                                 <Rectangle.Resources>
                                     <SolidColorBrush x:Key="BlackBrush" Color="White" />
                                 </Rectangle.Resources>
@@ -392,9 +393,9 @@
 </Controls:MetroWindow.Flyouts>
 
 <StackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SizeChanged="StackPanel_SizeChanged" Name="stp_Main" >
-        <StackPanel.Background>
+        <!--<StackPanel.Background>
             <ImageBrush ImageSource="u172_normal.jpg"/>
-        </StackPanel.Background>
+        </StackPanel.Background>-->
         <StackPanel.LayoutTransform>
             <ScaleTransform x:Name="ApplicationScaleTransform" 
                             CenterX="0"
@@ -403,13 +404,13 @@
                             ScaleY="{Binding ElementName=metroWindow, Path=ScaleValue}"/>
         </StackPanel.LayoutTransform>
 
-        <StackPanel Margin="90,180,0,100">
+        <StackPanel Margin="0,50,0,50">
             <DataGrid Name="dgd_diagrammsList" 
-                      Height="515" 
-                      Width="828" 
+                      Height="615" 
+                      Width="1028" 
                       AutoGenerateColumns="False" 
                       GridLinesVisibility="All" 
-                      FontSize="16" 
+                      FontSize="20" 
                       CanUserAddRows="False"
                       DataContext="{Binding DiagrammsList}"
                       SelectionMode="Single"
@@ -417,13 +418,14 @@
                       ItemsSource="{Binding}"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center" 
-                      MouseLeftButtonDown="dgd_diagrammsList_MouseLeftButtonDown"
-                      SelectionChanged="dgd_diagrammsList_Select">
+                    
+                      SelectionChanged="dgd_diagrammsList_Select"
+                      CanUserResizeRows="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Seriennummer" Binding="{Binding SerialNumber}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Feldname" Binding="{Binding FieldName}" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Auftragsnummer" Binding="{Binding JobNumber}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Projektname" Binding="{Binding ProjectName}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Seriennummer" SortMemberPath="SerialNumber" Binding="{Binding Path=SerialNumber}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Feldname" SortMemberPath="FieldName" Binding="{Binding FieldName}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Auftragsnummer" SortMemberPath="JobNumber" Binding="{Binding JobNumber}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Projektname" SortMemberPath="ProjectName" Binding="{Binding ProjectName}" IsReadOnly="True"/>
                     <DataGridTextColumn Visibility="Collapsed" Header="ID" Binding="{Binding ID}"/>
                 </DataGrid.Columns>
             </DataGrid>

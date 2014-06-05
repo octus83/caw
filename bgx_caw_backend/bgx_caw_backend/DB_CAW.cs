@@ -78,7 +78,12 @@ namespace bgx_caw_backend
 
             data_reader.Close();
 
+            result_list.Sort((x, y) => DateTime.Compare(x.Date_LastChange, y.Date_LastChange));
+
+            result_list.Reverse();
+
             return result_list;
+            
         }
 
         public Diagramm getDiagramm(String id) //Ein komplettes Diagramm-Objekt
