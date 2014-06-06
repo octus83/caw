@@ -72,7 +72,7 @@ namespace bgx_caw
             if (projectList.SelectedIndex != -1)
             {
                 int selectedIndex = projectList.SelectedIndex;
-                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;
+                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;          
                 this.Close();
             }
         }

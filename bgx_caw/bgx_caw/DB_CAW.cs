@@ -50,19 +50,7 @@ namespace bgx_caw
     {
         SqlCommand sql_cmd;
 
-        /*public DataSet getDiagrammsSet()
-        {
-            string queryString = "SELECT * FROM dbo.tbldiagramm";
-            SqlDataAdapter adapter = new SqlDataAdapter(queryString, sql_connection);
-
-            DataSet customers = new DataSet();
-            adapter.Fill(customers, "Diagramm");
-
-            return customers;
-        }*/
-        
-
-        public List<Diagramm> getDiagramms()
+        public List<Diagramm> getDiagramms() //Liste mit allen Diagrammen, allerdings nur "Grunddaten" ohne Seiten/Potentiale/Bauteile etc
         {
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm");
             sql_cmd.Connection = sql_connection;
@@ -90,15 +78,7 @@ namespace bgx_caw
             return result_list;
         }
 
-        public int getPageAmount(String id)
-        {
-            sql_cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.tblpages WHERE D_id = '" + id + "'");
-            sql_cmd.Connection = sql_connection;
-
-            return Convert.ToInt32(sql_cmd.ExecuteScalar());
-        }
-
-        public Diagramm getDiagramm(String id)
+        public Diagramm getDiagramm(String id) //Ein komplettes Diagramm-Objekt
         {
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_ID ='" + id + "'");
             sql_cmd.Connection = sql_connection;
@@ -148,9 +128,9 @@ namespace bgx_caw
                     PreFix = data_reader["PreFix"].ToString(),
                     PrePreFix = data_reader["PrePreFix"].ToString(),
                     Title = data_reader["Title"].ToString(),
+                    PageInDiagramm = Int32.Parse(data_reader["PageInDiagramm"].ToString()),
                     /*Version = Int32.Parse(data_reader["Version"].ToString())*/
-                }
-                                                );
+                });
             }
 
             data_reader.Close();
@@ -205,7 +185,7 @@ namespace bgx_caw
             return result;
         }
 
-        public void addDiagramm(Diagramm diagramm)
+        public void addDiagramm(Diagramm diagramm) //Fügt Diagramm-Objekt in Datenbank ein
         {
             sql_cmd = new SqlCommand();
             sql_cmd.Connection = sql_connection;
@@ -222,49 +202,51 @@ namespace bgx_caw
             sql_cmd.Parameters.Add("@AddressRow1", SqlDbType.VarChar, 50).Value = diagramm.AddressRow1;
             sql_cmd.Parameters.Add("@AddressRow2", SqlDbType.VarChar, 50).Value = diagramm.AddressRow2;
             sql_cmd.Parameters.Add("@AddressRow3", SqlDbType.VarChar, 50).Value = diagramm.AddressRow3;
-            sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = DateTime.Now;
-            sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = DateTime.Now;
+            sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
+            sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
             sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = diagramm.SourceFolder;
 
             try //try to INSERT Diagrammdata, when not exists
             {
-                sql_cmd.CommandText =   "IF NOT EXISTS (SELECT * FROM dbo.tblDiagramm WHERE Serialnumber = @SerialNumber AND FieldName = @FieldName AND D_id = @Diagramm_ID) " +
+                sql_cmd.CommandText = "IF NOT EXISTS (SELECT * FROM dbo.tblDiagramm WHERE Serialnumber = @SerialNumber AND FieldName = @FieldName AND D_id = @Diagramm_ID) " +
                                         "INSERT into dbo.tblDiagramm (D_id, Customer, EndCustomer, FieldName, JobNumber, SerialNumber, ProjectNumber, ProjectName, AddressRow1, AddressRow2, AddressRow3, Date_init, Date_lastChange, IsActive, SourceFolder) " +
                                         "VALUES (@Diagramm_ID, @Customer, @EndCustomer, @FieldName, @JobNumber, @SerialNumber, @ProjectNumber, @ProjectName, @AddressRow1, @AddressRow2, @AddressRow3, @Date_init, @Date_lastChange, @IsActive, @SourceFolder)";
-                                        
+
                 sql_cmd.ExecuteNonQuery();
             }
-            catch
+            catch (Exception exc)
             {
-                throw;
-                //Delete all Data to this Diagramm
+                //throw;
+                MessageBox.Show(exc.Message);
             }
 
-            for (int i = 0; i < diagramm.pages_List.Count; i++ ) //Für jede Seite fügen einen Eintrag hinzu
+            for (int i = 0; i < diagramm.pages_List.Count; i++) //Für jede Seite fügen einen Eintrag hinzu
             {
                 sql_cmd = new SqlCommand();
                 sql_cmd.Connection = sql_connection;
 
                 sql_cmd.Parameters.Add("@Diagramm_ID", SqlDbType.VarChar, 50).Value = diagramm.ID;
                 sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
+                sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
                 sql_cmd.Parameters.Add("@Page_ID", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].P_id;
                 sql_cmd.Parameters.Add("@Title", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].Title;
                 sql_cmd.Parameters.Add("@PrePreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].PrePreFix;
                 sql_cmd.Parameters.Add("@PreFix", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].PreFix;
                 sql_cmd.Parameters.Add("@OriginNumber", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].OriginNumber;
                 sql_cmd.Parameters.Add("@Author", SqlDbType.VarChar, 10).Value = diagramm.pages_List[i].Author;
+                sql_cmd.Parameters.Add("@PageInDiagramm", SqlDbType.Int).Value = diagramm.pages_List[i].PageInDiagramm;
 
                 try //Schreibe seitendaten , wenn nicht vorhanden,  in DB
                 {
-                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init) " +
-                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init)";
+                    sql_cmd.CommandText = "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm) " +
+                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm)";
                     sql_cmd.ExecuteNonQuery();
                 }
-                catch
+                catch (Exception exc)
                 {
-                    throw;
-                    //Delete all Data to this Diagramm
+                    //throw;
+                    MessageBox.Show(exc.Message);
                 }
 
                 //Für jedes Bauteil dieser Seite, füge in Bauteil in DB ein, wenn nicht vorhanden
@@ -280,15 +262,16 @@ namespace bgx_caw
 
                     try //Schreibe Part-Daten in DB, wenn nicht vorhanden
                     {
-                        sql_cmd.CommandText =   "IF NOT EXISTS (SELECT * FROM dbo.tblPart WHERE P_id = @Page_ID AND BMK = @Part_BMK) " +
+                        sql_cmd.CommandText = "IF NOT EXISTS (SELECT * FROM dbo.tblPart WHERE P_id = @Page_ID AND BMK = @Part_BMK) " +
                                                 "INSERT into dbo.tblPart (P_id, BMK, PrePreFix, PreFix) " +
                                                 "VALUES (@Page_ID, @Part_BMK, @Part_PrePreFix, @Part_PreFix)";
                         sql_cmd.ExecuteNonQuery();
                     }
-                    catch
+                    catch (Exception exc)
                     {
-                        throw;
+                        //throw;
                         //Delete all Data to this Diagramm
+                        MessageBox.Show(exc.Message);
                     }
                 }
 
@@ -305,21 +288,22 @@ namespace bgx_caw
 
                     try//Schreibe Potential-Daten in DB, wenn nicht vorhanden
                     {
-                        sql_cmd.CommandText =   "IF NOT EXISTS (SELECT * FROM dbo.tblPotential WHERE P_id = @Page_ID AND Name = @Potential_Name) " +
+                        sql_cmd.CommandText = "IF NOT EXISTS (SELECT * FROM dbo.tblPotential WHERE P_id = @Page_ID AND Name = @Potential_Name) " +
                                                 "INSERT into dbo.tblPotential (P_id, Name, PrePreFix, PreFix) " +
                                                 "VALUES (@Page_ID, @Potential_Name, @Potential_PrePreFix, @Potential_PreFix)";
                         sql_cmd.ExecuteNonQuery();
                     }
-                    catch
+                    catch (Exception exc)
                     {
-                        throw;
+                        //throw;
                         //Delete all Data to this Diagramm
+                        MessageBox.Show(exc.Message);
                     }
-                }                
+                }
             }
         }
 
-        public void deleteDiagramm(String id)
+        public void deleteDiagramm(String id) //Löscht alle Einträge zu einer Diagramm ID
         {
             List<String> pages = new List<String>();
 
@@ -335,7 +319,7 @@ namespace bgx_caw
 
             data_reader.Close();
 
-            foreach(var page in pages)
+            foreach (var page in pages)
             {
                 sql_cmd = new SqlCommand("DELETE FROM dbo.tblPart WHERE P_id = '" + page + "'");
                 sql_cmd.Connection = sql_connection;

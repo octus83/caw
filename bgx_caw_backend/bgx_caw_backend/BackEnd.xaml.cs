@@ -202,28 +202,39 @@ namespace bgx_caw_backend
 
         private void dgd_diagrammsList_Select(object sender, SelectionChangedEventArgs e)
         {
-            using (DB_CAW db_caw = new DB_CAW())
-            {
-                if(dgd_diagrammsList.SelectedItem != null)
+            //using (DB_CAW db_caw = new DB_CAW())
+            //{
+                if (dgd_diagrammsList.SelectedItem != null)
                 {
-                    RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
-                }
-            }
+                    using (DB_CAW db_caw = new DB_CAW())
+                    {
+                        RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);                       
+                    }
 
-            flo_Menu.IsOpen = true;
+                    flo_Menu.IsOpen = true;
+                }
+                else
+                {
+                    flo_Menu.IsOpen = false;
+                }
+            //}
         }
 
         private void dgd_diagrammsList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            using (DB_CAW db_caw = new DB_CAW())
+            if (dgd_diagrammsList.SelectedItem != null)
             {
-                if (dgd_diagrammsList.SelectedItem != null)
+                using (DB_CAW db_caw = new DB_CAW())
                 {
                     RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);
                 }
-            }
 
-            flo_Menu.IsOpen = true;
+                flo_Menu.IsOpen = true;
+            }
+            else
+            {
+                flo_Menu.IsOpen = false;
+            }
         }
 
         

@@ -8,6 +8,12 @@ namespace bgx_caw
 {
     public class Page
     {
+        public int PageInDiagramm
+        {
+            get;
+            set;
+        }
+
         private String _author;
         public String D_id;
         public String P_id
@@ -17,8 +23,45 @@ namespace bgx_caw
         }
         public String Title;
 
-        public String PrePreFix;
-        public String PreFix;
+        private String _prePreFix;
+        public String PrePreFix
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_prePreFix))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _prePreFix;
+                }
+            }
+            set
+            {
+                _prePreFix = value;
+            }
+        }
+
+        private String _preFix;
+        public String PreFix
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_preFix))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _preFix;
+                }
+            }
+            set
+            {
+                _preFix = value;
+            }
+        }
         public String OriginNumber;
         public String Author
         {
@@ -57,7 +100,10 @@ namespace bgx_caw
 
         public Page()
         {
+            P_id = Guid.NewGuid().ToString();
 
+            Parts_List = new List<Part>();
+            Potential_List = new List<Potential>();
         }
 
         public Page(String diagramm_id)

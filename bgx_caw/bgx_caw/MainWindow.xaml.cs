@@ -24,6 +24,19 @@ namespace bgx_caw
         private String _id;
         private int actualPageNumber = 0;
         private int maxPageNumber = 15;
+        private Data data;
+        public int MaxPageNumber
+        {
+            get
+            {
+                return this.maxPageNumber;
+            }
+            set
+            {
+                this.maxPageNumber = value;
+            }
+
+        }
 
         public String ID
         {
@@ -34,6 +47,8 @@ namespace bgx_caw
             set
             {
              this._id = value;
+             this.data = new Data(value);
+             maxPageNumber = data.getPageCout();
              MainLabel.Text = value;  
             }
         }
@@ -63,47 +78,38 @@ namespace bgx_caw
             flo_right_info.IsOpen = true;
         }
 
-        private void Tile_Potentiale(object sender, RoutedEventArgs e)
+        private void Tile_Potential(object sender, RoutedEventArgs e)
         {
             buildPotentialFlyout(); 
         }
         private void Tile_Potential_Click(object sender, EventArgs e)
         {
-            stack_right_sites.Children.Clear();
-            Tile tile = sender as Tile;
-
-            Data data = new Data(this.ID);
-
-
-            List<String> list = new List<String>();
-          // list= t.makeQuery(Query.getPotentialPagenumbersFromPotentialNames(tile.Title, this.ID));
-           list =data.getPotentialNamesFromPageNumber();
+           stack_right_sites.Children.Clear();
+           MyTile tile = sender as MyTile;
+           Potential p = (Potential)tile.Data;
+           List<Page> list = new List<Page>();
+           list = data.getPagenumbersFromPotentialNames(tile.Title);
+           flo_right_info.IsOpen = false;
+  
            flo_right_sites.IsOpen = true;
            foreach (var item in list)
            {
-               Tile t1 = new Tile();
-               t1.Title = item;
+               MyTile t1 = new MyTile();
+               t1.Title = item.PageInDiagramm.ToString()+" "+item.Title;
+               t1.Data = item;
                t1.TiltFactor = 2;
                t1.Width = 150;
                t1.Height = 50;
-               tile.Click += new RoutedEventHandler(Tile_Site_Click);
-               stack_right_sites.Children.Add(t1);
-               
-
+               t1.Click += new RoutedEventHandler(Tile_Site_Click);
+               stack_right_sites.Children.Add(t1);              
            }
         }
 
         private void Tile_Site_Click(object sender, EventArgs e)
-        {
-            Tile tile = sender as Tile;
-            try
-            {
-              goToPage(Convert.ToInt32(tile.Title)); 
-            }
-            catch (Exception)
-            {               
-                throw;
-            }
+        {    
+            MyTile tile = sender as MyTile;
+            Page p = (Page)tile.Data;    
+            goToPage(p.PageInDiagramm);                      
         }
 
         private void buildPotentialFlyout()
@@ -112,13 +118,14 @@ namespace bgx_caw
             if (actualPageNumber > 0)
             {
                 flo_left_potential.IsOpen = true;
-                DB_CAW t = new DB_CAW();
-                List<String> list = new List<String>();
-                list = t.makeQuery(Query.getPotentialNamesFromPageNumber(actualPageNumber, this.ID));
+              
+                List<Potential> list = new List<Potential>();
+                list = data.getPotentialFromPageNumber(actualPageNumber);
                 foreach (var item in list)
                 {
-                    Tile tile = new Tile();
-                    tile.Title = item;
+                    MyTile tile = new MyTile();
+                    tile.Title = item.Name;
+                    tile.Data = item;
                     tile.TiltFactor = 2;
                     tile.Width = 150;
                     tile.Height = 50;
@@ -140,7 +147,7 @@ namespace bgx_caw
             if (actualPageNumber <= maxPageNumber)
             {
                 actualPageNumber++;
-                PageNumberLabel.Text = actualPageNumber.ToString();
+            PageNumberLabel.Text = actualPageNumber.ToString();
                 if (flo_left_potential.IsOpen)
                 {
                     buildPotentialFlyout();
@@ -163,6 +170,11 @@ namespace bgx_caw
         private void goToPage(int page)
         {
             actualPageNumber = page;
+            PageNumberLabel.Text = actualPageNumber.ToString();
+            if (flo_left_potential.IsOpen)
+            {
+                buildPotentialFlyout();
+            }
         }
     }
 }

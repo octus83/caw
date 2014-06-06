@@ -40,41 +40,118 @@ namespace bgx_caw
             }
         }
 
+        private String _fieldName;
         public String FieldName
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_fieldName))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _fieldName;
+                }
+            }
+            set
+            {
+                _fieldName = value;
+            }
         }
 
+        private String _projectNumber;
         public String ProjectNumber
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_projectNumber))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _projectNumber;
+                }
+            }
+            set
+            {
+                _projectNumber = value;
+            }
         }
 
+        private String _projectName;
         public String ProjectName
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_projectName))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _projectName;
+                }
+            }
+            set
+            {
+                _projectName = value;
+            }
         }
 
+        private String _jobNumber;
         public String JobNumber
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_jobNumber))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _jobNumber;
+                }
+            }
+            set
+            {
+                _jobNumber = value;
+            }
         }
 
+        private String _customer;
         public String Customer
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_customer))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _customer;
+                }
+            }
+            set
+            {
+                _customer = value;
+            }
         }
 
         public String EndCustomer
         {
             get
             {
-                return _endCustomer;
+                if (String.IsNullOrWhiteSpace(_endCustomer))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _endCustomer;
+                }
             }
             set
             {
@@ -82,22 +159,64 @@ namespace bgx_caw
             }
         }
 
+        private String _addressRow1;
         public String AddressRow1
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_addressRow1))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _addressRow1;
+                }
+            }
+            set
+            {
+                _addressRow1 = value;
+            }
         }
 
+        private String _addressRow2;
         public String AddressRow2
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_addressRow2))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _addressRow2;
+                }
+            }
+            set
+            {
+                _addressRow2 = value;
+            }
         }
 
+        private String _addressRow3;
         public String AddressRow3
         {
-            get;
-            set;
+            get
+            {
+                if (String.IsNullOrWhiteSpace(_addressRow3))
+                {
+                    return "Keine Angabe";
+                }
+                else
+                {
+                    return _addressRow3;
+                }
+            }
+            set
+            {
+                _addressRow3 = value;
+            }
         }
 
         public DateTime Date_Init

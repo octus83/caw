@@ -16,17 +16,43 @@ namespace bgx_caw
             this.diagramm = db_caw.getDiagramm(id);        
         }
 
-        public List<String> getPotentialNamesFromPageNumber()
+        public List<Potential> getPotentialFromPageNumber(int number)
         {
-            List<String> list = new List<String>();
 
             foreach (var item in diagramm.pages_List)
             {
-                list.Add(item.OriginNumber.ToString());
-               
+                if (item.PageInDiagramm == number)
+                {
+                    return item.Potential_List;
+                }            
+            }
+            return new List<Potential>();
+      /*      var erg = from pot in diagramm.pages_List
+                       where pot.PageInDiagramm == number
+                       select pot;
+      
+            return erg.ElementAt(0).Potential_List;*/
+        
+        }
+        public List<Page> getPagenumbersFromPotentialNames(String name)
+        {
+            List<Page> list = new List<Page>();
+            foreach (var itemA in diagramm.pages_List)
+            {
+                foreach (var itemB in itemA.Potential_List)
+                {
+                    if (itemB.Name.Equals(name))
+                    {
+                        list.Add(itemA);
+                    }
+                }   
             }
             return list;
-        
+        }
+
+        public int getPageCout()
+        {
+            return diagramm.pages_List.Count;
         }
 
     }
