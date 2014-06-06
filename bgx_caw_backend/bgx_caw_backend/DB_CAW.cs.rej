@@ -1,0 +1,16 @@
+diff a/bgx_caw_backend/bgx_caw_backend/DB_CAW.cs b/bgx_caw_backend/bgx_caw_backend/DB_CAW.cs	(rejected hunks)
+@@ -243,11 +243,12 @@
+                 sql_cmd.Parameters.Add("@OriginNumber", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].OriginNumber;
+                 sql_cmd.Parameters.Add("@Author", SqlDbType.VarChar, 10).Value = diagramm.pages_List[i].Author;
+                 sql_cmd.Parameters.Add("@PageInDiagramm", SqlDbType.Int).Value = diagramm.pages_List[i].PageInDiagramm;
++                sql_cmd.Parameters.Add("@Image", SqlDbType.Image, diagramm.pages_List[i].Image.Length).Value = diagramm.pages_List[i].Image;
+ 
+                 try //Schreibe seitendaten , wenn nicht vorhanden,  in DB
+                 {
+-                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm) " +
+-                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm)";
++                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm, BLOB) " +
++                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm, @Image)";
+                     sql_cmd.ExecuteNonQuery();
+                 }
+                 catch(Exception exc)

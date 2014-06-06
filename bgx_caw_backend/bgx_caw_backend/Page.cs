@@ -97,6 +97,8 @@ namespace bgx_caw_backend
         public List<Part> Parts_List;
         public List<Potential> Potential_List;
 
+        public byte[] Image;
+
 
         public Page()
         {

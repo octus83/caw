@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls.Dialogs;
 using MahApps.Metro.Controls;
 using System.Data;
+
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.IO;
@@ -41,9 +42,16 @@ namespace bgx_caw_backend
         {
             get
             {
-                using(DB_CAW db_caw = new DB_CAW())
+                if (DataSource != null && InitialCatalog != null)
                 {
-                    return new BindingList<Diagramm>(db_caw.getDiagramms()); 
+                    using (DB_CAW db_caw = new DB_CAW())
+                    {
+                        return new BindingList<Diagramm>(db_caw.getDiagramms());
+                    }
+                }
+                else
+                {
+                    return null;
                 }
             }
         }
@@ -115,17 +123,34 @@ namespace bgx_caw_backend
         {
             get
             {
-                return config.AppSettings.Settings["DataSource"].Value;
+                if (config.AppSettings.Settings["DataSource"] == null)
+                {
+                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;                   
+                    return null;
+                }
+                else
+                {
+                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
+                    return config.AppSettings.Settings["DataSource"].Value;
+                }
             }
             set
             {
-                if (config.AppSettings.Settings["DataSource"] != null)
+                if (!String.IsNullOrWhiteSpace(value))
                 {
-                    config.AppSettings.Settings.Remove("DataSource");
+                    if (config.AppSettings.Settings["DataSource"] != null)
+                    {
+                        flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;
+                        config.AppSettings.Settings.Remove("DataSource");
+                    }
+                    config.AppSettings.Settings.Add("DataSource", value);
+
+                    config.Save(ConfigurationSaveMode.Modified);
                 }
-                config.AppSettings.Settings.Add("DataSource", value);
-                
-                config.Save(ConfigurationSaveMode.Modified);
+                else
+                {
+                    flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
+                }                
             }
         }
 
@@ -133,7 +158,15 @@ namespace bgx_caw_backend
         {
             get
             {
-                return config.AppSettings.Settings["InitialCatalog"].Value;
+                if (config.AppSettings.Settings["InitialCatalog"] == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return config.AppSettings.Settings["InitialCatalog"].Value;
+                }
+                
             }
             set
             {
@@ -151,7 +184,14 @@ namespace bgx_caw_backend
         {
             get
             {
-                return config.AppSettings.Settings["ProgrammPath"].Value;
+                if (config.AppSettings.Settings["ProgrammPath"] == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return config.AppSettings.Settings["ProgrammPath"].Value;
+                }
             }
             set
             {
@@ -166,12 +206,14 @@ namespace bgx_caw_backend
         }
 
         public BackEnd()
-        {           
+        {
             InitializeComponent();
-            /*Remove before Release*/DataSource = "N005509\\trans_edb_p8";
-            /*Remove before Release*/InitialCatalog = "CAWFinal";
-            /*Remove before Release*/ProgrammPath = "d:\\programme\\caw\\projects\\";
             this.DataContext = this; 
+
+            if(DataSource == null || InitialCatalog == null || ProgrammPath == null)
+            {
+                flo_Settings.IsOpen = true;
+            }            
         }
 
         protected void propertyChanged(String name)
@@ -202,22 +244,19 @@ namespace bgx_caw_backend
 
         private void dgd_diagrammsList_Select(object sender, SelectionChangedEventArgs e)
         {
-            //using (DB_CAW db_caw = new DB_CAW())
-            //{
-                if (dgd_diagrammsList.SelectedItem != null)
+            if (dgd_diagrammsList.SelectedItem != null)
+            {
+                using (DB_CAW db_caw = new DB_CAW())
                 {
-                    using (DB_CAW db_caw = new DB_CAW())
-                    {
-                        RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);                       
-                    }
+                    RecentDiagramm = db_caw.getDiagramm(((Diagramm)dgd_diagrammsList.SelectedItem).ID);                       
+                }
 
-                    flo_Menu.IsOpen = true;
-                }
-                else
-                {
-                    flo_Menu.IsOpen = false;
-                }
-            //}
+                flo_Menu.IsOpen = true;
+            }
+            else
+            {
+                flo_Menu.IsOpen = false;
+            }
         }
 
         private void dgd_diagrammsList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -310,25 +349,23 @@ namespace bgx_caw_backend
             await this.ShowMessageAsync("Fehler", "");
         }
 
-        private static void GetPdfThumbnail(string sourcePdfFilePath, string destinationPngFilePath)
+        private static void GetPdfThumbnail(String sourcePdfFilePath, String destinationPngFilePath, int pageNo)
         {
             // Use GhostscriptSharp to convert the pdf to a png
             GhostscriptWrapper.GenerateOutput(sourcePdfFilePath, destinationPngFilePath,
                 new GhostscriptSettings
                 {
-                    Device = GhostscriptDevices.pngalpha,
+                    Device = GhostscriptDevices.jpeg,
                     Page = new GhostscriptPages
                     {
-                        // Only make a thumbnail of the first page
-                        Start = 1,
-                        End = 10,
-                        AllPages = true
+                        Start = pageNo,
+                        End = pageNo
                     },
                     Resolution = new System.Drawing.Size
                     {
                         // Render at 72x72 dpi
-                        Height = 200,
-                        Width = 200
+                        Height = 300,
+                        Width = 300
                     },
                     Size = new GhostscriptPageSize
                     {

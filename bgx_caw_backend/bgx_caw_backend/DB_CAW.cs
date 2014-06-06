@@ -212,7 +212,7 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
-            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = diagramm.SourceFolder;
+            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = System.IO.Path.Combine(config.AppSettings.Settings["ProgrammPath"].Value, diagramm.ID);
 
             try //try to INSERT Diagrammdata, when not exists
             {
@@ -243,11 +243,12 @@ namespace bgx_caw_backend
                 sql_cmd.Parameters.Add("@OriginNumber", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].OriginNumber;
                 sql_cmd.Parameters.Add("@Author", SqlDbType.VarChar, 10).Value = diagramm.pages_List[i].Author;
                 sql_cmd.Parameters.Add("@PageInDiagramm", SqlDbType.Int).Value = diagramm.pages_List[i].PageInDiagramm;
+                sql_cmd.Parameters.Add("@Image", SqlDbType.Image, diagramm.pages_List[i].Image.Length).Value = diagramm.pages_List[i].Image;
 
                 try //Schreibe seitendaten , wenn nicht vorhanden,  in DB
                 {
-                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm) " +
-                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm)";
+                    sql_cmd.CommandText =   "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm, BLOB) " +
+                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm, @Image)";
                     sql_cmd.ExecuteNonQuery();
                 }
                 catch(Exception exc)

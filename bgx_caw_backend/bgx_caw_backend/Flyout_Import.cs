@@ -37,7 +37,6 @@ namespace bgx_caw_backend
 
         private async void flo_import_tle_import_Click(object sender, RoutedEventArgs e)
         {
-            //String projectFolder = @"e:\programme\caw\projects\";
             String diagrammPath = System.IO.Path.Combine(ProgrammPath, ImportDiagramm.ID);
             String pagePath;
 
@@ -55,18 +54,25 @@ namespace bgx_caw_backend
                     //Create DiagrammFolder (ID)                    
                     System.IO.Directory.CreateDirectory(diagrammPath);
 
-                    await Task.Delay(200);
+                    await Task.Delay(20);
 
-                    int counter = 0;
+                    int counter = 1;
 
                     //Create PageFolder (P_id) containing Overlays                
                     foreach (Page page in ImportDiagramm.pages_List)
                     {
-                        progressDialog.SetMessage("Page Ordner " + page.P_id + " wird erstellt");
+                        //Ordner
+                        progressDialog.SetMessage("Page " + page.P_id + " wird erstellt");
                         pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
                         System.IO.Directory.CreateDirectory(pagePath);
 
-                        await Task.Delay(100);
+                        //Bild generieren und kopieren
+                        GetPdfThumbnail(PDFDialog.FileName, System.IO.Path.Combine(pagePath, counter + ".jpg"), counter);
+
+                        //Bild als Blob in Page-Objekt einfügen
+                        ImportDiagramm.pages_List[counter - 1].Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
+
+                        await Task.Delay(50);
 
                         counter++;
                         progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
@@ -76,17 +82,18 @@ namespace bgx_caw_backend
                     progressDialog.SetMessage("PDF wird kopiert");
                     System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
 
-                    await Task.Delay(300);
                     progressDialog.SetProgress(0.9);
 
                     progressDialog.SetMessage("Diagramm in Datenbank anlegen");
-                    await Task.Delay(300);
+                    await Task.Delay(100);
                     progressDialog.SetProgress(1.0);
 
                     using (DB_CAW db_caw = new DB_CAW())
                     {
                         db_caw.addDiagramm(ImportDiagramm);
                     }
+
+
 
                     await progressDialog.CloseAsync();
 
@@ -99,9 +106,9 @@ namespace bgx_caw_backend
                     System.Windows.Forms.MessageBox.Show("Das PDF hat " + pdfReader.NumberOfPages + " Seiten und das DXF " + ImportDiagramm.pages_List.Count);
                 }
             }
-            catch
+            catch(Exception exc)
             {
-
+                System.Windows.Forms.MessageBox.Show(exc.Message);
             }
             finally
             {
@@ -111,6 +118,20 @@ namespace bgx_caw_backend
                 PDFDialog = null;
             }
 
+        }
+
+        // **** Read Image into Byte Array from Filesystem
+        public static byte[] GetPhoto(string filePath)
+        {
+            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(fs);
+
+            byte[] photo = br.ReadBytes((int)fs.Length);
+
+            br.Close();
+            fs.Close();
+
+            return photo;
         }
 
         private void flo_import_tle_del_Click(object sender, RoutedEventArgs e)
