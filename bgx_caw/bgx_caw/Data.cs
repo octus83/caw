@@ -34,6 +34,17 @@ namespace bgx_caw
             return erg.ElementAt(0).Potential_List;*/
         
         }
+        public List<Part> getPartFomPageNumber(int number)
+        {
+            foreach (var item in diagramm.pages_List)
+            {
+                if (item.PageInDiagramm == number)
+                {
+                    return item.Parts_List;
+                }
+            }
+            return new List<Part>();
+        }
         public List<Page> getPagenumbersFromPotentialNames(String name)
         {
             List<Page> list = new List<Page>();
@@ -53,6 +64,20 @@ namespace bgx_caw
         public int getPageCout()
         {
             return diagramm.pages_List.Count;
+        }
+
+
+        public List<Part> getCompletePartList()
+        {
+            List<Part> list = new List<Part>();
+            foreach (var itemA in  diagramm.pages_List)
+	        {
+                foreach (var itemB in itemA.Parts_List)
+                {
+                    list.Add(itemB);
+                }
+	        }
+            return list;
         }
 
     }
