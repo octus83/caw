@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using System.IO;
 
 namespace bgx_caw
 {
@@ -22,6 +23,7 @@ namespace bgx_caw
     {
         private List<Diagramm> diagrammsList;
         private MainWindow caller;
+
         public OpenProjectWindow()
         {
             InitializeComponent();
@@ -72,9 +74,25 @@ namespace bgx_caw
             if (projectList.SelectedIndex != -1)
             {
                 int selectedIndex = projectList.SelectedIndex;
-                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;          
+                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;
+                caller.Images = createbitmapsourceList();
+                caller.ProjectState = State.ProjectSelected;
+                caller.onProjectOpen();
                 this.Close();
             }
         }
+    
+        private List<BitmapImage> createbitmapsourceList()
+        {
+
+            List<String> sList = Directory.GetFiles("C:\\Users\\Public\\Pictures\\Sample Pictures", "*.jpg").ToList<String>();
+            List<BitmapImage> bList = new List<BitmapImage>();
+            foreach (var item in sList)
+            {
+                bList.Add(new BitmapImage(new Uri(item)));
+            }
+            return bList;
+        }
+       
     }
 }
