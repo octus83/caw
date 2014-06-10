@@ -208,7 +208,7 @@ namespace bgx_caw_backend
         public BackEnd()
         {
             InitializeComponent();
-            this.DataContext = this; 
+            this.DataContext = this;
 
             if(DataSource == null || InitialCatalog == null || ProgrammPath == null)
             {
