@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Configuration;
 
 namespace bgx_caw
 {
@@ -29,16 +30,77 @@ namespace bgx_caw
     /// </summary>
     public partial class MainWindow :MetroWindow 
     {
-        private String _id;
+
         private int actualPageNumber = 0;
         private int maxPageNumber = 15;
         private Data data;
-        private List<BitmapImage> _images;
-        private List<Part> _completedParts;
-        private State _projectState;
 
-      
-        
+     
+
+
+        Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+        public String DataSource
+        {
+            get
+            {
+                if (config.AppSettings.Settings["DataSource"] == null)
+                {
+                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;                   
+                    return null;
+                }
+                else
+                {
+                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
+                    return config.AppSettings.Settings["DataSource"].Value;
+                }
+            }
+            set
+            {
+                if (!String.IsNullOrWhiteSpace(value))
+                {
+                    if (config.AppSettings.Settings["DataSource"] != null)
+                    {
+                        flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;
+                        config.AppSettings.Settings.Remove("DataSource");
+                    }
+                    config.AppSettings.Settings.Add("DataSource", value);
+
+                    config.Save(ConfigurationSaveMode.Modified);
+                }
+                else
+                {
+                    flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
+                }
+            }
+        }
+        public String InitialCatalog
+        {
+            get
+            {
+                if (config.AppSettings.Settings["InitialCatalog"] == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return config.AppSettings.Settings["InitialCatalog"].Value;
+                }
+
+            }
+            set
+            {
+                if (config.AppSettings.Settings["InitialCatalog"] != null)
+                {
+                    config.AppSettings.Settings.Remove("InitialCatalog");
+                }
+                config.AppSettings.Settings.Add("InitialCatalog", value);
+
+                config.Save(ConfigurationSaveMode.Modified);
+            }
+        }
+
+        private State _projectState;
         public State ProjectState
         {
             get
@@ -50,6 +112,7 @@ namespace bgx_caw
                 this._projectState = value;
             }
         }
+        private List<BitmapImage> _images;
         public List<BitmapImage> Images
         {
             get
@@ -73,7 +136,7 @@ namespace bgx_caw
             }
 
         }
-
+        private String _id;
         public String ID
         {
             get
@@ -96,59 +159,7 @@ namespace bgx_caw
            
         }
 
-        private void txtAuto_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (ProjectState == State.ProjectSelected)
-            {
-                if (_completedParts == null)
-                {
-                    _completedParts = data.getCompletePartList();
-                }
-                string typedString = txtAuto.Text;
-                List<String> autoList = new List<String>();
-                autoList.Clear();
-
-                foreach (var item in _completedParts)
-                {
-                    if (!string.IsNullOrEmpty(txtAuto.Text))
-                    {
-                        if (item.BMK.StartsWith(typedString))
-                        {
-                            autoList.Add(item.BMK);
-                           
-                        }
-                    }
-                }
-                if (autoList.Count > 0)
-                {
-                    lbSuggestion.ItemsSource = autoList;
-                    lbSuggestion.Visibility = Visibility.Visible;
-                }
-                else if (txtAuto.Text.Equals(""))
-                {
-                    lbSuggestion.ItemsSource = null;
-                    lbSuggestion.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    lbSuggestion.ItemsSource = null;
-                    lbSuggestion.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-        private void lbSuggestion_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (lbSuggestion.ItemsSource != null)
-            {
-                lbSuggestion.Visibility = Visibility.Collapsed;
-                txtAuto.TextChanged -= new TextChangedEventHandler(txtAuto_TextChanged);
-                if (lbSuggestion.SelectedIndex != -1)
-                {
-                    txtAuto.Text = lbSuggestion.SelectedItem.ToString();
-                }
-                txtAuto.TextChanged += new TextChangedEventHandler(txtAuto_TextChanged);
-            }
-        }
+       
 
         
 
@@ -179,76 +190,6 @@ namespace bgx_caw
                 MessageBox.Show("No Project selected");
             }
 
-        }
-
-        private void Tile_Potential(object sender, RoutedEventArgs e)
-        {
-            buildPotentialFlyout(); 
-        }
-        private void Tile_Potential_Click(object sender, EventArgs e)
-        {
-           stack_right_sites.Children.Clear();
-           MyTile tile = sender as MyTile;
-           Potential p = (Potential)tile.Data;
-           List<Page> list = new List<Page>();
-           list = data.getPagenumbersFromPotentialNames(tile.Title);
-
-           closeAllRightFlyouts();
-  
-           flo_right_sites.IsOpen = true;
-           foreach (var item in list)
-           {
-               MyTile t1 = new MyTile();
-               t1.Title = item.PageInDiagramm.ToString()+" "+item.Title;
-               t1.Data = item;
-               t1.TiltFactor = 2;
-               t1.Width = 150;
-               t1.Height = 50;
-               t1.Click += new RoutedEventHandler(Tile_Site_Click);
-               stack_right_sites.Children.Add(t1);              
-           }
-        }
-        
-
-        private void Tile_Site_Click(object sender, EventArgs e)
-        {    
-            MyTile tile = sender as MyTile;
-            Page p = (Page)tile.Data;    
-            goToPage(p.PageInDiagramm);                      
-        }
-
-        private void Tile_Search(object sender, EventArgs e)
-        {
-            closeAllLeftFlyouts();
-            flo_left_search.IsOpen = true;
-        }
-
-        private void buildPotentialFlyout()
-        {
-            stack_left_potential.Children.Clear();
-            if (actualPageNumber > 0)
-            {
-                closeAllLeftFlyouts();
-                flo_left_potential.IsOpen = true;
-                List<Potential> list = new List<Potential>();
-                list = data.getPotentialFromPageNumber(actualPageNumber);
-                foreach (var item in list)
-                {
-                    MyTile tile = new MyTile();
-                    tile.Title = item.Name;
-                    tile.Data = item;
-                    tile.TiltFactor = 2;
-                    tile.Width = 150;
-                    tile.Height = 50;
-                    tile.Click += new RoutedEventHandler(Tile_Potential_Click);
-                    stack_left_potential.Children.Add(tile);
-                }
-            }
-        }
-
-        private void buildSiteFylout()
-        {
-            stack_right_sites.Children.Clear();
         }
 
         private void nextPage()
@@ -293,26 +234,32 @@ namespace bgx_caw
                 buildPotentialFlyout();
             }
         }
+
         private void updatePagenumberLabel(String update)
         {
             sitenumberLabel.Content = "Seite " + update + " von " + maxPageNumber;
         }
+
         private void changePicture()
         {
             if (actualPageNumber < _images.Count && _images != null)
             {
-                showImage.Source = _images.ElementAt(actualPageNumber);
+                showImage.Source = _images.ElementAt((actualPageNumber-1));
                 showImage.RenderTransform = new ScaleTransform
-                        (1, 1, 0.5, 0.5);
+                        (1, 0.7, 0.5, 0.5);
             }
             else
             {
                 MessageBox.Show("no pictures found");
             }
         }
+
         public void onProjectOpen()
         {
-            goToPage(1);
+            
+           this.Images=  data.getBitmapList();
+           goToPage(1);
+          
         }
 
         private void closeAllLeftFlyouts()
@@ -326,36 +273,28 @@ namespace bgx_caw
             flo_right_info.IsOpen = false;
             flo_right_sites.IsOpen = false;
         }
-        private void Tile_Part(Object sender, EventArgs e)
-        {
-            buildPartFlyout();
-        }
+      
 
-        private void buildPartFlyout(){
-            stack_left_parts.Children.Clear();
-            if (actualPageNumber > 0)
+
+
+        protected void propertyChanged(String name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
             {
-                closeAllLeftFlyouts();
-                flo_left_parts.IsOpen = true;
-                List<Part> list = new List<Part>();
-                list = data.getPartFomPageNumber(actualPageNumber);
-               
-                foreach (var item in list)
-                {
-                    MyTile tile = new MyTile();
-                    tile.Title = item.BMK;
-                    tile.Data = item;
-                    tile.TiltFactor = 2;
-                    tile.Width = 150;
-                    tile.Height = 50;
-                    tile.Click += new RoutedEventHandler(Tile_Part_Click);
-                    stack_left_parts.Children.Add(tile);
-                }
+                handler(this, new PropertyChangedEventArgs(name));
             }
         }
-        private void Tile_Part_Click(object sender, EventArgs e)
+
+
+
+        private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            MessageBox.Show("Liste mit seiten");
+            var st = (ScaleTransform)showImage.RenderTransform;
+            double zoom = e.Delta > 0 ? .2 : -.2;
+            st.ScaleX += zoom;
+            st.ScaleY += zoom; 
         }
     }
 }

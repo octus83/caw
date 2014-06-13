@@ -8,7 +8,7 @@ namespace bgx_caw
 {
     public class Page
     {
-        public int PageInDiagramm
+       public int PageInDiagramm
         {
             get;
             set;
@@ -48,7 +48,7 @@ namespace bgx_caw
         {
             get
             {
-                if (String.IsNullOrWhiteSpace(_preFix))
+                if(String.IsNullOrWhiteSpace(_preFix))
                 {
                     return "Keine Angabe";
                 }
@@ -96,6 +96,8 @@ namespace bgx_caw
 
         public List<Part> Parts_List;
         public List<Potential> Potential_List;
+
+        public byte[] Image;
 
 
         public Page()

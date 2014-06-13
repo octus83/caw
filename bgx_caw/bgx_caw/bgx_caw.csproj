@@ -53,6 +53,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Printing" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -78,6 +79,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Data.cs" />
+    <Compile Include="Drawing.cs" />
+    <Compile Include="Flyout_Pagenumber.cs" />
+    <Compile Include="Flyout_Part.cs" />
+    <Compile Include="Flyout_Potential.cs" />
+    <Compile Include="Flyout_Search.cs" />
+    <Compile Include="Flyout_Settings.cs" />
     <Compile Include="MyTile.cs" />
     <Compile Include="Query.cs" />
     <Page Include="MainWindow.xaml">
@@ -127,6 +134,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="caw.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -144,6 +152,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Lupe.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="background.jpg" />
+    <Resource Include="CAWLogo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

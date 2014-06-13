@@ -75,7 +75,7 @@ namespace bgx_caw
             {
                 int selectedIndex = projectList.SelectedIndex;
                 caller.ID = diagrammsList.ElementAt(selectedIndex).ID;
-                caller.Images = createbitmapsourceList();
+               // caller.Images = createbitmapsourceList();
                 caller.ProjectState = State.ProjectSelected;
                 caller.onProjectOpen();
                 this.Close();
@@ -93,6 +93,10 @@ namespace bgx_caw
             }
             return bList;
         }
+
        
+       
+
+
     }
 }

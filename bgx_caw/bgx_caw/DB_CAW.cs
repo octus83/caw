@@ -5,10 +5,10 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Objects;
 using System.Windows;
 using System.Configuration;
-
-using System.Windows;
+using System.IO;
 
 namespace bgx_caw
 {
@@ -17,6 +17,8 @@ namespace bgx_caw
     /// </summary>
     partial class DB_CAW : IDisposable
     {
+        private Configuration config;
+
         private SqlConnection sql_connection;
         private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
         {
@@ -24,6 +26,7 @@ namespace bgx_caw
             InitialCatalog = "CAWFinal",
             IntegratedSecurity = true
         };
+
 
         /// <summary>
         /// calls SqlConnection.Open to open connection to database
@@ -43,7 +46,7 @@ namespace bgx_caw
         }
     }
 
-     /// <summary>
+    /// <summary>
     /// partial class that implements additional functions for the caw_backend
     /// </summary>
     partial class DB_CAW
@@ -75,7 +78,12 @@ namespace bgx_caw
 
             data_reader.Close();
 
+            result_list.Sort((x, y) => DateTime.Compare(x.Date_LastChange, y.Date_LastChange));
+
+            result_list.Reverse();
+
             return result_list;
+
         }
 
         public Diagramm getDiagramm(String id) //Ein komplettes Diagramm-Objekt
@@ -205,7 +213,7 @@ namespace bgx_caw
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
-            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = diagramm.SourceFolder;
+            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = System.IO.Path.Combine(config.AppSettings.Settings["ProgrammPath"].Value, diagramm.ID);
 
             try //try to INSERT Diagrammdata, when not exists
             {
@@ -236,11 +244,12 @@ namespace bgx_caw
                 sql_cmd.Parameters.Add("@OriginNumber", SqlDbType.VarChar, 50).Value = diagramm.pages_List[i].OriginNumber;
                 sql_cmd.Parameters.Add("@Author", SqlDbType.VarChar, 10).Value = diagramm.pages_List[i].Author;
                 sql_cmd.Parameters.Add("@PageInDiagramm", SqlDbType.Int).Value = diagramm.pages_List[i].PageInDiagramm;
+                sql_cmd.Parameters.Add("@Image", SqlDbType.Image, diagramm.pages_List[i].Image.Length).Value = diagramm.pages_List[i].Image;
 
                 try //Schreibe seitendaten , wenn nicht vorhanden,  in DB
                 {
-                    sql_cmd.CommandText = "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm) " +
-                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm)";
+                    sql_cmd.CommandText = "INSERT into dbo.tblPage (D_id, P_id, Title, PrePreFix, PreFix, OriginNumber, Author, Date_init, Date_LastChange, PageInDiagramm, BLOB) " +
+                                            "VALUES (@Diagramm_ID, @Page_ID, @Title, @PrePreFix, @PreFix, @OriginNumber, @Author, @Date_Init, @Date_LastChange, @PageInDiagramm, @Image)";
                     sql_cmd.ExecuteNonQuery();
                 }
                 catch (Exception exc)
@@ -339,27 +348,24 @@ namespace bgx_caw
             sql_cmd.ExecuteNonQuery();
 
         }
-        public List<String> makeQuery(String query)
+
+        public  byte[] getBLOB(String id)
         {
-            sql_cmd = new SqlCommand(query);
+            sql_cmd = new SqlCommand(
+               "Select dbo.tblPage.BLOB FROM dbo.tblPage Where dbo.tblPage.P_id = '" + id + "'");
             sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
-            List<String> result_list = new List<String>();
+            byte[] b = null;
             while (data_reader.Read())
             {
-
-                result_list.Add(data_reader[0].ToString());
-                //Console.WriteLine(data_reader[0].ToString());
-                // MessageBox.Show(data_reader[0].ToString());
+               
+                b = (byte[])data_reader.GetValue(0);
             }
-
             data_reader.Close();
-            return result_list;
+            return b;
+
+           
+
         }
-       
-       
     }
 }
-
-
-

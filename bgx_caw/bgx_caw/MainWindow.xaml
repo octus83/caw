@@ -2,22 +2,35 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        Title="MainWindow" Height="600" Width="1200" WindowState="Maximized">
+        Title="Caw" Height="600" Width="1200" WindowState="Maximized"  Icon="CAWLogo.png">
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button Name="win_Comm_btn_Settings" Content="Einstellungen" Click="win_Comm_btn_Settings_Click"/>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
+   
     <Canvas>
-        <Canvas.DataContext>
-            <Binding ElementName="This" />
-        </Canvas.DataContext>
+
         <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="open project" Click="Button_open_project" Canvas.Left="373" Canvas.Top="8" />
         <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="next page" Canvas.Left="463" Canvas.Top="8" Click="Button_next_page" />
         <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="prevoius page" Canvas.Left="553" Canvas.Top="8" Click="Button_previous_page" />
         <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="open info" Canvas.Left="648" Canvas.Top="8" Click="Button_open_info"  />
         <Label Content="Seite:  von  " Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10"></Label>
-       
-        <Canvas Name="view" Height="768" Width="1024" Canvas.Left="131" Canvas.Top="66">
-            <Image Name="showImage"></Image>
+
+        <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1">
+            <Border x:Name="clipBorder" Margin="40" BorderBrush="Black" Background="Transparent" BorderThickness="1" ClipToBounds="True" MouseWheel="clipBorder_MouseWheel">
+                <Image x:Name="showImage" >
+                    <Image.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="imageScaleTransform"/>
+                            <TranslateTransform x:Name="imageTranslateTransform"/>
+                        </TransformGroup>
+                    </Image.RenderTransform>
+                </Image>
+            </Border>
         </Canvas>
     </Canvas>
-
+   
     <controls:MetroWindow.Flyouts >
         <controls:FlyoutsControl>
             <controls:Flyout Header="Info" Position="Right" Width="200" Name="flo_right_info" >
@@ -65,7 +78,49 @@
                     <StackPanel Name="stack_right_sites"></StackPanel>
                 </ScrollViewer>
             </controls:Flyout>
-
+            <controls:Flyout Name="flo_Settings" Position="Top" Height="400" IsModal="True">
+                <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,30,0,0">
+                    <Label Content="Einstellungen" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                        <StackPanel Orientation="Vertical" Margin="0,0,20,0" >
+                            <Label FontSize="16">Datenbank-Server (DataSource)</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Name="flo_Settings_tbx_dsc" Width="150" Text="{Binding DataSource, Mode=TwoWay}" Margin="0,0,5,0"></TextBox>
+                            </StackPanel>
+                            <Label FontSize="16">Datenbank (InitialCatalog)</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Name="flo_Settings_tbx_inc" Width="150" Text="{Binding InitialCatalog, Mode=TwoWay}" Margin="0,0,5,0" ></TextBox>
+                            </StackPanel>
+                            <Label FontSize="16">Programm-Ordner</Label>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Name="flo_Settings_tbx_prf" Width="150" Text="{Binding ProgrammPath, Mode=TwoWay}" Margin="0,0,5,0" ></TextBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <controls:Tile x:Name="flo_Settings_tle_ccl" Margin="10,10,10,10" Background="#FFCC1C00" Height="60" Width="60" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_ccl_Click">
+                            <Rectangle Width="30" Height="30">
+                                <Rectangle.Resources>
+                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                </Rectangle.Resources>
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_app_remove}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </controls:Tile>
+                        <controls:Tile x:Name="flo_Settings_tle_sve" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Settings_tle_sve_Click">
+                            <Rectangle Width="30" Height="30">
+                                <Rectangle.Resources>
+                                    <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                </Rectangle.Resources>
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_cabinet_in}" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </controls:Tile>
+                    </StackPanel>
+                </StackPanel>
+            </controls:Flyout>
 
             <controls:Flyout Header="Suche" Position="Left" Width="200" Name="flo_left_search">
                 <!-- Your custom content here -->
@@ -94,6 +149,7 @@
                 </ScrollViewer>
             </controls:Flyout>
         </controls:FlyoutsControl>
+        
     </controls:MetroWindow.Flyouts >
 
 
