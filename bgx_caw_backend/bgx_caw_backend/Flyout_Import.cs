@@ -70,7 +70,7 @@ namespace bgx_caw_backend
                         GetPdfThumbnail(PDFDialog.FileName, System.IO.Path.Combine(pagePath, counter + ".jpg"), counter);
 
                         //Bild als Blob in Page-Objekt einfügen
-                        ImportDiagramm.pages_List[counter - 1].Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
+                        page.Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
 
                         await Task.Delay(50);
 
