@@ -1,60 +1,58 @@
-﻿<controls:MetroWindow x:Class="bgx_caw.MainWindow" x:Name="This"
+﻿<controls:MetroWindow x:Class="bgx_caw.MainWindow" x:Name="mainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         Title="Caw" Height="600" Width="1200" WindowState="Maximized"  Icon="CAWLogo.png">
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
+            <Button Name="win_Comm_btn_Drawing" Content="Zeichnen" Click="win_Comm_btn_Drawing_Click" Visibility="Visible"/>
             <Button Name="win_Comm_btn_Settings" Content="Einstellungen" Click="win_Comm_btn_Settings_Click"/>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
-   
-    <Canvas>
+    <Grid>
+        <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top">
+            <controls:Tile  Width="90" Height="30" Click="Button_open_project"  >
+                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Projekt Öffnen</Label>
+            </controls:Tile>
 
-        <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="open project" Click="Button_open_project" Canvas.Left="373" Canvas.Top="8" />
-        <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="next page" Canvas.Left="463" Canvas.Top="8" Click="Button_next_page" />
-        <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="prevoius page" Canvas.Left="553" Canvas.Top="8" Click="Button_previous_page" />
-        <Button Style="{DynamicResource SquareButtonStyle}" Width="90" Height="25" Content="open info" Canvas.Left="648" Canvas.Top="8" Click="Button_open_info"  />
-        <Label Content="Seite:  von  " Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10"></Label>
+            <controls:Tile  Width="90" Height="30" Click="Button_next_page"  >
+                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Nächste Seite</Label>
+            </controls:Tile>
+            <Label Content="Seite:  von   " Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10"></Label>
+            <controls:Tile  Width="90" Height="30" Click="Button_previous_page"  >
+                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">vorherige Seite</Label>
+            </controls:Tile>
 
-        <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1">
-            <Border x:Name="clipBorder" Margin="40" BorderBrush="Black" Background="Transparent" BorderThickness="1" ClipToBounds="True" MouseWheel="clipBorder_MouseWheel">
-                <Image x:Name="showImage" >
-                    <Image.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform x:Name="imageScaleTransform"/>
-                            <TranslateTransform x:Name="imageTranslateTransform"/>
-                        </TransformGroup>
-                    </Image.RenderTransform>
-                </Image>
-            </Border>
-        </Canvas>
-    </Canvas>
-   
+            <controls:Tile  Width="90" Height="30" Click="Button_open_info" HorizontalAlignment="Left" >
+                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Info</Label>
+            </controls:Tile>
+
+        </DockPanel>
+        <Grid Name="renderContainer"  ClipToBounds="True" Margin="0,45,0,0">
+            <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
+                <Canvas.Background>
+                    <ImageBrush x:Name="showImage"/>
+                </Canvas.Background>
+                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="3" ClipToBounds="True" MouseWheel="clipBorder_MouseWheel" Width="{Binding Path=ActualWidth, ElementName=view}" Height="{Binding Path=ActualHeight, ElementName=view}">
+
+                </Border>
+            </Canvas>
+        </Grid>
+    </Grid>
+
+
+
+
+
+
     <controls:MetroWindow.Flyouts >
         <controls:FlyoutsControl>
             <controls:Flyout Header="Info" Position="Right" Width="200" Name="flo_right_info" >
                 <!-- Your custom content here -->
                 <StackPanel Name="stack_right_info">
-
-                    <controls:Tile Title="Potentiale!" 
-                    TiltFactor="2"
-                    Width="150" Height="50" 
-                    Click="Tile_Potential" >
-                    </controls:Tile>
-                    
-                    <controls:Tile Title="Bauteile!" 
-                    TiltFactor="2"
-                    Width="150" Height="50" 
-                                   Click="Tile_Part"
-                     >
-                    </controls:Tile>
-                    <controls:Tile Title="Suche!" 
-                    TiltFactor="2"
-                    Width="150" Height="50" 
-                                   Click="Tile_Search" >
-                     
-                    </controls:Tile>
+                    <controls:Tile Title="Potentiale!" TiltFactor="2" Width="150" Height="50" Click="Tile_Potential" />
+                    <controls:Tile Title="Bauteile!"  TiltFactor="2"  Width="150" Height="50" Click="Tile_Part" />
+                    <controls:Tile Title="Suche!" TiltFactor="2" Width="150" Height="50" Click="Tile_Search" />
                 </StackPanel>
             </controls:Flyout>
 
@@ -71,7 +69,46 @@
                     <StackPanel Name="stack_left_parts"></StackPanel>
                 </ScrollViewer>
             </controls:Flyout>
-            
+
+            <controls:Flyout Header="Zeichnen" Position="Top" Height="150" Name="flo_up_draw" >
+                <DockPanel Margin="0,15,0,0">
+                    <StackPanel Margin="50,0,0,0">
+                        <Label FontSize="16">Rotstift</Label>
+                        <Border BorderThickness="2" BorderBrush="White">
+                            <controls:Tile  Background="Black" x:Name="toggle_btn_red"  Width="50" Height="50" Click="toggle_btn_red_click" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Margin="50,0,0,0">
+                        <Label FontSize="16">Grün</Label>
+                        <Border  BorderThickness="2" BorderBrush="White">
+                            <controls:Tile Background="Black" x:Name="toggle_btn_green" Width="50" Height="50"  Click="toggle_btn_green_click" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Margin="50,0,0,0" >
+                        <Label FontSize="16">Makierung</Label>
+                        <Border  HorizontalAlignment="Left" BorderThickness="2" BorderBrush="White">
+                            <controls:Tile Background="Black" x:Name="toggle_btn_mark" Width="50" Height="50"  Click="toggle_btn_mark_click" />
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Margin="50,0,0,0" >
+                        <Label FontSize="16">Speichern</Label>
+                        <Border  HorizontalAlignment="Left" BorderThickness="2" BorderBrush="White">
+                            
+                            <controls:Tile x:Name="canvas_save" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="canvas_click">
+                                <Rectangle Width="30" Height="30">
+                                    <Rectangle.Resources>
+                                        <SolidColorBrush x:Key="BlackBrush" Color="White" />
+                                    </Rectangle.Resources>
+                                    <Rectangle.Fill>
+                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_cabinet_in}" />
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </controls:Tile>
+                        </Border>
+                    </StackPanel>
+                </DockPanel>
+            </controls:Flyout>
+
             <controls:Flyout Header="Seiten" Position="Right" Width="200" Name="flo_right_sites">
                 <!-- Your custom content here -->
                 <ScrollViewer>
@@ -149,7 +186,7 @@
                 </ScrollViewer>
             </controls:Flyout>
         </controls:FlyoutsControl>
-        
+
     </controls:MetroWindow.Flyouts >
 
 

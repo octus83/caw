@@ -112,8 +112,8 @@ namespace bgx_caw
                 this._projectState = value;
             }
         }
-        private List<BitmapImage> _images;
-        public List<BitmapImage> Images
+        private List<CustomBitmapImage> _images;
+        public List<CustomBitmapImage> Images
         {
             get
         {
@@ -215,6 +215,7 @@ namespace bgx_caw
         }
         private void goToPage(int page)
         {
+          
             if (page <= maxPageNumber && page > 0)
             {
                 actualPageNumber = page;
@@ -242,11 +243,20 @@ namespace bgx_caw
 
         private void changePicture()
         {
-            if (actualPageNumber < _images.Count && _images != null)
+            view.Children.Clear();
+
+            if (actualPageNumber <= maxPageNumber && actualPageNumber > 0)
             {
-                showImage.Source = _images.ElementAt((actualPageNumber-1));
-                showImage.RenderTransform = new ScaleTransform
-                        (1, 0.7, 0.5, 0.5);
+                if (_images.ElementAt((actualPageNumber - 1)).IsCustomImage)
+                {
+                    showImage.ImageSource = _images.ElementAt((actualPageNumber - 1)).CustomImage;
+                }
+                else
+                {
+                    showImage.ImageSource = _images.ElementAt((actualPageNumber - 1)).OrginalImage;
+                }
+               // showImage.RenderTransform = new ScaleTransform
+                        //(1, 1, 0, 0);
             }
             else
             {
@@ -257,8 +267,9 @@ namespace bgx_caw
         public void onProjectOpen()
         {
             
-           this.Images=  data.getBitmapList();
+           Images=  data.getBitmapList();
            goToPage(1);
+           win_Comm_btn_Drawing.Visibility = Visibility.Visible;
           
         }
 
@@ -291,10 +302,13 @@ namespace bgx_caw
 
         private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+         /*   Point p = e.GetPosition(clipBorder);
             var st = (ScaleTransform)showImage.RenderTransform;
             double zoom = e.Delta > 0 ? .2 : -.2;
             st.ScaleX += zoom;
-            st.ScaleY += zoom; 
+            st.ScaleY += zoom;
+            st.CenterX = p.X;
+            st.CenterY = p.Y;*/
         }
     }
 }

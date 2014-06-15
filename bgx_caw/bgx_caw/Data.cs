@@ -105,17 +105,18 @@ namespace bgx_caw
             return list;
         }
 
-        public List<BitmapImage> getBitmapList()
+        public List<CustomBitmapImage> getBitmapList()
         {
-            List<BitmapImage> list = new List<BitmapImage>();
+            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
             foreach (var item in sortedPageIdList)
             {
-
-                list.Add(createbitmapsourceList(db_caw.getBLOB(item)));
+                CustomBitmapImage cbi = new CustomBitmapImage();
+                cbi.OrginalImage = createbitmapsource(db_caw.getBLOB(item));
+                list.Add(cbi);
             }
             return list;
         }
-        private BitmapImage createbitmapsourceList(byte[] imageBytes)
+        private BitmapImage createbitmapsource(byte[] imageBytes)
         {
             var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();

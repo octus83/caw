@@ -78,8 +78,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CustomBitmapImage.cs" />
     <Compile Include="Data.cs" />
     <Compile Include="Drawing.cs" />
+    <Compile Include="Flyout_Drawing.cs" />
     <Compile Include="Flyout_Pagenumber.cs" />
     <Compile Include="Flyout_Part.cs" />
     <Compile Include="Flyout_Potential.cs" />
