@@ -32,12 +32,8 @@ namespace bgx_caw
     public partial class MainWindow :MetroWindow 
     {
 
-        private int actualPageNumber = 0;
-        private int maxPageNumber = 15;
+        private int actualPageNumber = -1;     
         private Data data;
-
-     
-
 
         Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
@@ -129,15 +125,16 @@ namespace bgx_caw
                 this._images = value;
             }
         }
+        private int _maxPageNumber = -1;
         public int MaxPageNumber
         {
             get
             {
-                return this.maxPageNumber;
+                return this._maxPageNumber;
             }
             set
             {
-                this.maxPageNumber = value;
+                this._maxPageNumber = value;
             }
 
         }
@@ -152,21 +149,16 @@ namespace bgx_caw
             {
              this._id = value;
              this.data = new Data(value);
-             maxPageNumber = data.getPageCout();
+             this.MaxPageNumber = data.getPageCout();
             }
         }
-
 
         public MainWindow()
         {
             InitializeComponent();
             ProjectState = State.NoProjectSelected;
            
-        }
-
-       
-
-        
+        }           
 
         private void Button_open_project(object sender, RoutedEventArgs e)
         {
@@ -199,35 +191,42 @@ namespace bgx_caw
 
         private void nextPage()
         {
-            
-            if (actualPageNumber <= maxPageNumber)
+            if (ProjectState == State.ProjectSelected)
             {
-                actualPageNumber++;
-                updatePagenumberLabel(actualPageNumber.ToString());
-                changePicture();
-                checkWhichFlyoutIsOpen();
+                if (actualPageNumber <= this.MaxPageNumber)
+                {
+                    actualPageNumber++;
+                    updatePagenumberLabel(actualPageNumber.ToString());
+                    changePicture();
+                    checkWhichFlyoutIsOpen();
+                }
             }
         }
 
         private void previousPage()
         {
-            if (actualPageNumber > 1)
+            if (ProjectState == State.ProjectSelected)
             {
-                actualPageNumber--;
-                updatePagenumberLabel(actualPageNumber.ToString());
-                changePicture();
-                checkWhichFlyoutIsOpen();
+                if (actualPageNumber > 1)
+                {
+                    actualPageNumber--;
+                    updatePagenumberLabel(actualPageNumber.ToString());
+                    changePicture();
+                    checkWhichFlyoutIsOpen();
+                }
             }
         }
         private void goToPage(int page)
         {
-          
-            if (page <= maxPageNumber && page > 0)
+            if (ProjectState == State.ProjectSelected)
             {
-                actualPageNumber = page;
-                updatePagenumberLabel(actualPageNumber.ToString());
-                changePicture();
-                checkWhichFlyoutIsOpen();
+                if (page <= this.MaxPageNumber && page > 0)
+                {
+                    actualPageNumber = page;
+                    updatePagenumberLabel(actualPageNumber.ToString());
+                    changePicture();
+                    checkWhichFlyoutIsOpen();
+                }
             }
         }
         private void checkWhichFlyoutIsOpen()
@@ -244,14 +243,15 @@ namespace bgx_caw
 
         private void updatePagenumberLabel(String update)
         {
-            sitenumberLabel.Content = "Seite " + update + " von " + maxPageNumber;
+            sitenumberLabel.Content = "Seite " + update + " von " + this.MaxPageNumber;
         }
 
         private void changePicture()
         {
+            // clear possible drawings
             view.Children.Clear();
 
-            if (actualPageNumber <= maxPageNumber && actualPageNumber > 0)
+            if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
             {
                 if (_images.ElementAt((actualPageNumber - 1)).IsCustomImage)
                 {
@@ -270,9 +270,50 @@ namespace bgx_caw
             }
         }
 
-        public  void onProjectOpen()
-        {         
-           getBitmapList();                
+        private void closeAllLeftFlyouts()
+        {
+            flo_left_potential.IsOpen = false;
+            flo_left_search.IsOpen = false;
+            flo_left_parts.IsOpen = false;
+        }
+
+        private void closeAllRightFlyouts()
+        {
+            flo_right_info.IsOpen = false;
+            flo_right_sites.IsOpen = false;
+        }
+
+        private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            /*   Point p = e.GetPosition(clipBorder);
+               var st = (ScaleTransform)showImage.RenderTransform;
+               double zoom = e.Delta > 0 ? .2 : -.2;
+               st.ScaleX += zoom;
+               st.ScaleY += zoom;
+               st.CenterX = p.X;
+               st.CenterY = p.Y;*/
+        }
+
+        protected void propertyChanged(String name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+//---------------------Public functions -----------------------------------------------
+        public void cleanProject()
+        {
+            ProjectState = State.NoProjectSelected;
+            this.actualPageNumber = -1;
+            this.MaxPageNumber = -1;
+        }
+        public void onProjectOpen(String diagrammID)
+        {              
+           getBitmapList();
+           ProjectState = State.ProjectSelected;
+           ID = diagrammID;
         }
 
         public void onProjectOpenFinish()
@@ -280,91 +321,37 @@ namespace bgx_caw
             goToPage(1);
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
-
-        private void closeAllLeftFlyouts()
+        public async void getBitmapList( )
         {
-            flo_left_potential.IsOpen = false;
-            flo_left_search.IsOpen = false;
-            flo_left_parts.IsOpen = false;
-        }
-        private void closeAllRightFlyouts()
-        {
-            flo_right_info.IsOpen = false;
-            flo_right_sites.IsOpen = false;
-        }
+            List<String> sortedPageIdList = data.SortedPageIdList;
+            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
 
+            this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            var progressDialog = await this.ShowProgressAsync("Schaltplan wird geladen ....", "");
+            progressDialog.SetProgress(0.0);
 
-     
+            await Task.Delay(200);
 
-        protected void propertyChanged(String name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
+            double percent = 0.1 + (100 / sortedPageIdList.Count) / 100;
+            int count = 1;
 
-            if (handler != null)
+            foreach (var item in sortedPageIdList)
             {
-                handler(this, new PropertyChangedEventArgs(name));
+                CustomBitmapImage cbi = new CustomBitmapImage();
+                cbi.OrginalImage = data.createbitmapsource(data.getBlob(item));
+                list.Add(cbi);
+                progressDialog.SetMessage("Seite: " + count + " wird geladen");
+                progressDialog.SetProgress(0.9 / sortedPageIdList.Count * count);
+
+                await Task.Delay(10);
+                count++;
             }
+            this.Images = list;
+            this.onProjectOpenFinish();
+            progressDialog.SetProgress(1.0);
+            await Task.Delay(100);
+            await progressDialog.CloseAsync();
         }
-
-
-
-        private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-         /*   Point p = e.GetPosition(clipBorder);
-            var st = (ScaleTransform)showImage.RenderTransform;
-            double zoom = e.Delta > 0 ? .2 : -.2;
-            st.ScaleX += zoom;
-            st.ScaleY += zoom;
-            st.CenterX = p.X;
-            st.CenterY = p.Y;*/
-        }
-
-           public async void ShowSimpleDialog()
-        {
-            var mySettings = new MetroDialogSettings()
-            {
-                AffirmativeButtonText = "JA",
-                NegativeButtonText = "NEIN",
-                FirstAuxiliaryButtonText = "ABBRECHEN",
-                ColorScheme = MetroDialogColorScheme.Accented
-            };
-
-            MessageDialogResult result = await this.ShowMessageAsync("Achtung", "Soll der Schaltplan ");
-
-         
-        }
-
-           public async void getBitmapList( )
-           {
-               List<String> sortedPageIdList = data.SortedPageIdList;
-               List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-
-               this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-               var progressDialog = await this.ShowProgressAsync("Schaltplan wird geladen ....", "");
-               progressDialog.SetProgress(0.0);
-
-               await Task.Delay(200);
-
-               double percent = 0.1 + (100 / sortedPageIdList.Count) / 100;
-               int count = 1;
-
-               foreach (var item in sortedPageIdList)
-               {
-                   CustomBitmapImage cbi = new CustomBitmapImage();
-                   cbi.OrginalImage = data.createbitmapsource(data.getBlob(item));
-                   list.Add(cbi);
-                   progressDialog.SetMessage("Seite: " + count + " wird geladen");
-                   progressDialog.SetProgress(0.9 / sortedPageIdList.Count * count);
-
-                   await Task.Delay(10);
-                   count++;
-               }
-               this.Images = list;
-               this.onProjectOpenFinish();
-               progressDialog.SetProgress(1.0);
-               await Task.Delay(100);
-               await progressDialog.CloseAsync();
-           }
 
     
     }

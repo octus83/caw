@@ -358,15 +358,11 @@ namespace bgx_caw
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
             byte[] b = null;
             while (data_reader.Read())
-            {
-               
+            {             
                 b = (byte[])data_reader.GetValue(0);
             }
             data_reader.Close();
             return b;
-
-           
-
         }
       
     }

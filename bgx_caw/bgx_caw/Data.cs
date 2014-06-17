@@ -28,6 +28,7 @@ namespace bgx_caw
     {
         private Diagramm diagramm;
         private DB_CAW db_caw;
+
         private List<String> _sortedPageIdList;
         public List<String> SortedPageIdList
         {
@@ -41,7 +42,6 @@ namespace bgx_caw
             }
 
         }
-
         public Data(String id)
         {
             db_caw = new DB_CAW();
@@ -53,17 +53,12 @@ namespace bgx_caw
         {
             List<String> list = new List<String>();
             for (int i = 0; i < diagramm.pages_List.Count; i++)
-            {
-                
-          
-            foreach (var item in diagramm.pages_List)
-	        {
+            {                        
+                foreach (var item in diagramm.pages_List)
+	            {
 		            if(item.PageInDiagramm ==i)
-                        list.Add(item.P_id);
- 
-                    
-                
-	        }
+                    list.Add(item.P_id);       
+	            }
             }
             return list;
         }
@@ -82,11 +77,10 @@ namespace bgx_caw
             return new List<Potential>();
       /*      var erg = from pot in diagramm.pages_List
                        where pot.PageInDiagramm == number
-                       select pot;
-      
-            return erg.ElementAt(0).Potential_List;*/
-        
+                       select pot;    
+            return erg.ElementAt(0).Potential_List;*/     
         }
+
         public List<Part> getPartFomPageNumber(int number)
         {
             //pages starts at 0
@@ -100,6 +94,7 @@ namespace bgx_caw
             }
             return new List<Part>();
         }
+
         public List<Page> getPagenumbersFromPotentialNames(String name)
         {
             List<Page> list = new List<Page>();
@@ -133,31 +128,6 @@ namespace bgx_caw
                 }
 	        }
             return list;
-        }
-
-        public async void  getBitmapList(MainWindow caller)
-        {
-            caller.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-            var progressDialog = await caller.ShowProgressAsync("Schaltplan wird geladen", "Diagram Ordner ");
-            progressDialog.SetProgress(0.001);
-            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-            double percent = (100 / _sortedPageIdList.Count) / 100;
-            int count = 0;
-            foreach (var item in _sortedPageIdList)
-            {
-                count++;
-                progressDialog.SetMessage("Page " + count + " wird geladen");
-                CustomBitmapImage cbi = new CustomBitmapImage();
-                cbi.OrginalImage = createbitmapsource(db_caw.getBLOB(item));
-                list.Add(cbi);
-                percent += percent;
-                progressDialog.SetProgress(percent);
-            }
-            progressDialog.SetProgress(1.0);
-
-            await progressDialog.CloseAsync();
-            caller.Images= list;
-            caller.onProjectOpenFinish();
         }
         public byte[] getBlob(String id)
         {

@@ -73,18 +73,14 @@ namespace bgx_caw
             if (projectList.SelectedIndex != -1)
             {
                 this.Close();
-                int selectedIndex = projectList.SelectedIndex;
-                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;         
-                caller.ProjectState = State.ProjectSelected;               
-                caller.onProjectOpen();
-
+                int selectedIndex = projectList.SelectedIndex;  
+                caller.onProjectOpen(diagrammsList.ElementAt(selectedIndex).ID);
             }
         }
     
        
        
        
-
 
     }
 }
