@@ -72,7 +72,7 @@ namespace bgx_caw_backend
                         //Bild als Blob in Page-Objekt einfügen
                         page.Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
 
-                        await Task.Delay(50);
+                        await Task.Delay(0);
 
                         counter++;
                         progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
@@ -85,7 +85,7 @@ namespace bgx_caw_backend
                     progressDialog.SetProgress(0.9);
 
                     progressDialog.SetMessage("Diagramm in Datenbank anlegen");
-                    await Task.Delay(100);
+                    await Task.Delay(0);
                     progressDialog.SetProgress(1.0);
 
                     using (DB_CAW db_caw = new DB_CAW())
