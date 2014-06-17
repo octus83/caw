@@ -5,36 +5,66 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using MahApps.Metro.Controls;
+
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Configuration;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace bgx_caw
 {
     class Data
     {
-        Diagramm diagramm;
-        DB_CAW db_caw;
-        List<String> sortedPageIdList;
+        private Diagramm diagramm;
+        private DB_CAW db_caw;
+        private List<String> _sortedPageIdList;
+        public List<String> SortedPageIdList
+        {
+            set
+            {
+                this._sortedPageIdList = value;
+            }
+            get
+            {
+                return this._sortedPageIdList;
+            }
+
+        }
 
         public Data(String id)
         {
             db_caw = new DB_CAW();
             this.diagramm = db_caw.getDiagramm(id);
-            this.sortedPageIdList = getSortedPageIdList();
+            this._sortedPageIdList = getSortedPageIdList();
         }
 
         private List<String> getSortedPageIdList()
         {
             List<String> list = new List<String>();
+            for (int i = 0; i < diagramm.pages_List.Count; i++)
+            {
+                
+          
             foreach (var item in diagramm.pages_List)
 	        {
-		        for (int i = 0; i <  diagramm.PageCount; i++)
-                {
-                    if(item.PageInDiagramm == i)
-                    {
+		            if(item.PageInDiagramm ==i)
                         list.Add(item.P_id);
  
-                    }
-                }
+                    
+                
 	        }
+            }
             return list;
         }
 
@@ -105,18 +135,35 @@ namespace bgx_caw
             return list;
         }
 
-        public List<CustomBitmapImage> getBitmapList()
+        public async void  getBitmapList(MainWindow caller)
         {
+            caller.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            var progressDialog = await caller.ShowProgressAsync("Schaltplan wird geladen", "Diagram Ordner ");
+            progressDialog.SetProgress(0.001);
             List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-            foreach (var item in sortedPageIdList)
+            double percent = (100 / _sortedPageIdList.Count) / 100;
+            int count = 0;
+            foreach (var item in _sortedPageIdList)
             {
+                count++;
+                progressDialog.SetMessage("Page " + count + " wird geladen");
                 CustomBitmapImage cbi = new CustomBitmapImage();
                 cbi.OrginalImage = createbitmapsource(db_caw.getBLOB(item));
                 list.Add(cbi);
+                percent += percent;
+                progressDialog.SetProgress(percent);
             }
-            return list;
+            progressDialog.SetProgress(1.0);
+
+            await progressDialog.CloseAsync();
+            caller.Images= list;
+            caller.onProjectOpenFinish();
         }
-        private BitmapImage createbitmapsource(byte[] imageBytes)
+        public byte[] getBlob(String id)
+        {
+            return db_caw.getBLOB(id);
+        }
+        public  BitmapImage createbitmapsource(byte[] imageBytes)
         {
             var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();

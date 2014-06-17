@@ -44,8 +44,7 @@ namespace bgx_caw
                 {
                     diagrammsList = db_caw.getDiagramms();
                     projectList.ItemsSource = buildListBoxList(diagrammsList);
-                    
-               
+
                 }
             }
             catch (Exception exc)
@@ -73,27 +72,16 @@ namespace bgx_caw
         {
             if (projectList.SelectedIndex != -1)
             {
-                int selectedIndex = projectList.SelectedIndex;
-                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;
-               // caller.Images = createbitmapsourceList();
-                caller.ProjectState = State.ProjectSelected;
-                caller.onProjectOpen();
                 this.Close();
+                int selectedIndex = projectList.SelectedIndex;
+                caller.ID = diagrammsList.ElementAt(selectedIndex).ID;         
+                caller.ProjectState = State.ProjectSelected;               
+                caller.onProjectOpen();
+
             }
         }
     
-        private List<BitmapImage> createbitmapsourceList()
-        {
-
-            List<String> sList = Directory.GetFiles("C:\\Users\\Public\\Pictures\\Sample Pictures", "*.jpg").ToList<String>();
-            List<BitmapImage> bList = new List<BitmapImage>();
-            foreach (var item in sList)
-            {
-                bList.Add(new BitmapImage(new Uri(item)));
-            }
-            return bList;
-        }
-
+       
        
        
 

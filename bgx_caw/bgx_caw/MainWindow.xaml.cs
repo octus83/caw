@@ -16,6 +16,7 @@ using MahApps.Metro.Controls;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Configuration;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace bgx_caw
 {
@@ -121,6 +122,10 @@ namespace bgx_caw
         }
             set
             {
+                if (this._images != null)
+                {
+                    this._images.Clear();
+                }
                 this._images = value;
             }
         }
@@ -194,6 +199,7 @@ namespace bgx_caw
 
         private void nextPage()
         {
+            
             if (actualPageNumber <= maxPageNumber)
             {
                 actualPageNumber++;
@@ -264,13 +270,15 @@ namespace bgx_caw
             }
         }
 
-        public void onProjectOpen()
+        public  void onProjectOpen()
+        {         
+           getBitmapList();                
+        }
+
+        public void onProjectOpenFinish()
         {
-            
-           Images=  data.getBitmapList();
-           goToPage(1);
-           win_Comm_btn_Drawing.Visibility = Visibility.Visible;
-          
+            goToPage(1);
+            win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
 
         private void closeAllLeftFlyouts()
@@ -284,9 +292,9 @@ namespace bgx_caw
             flo_right_info.IsOpen = false;
             flo_right_sites.IsOpen = false;
         }
-      
 
 
+     
 
         protected void propertyChanged(String name)
         {
@@ -310,5 +318,54 @@ namespace bgx_caw
             st.CenterX = p.X;
             st.CenterY = p.Y;*/
         }
+
+           public async void ShowSimpleDialog()
+        {
+            var mySettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "JA",
+                NegativeButtonText = "NEIN",
+                FirstAuxiliaryButtonText = "ABBRECHEN",
+                ColorScheme = MetroDialogColorScheme.Accented
+            };
+
+            MessageDialogResult result = await this.ShowMessageAsync("Achtung", "Soll der Schaltplan ");
+
+         
+        }
+
+           public async void getBitmapList( )
+           {
+               List<String> sortedPageIdList = data.SortedPageIdList;
+               List<CustomBitmapImage> list = new List<CustomBitmapImage>();
+
+               this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+               var progressDialog = await this.ShowProgressAsync("Schaltplan wird geladen ....", "");
+               progressDialog.SetProgress(0.0);
+
+               await Task.Delay(200);
+
+               double percent = 0.1 + (100 / sortedPageIdList.Count) / 100;
+               int count = 1;
+
+               foreach (var item in sortedPageIdList)
+               {
+                   CustomBitmapImage cbi = new CustomBitmapImage();
+                   cbi.OrginalImage = data.createbitmapsource(data.getBlob(item));
+                   list.Add(cbi);
+                   progressDialog.SetMessage("Seite: " + count + " wird geladen");
+                   progressDialog.SetProgress(0.9 / sortedPageIdList.Count * count);
+
+                   await Task.Delay(10);
+                   count++;
+               }
+               this.Images = list;
+               this.onProjectOpenFinish();
+               progressDialog.SetProgress(1.0);
+               await Task.Delay(100);
+               await progressDialog.CloseAsync();
+           }
+
+    
     }
 }
