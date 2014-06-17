@@ -42,7 +42,9 @@ namespace bgx_caw_backend
             foreach (FileInfo file in folderPath.GetFiles().OrderBy(f => int.Parse(Path.GetFileNameWithoutExtension(f.ToString()))))
             {
                 if(file.Extension == ".dxf")
-                {                   
+                {
+                    MessageBox.Show(file.ToString());
+
                     StreamReader fileReader = new StreamReader(file.FullName);
                     String line;
                     List<String> fileRows = new List<String>();
