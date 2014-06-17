@@ -22,8 +22,7 @@ namespace bgx_caw
         private SqlConnection sql_connection;
         private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
         {
-            /*DataSource = "UNKNOWN\\SQLEXPRESS"*/
-            DataSource = "N005509\\trans_edb_p8",
+            DataSource = "UNKNOWN\\SQLEXPRESS",
             InitialCatalog = "CAWFinal",
             IntegratedSecurity = true
         };
@@ -350,7 +349,7 @@ namespace bgx_caw
 
         }
 
-        public  byte[] getBLOB(String id)
+        public byte[] getBLOB(String id)
         {
             sql_cmd = new SqlCommand(
                "Select dbo.tblPage.BLOB FROM dbo.tblPage Where dbo.tblPage.P_id = '" + id + "'");
@@ -358,12 +357,15 @@ namespace bgx_caw
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
             byte[] b = null;
             while (data_reader.Read())
-            {             
+            {
+
                 b = (byte[])data_reader.GetValue(0);
             }
             data_reader.Close();
             return b;
+
+
+
         }
-      
     }
 }

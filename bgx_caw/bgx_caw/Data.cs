@@ -49,7 +49,7 @@ namespace bgx_caw
             this._sortedPageIdList = getSortedPageIdList();
         }
 
-        private List<String> getSortedPageIdList()
+        public List<String> getSortedPageIdList()
         {
             List<String> list = new List<String>();
             for (int i = 0; i < diagramm.pages_List.Count; i++)
@@ -142,6 +142,7 @@ namespace bgx_caw
             bitmapImage.EndInit();
             return bitmapImage;
         }
+      
 
     }
 }

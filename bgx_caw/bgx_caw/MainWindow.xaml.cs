@@ -308,12 +308,15 @@ namespace bgx_caw
             ProjectState = State.NoProjectSelected;
             this.actualPageNumber = -1;
             this.MaxPageNumber = -1;
+            this._images.Clear();
+            this._completedParts.Clear();
+            this._id = null;
+            this.drawState = DrawState.None;
         }
-        public void onProjectOpen(String diagrammID)
-        {              
+        public void onProjectOpen()
+        {
            getBitmapList();
-           ProjectState = State.ProjectSelected;
-           ID = diagrammID;
+           ProjectState = State.ProjectSelected;          
         }
 
         public void onProjectOpenFinish()
@@ -321,12 +324,13 @@ namespace bgx_caw
             goToPage(1);
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
+
         public async void getBitmapList( )
         {
             List<String> sortedPageIdList = data.SortedPageIdList;
             List<CustomBitmapImage> list = new List<CustomBitmapImage>();
 
-            this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+             MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
             var progressDialog = await this.ShowProgressAsync("Schaltplan wird geladen ....", "");
             progressDialog.SetProgress(0.0);
 
@@ -346,8 +350,8 @@ namespace bgx_caw
                 await Task.Delay(10);
                 count++;
             }
-            this.Images = list;
-            this.onProjectOpenFinish();
+            Images = list;
+            onProjectOpenFinish();
             progressDialog.SetProgress(1.0);
             await Task.Delay(100);
             await progressDialog.CloseAsync();
