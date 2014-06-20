@@ -26,8 +26,10 @@ namespace bgx_caw
             flo_right_sites.IsOpen = true;
             foreach (var item in list)
             {
+                int page = (item.PageInDiagramm + 1);
                 MyTile t1 = new MyTile();
-                t1.Title = item.PageInDiagramm.ToString() + " " + item.Title;
+                t1.TitleFontSize = 15;
+                t1.Title = page.ToString() + " " + item.Title;
                 t1.Data = item;
                 t1.TiltFactor = 2;
                 t1.Width = 150;
@@ -60,3 +62,4 @@ namespace bgx_caw
         }
     }
 }
+

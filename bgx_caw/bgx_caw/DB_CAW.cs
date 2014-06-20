@@ -9,6 +9,7 @@ using System.Data.Objects;
 using System.Windows;
 using System.Configuration;
 using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace bgx_caw
 {
@@ -351,6 +352,8 @@ namespace bgx_caw
 
         public byte[] getBLOB(String id)
         {
+            sql_connection.Close();
+            sql_connection.Open();
             sql_cmd = new SqlCommand(
                "Select dbo.tblPage.BLOB FROM dbo.tblPage Where dbo.tblPage.P_id = '" + id + "'");
             sql_cmd.Connection = sql_connection;
@@ -363,9 +366,37 @@ namespace bgx_caw
             }
             data_reader.Close();
             return b;
+        }
+        public List<CustomBitmapImage> getAllBLOBs(String d_id)
+        {
+            sql_cmd = new SqlCommand(
+               "Select dbo.tblPage.P_id, dbo.tblPage.BLOB, dbo.tblPage.PageInDiagramm FROM dbo.tblPage Where dbo.tblPage.D_id = '" + d_id + "'");
+            sql_cmd.Connection = sql_connection;
+            SqlDataReader data_reader = sql_cmd.ExecuteReader();
+            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
+            byte[] b = null;
+            while (data_reader.Read())
+            {
+                CustomBitmapImage cbi = new CustomBitmapImage();
+                cbi.OrginalImage = createbitmapImage((byte[])data_reader["BLOB"]);
+                cbi.P_id = data_reader["P_id"].ToString();
+                cbi.PageInDiagramm = ((int)data_reader["PageInDiagramm"]+1);
+                Console.WriteLine("Ausgabe-> " + cbi.PageInDiagramm);
+                list.Add(cbi);
+            }
+            data_reader.Close();
+            return list;
+        }
 
-
-
+        public BitmapImage createbitmapImage(byte[] imageBytes)
+        {
+         
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = new MemoryStream(imageBytes);
+            bitmapImage.EndInit();
+            return bitmapImage;
         }
     }
 }

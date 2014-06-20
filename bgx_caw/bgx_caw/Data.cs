@@ -28,6 +28,7 @@ namespace bgx_caw
     {
         private Diagramm diagramm;
         private DB_CAW db_caw;
+        private MainWindow caller;
 
         private List<String> _sortedPageIdList;
         public List<String> SortedPageIdList
@@ -42,8 +43,9 @@ namespace bgx_caw
             }
 
         }
-        public Data(String id)
+        public Data(String id, MainWindow caller)
         {
+            this.caller = caller;
             db_caw = new DB_CAW();
             this.diagramm = db_caw.getDiagramm(id);
             this._sortedPageIdList = getSortedPageIdList();
@@ -110,6 +112,18 @@ namespace bgx_caw
             }
             return list;
         }
+        public String getPIDFromPagenumber(int number)
+        {
+            number = number - 1;
+            foreach (var item in diagramm.pages_List)
+            {
+                if (number == item.PageInDiagramm)
+                {
+                    return item.P_id;
+                }
+            }
+            return "";
+        }
 
         public int getPageCout()
         {
@@ -135,6 +149,7 @@ namespace bgx_caw
         }
         public  BitmapImage createbitmapsource(byte[] imageBytes)
         {
+            Console.WriteLine("Ausgabe Console ->"+imageBytes.Length);
             var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
             bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
@@ -142,7 +157,70 @@ namespace bgx_caw
             bitmapImage.EndInit();
             return bitmapImage;
         }
-      
+
+        public void savaBitmapimageToFile(BitmapImage b, int page)
+        {
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            String diagrammPath = System.IO.Path.Combine("D:\\caw", caller.ID);
+
+            if(!System.IO.Directory.Exists(diagrammPath))
+            {
+            System.IO.Directory.CreateDirectory(diagrammPath);
+            }
+            String pagePath = System.IO.Path.Combine(diagrammPath, page+".jpg");
+            if (!File.Exists(pagePath))
+            {
+                encoder.Frames.Add(BitmapFrame.Create(b));
+                Console.WriteLine(pagePath);
+                using (var filestream = new FileStream(pagePath, FileMode.Create))
+                    encoder.Save(filestream);
+            }
+        }
+
+        public void creatAllPictures(){
+            List<CustomBitmapImage> list = db_caw.getAllBLOBs(diagramm.ID);
+            foreach (var item in list)
+            {
+                savaBitmapimageToFile(item.OrginalImage, item.PageInDiagramm);
+            }
+            
+        }
+
+        public async void getBitmapList(MainWindow caller)
+        {
+            List<String> sortedPageIdList = SortedPageIdList;
+            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
+            caller.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+         
+            var progressDialog = await caller.ShowProgressAsync("Schaltplan wird geladen ....", "");
+            progressDialog.SetProgress(0.0);
+
+            await Task.Delay(200);
+            
+            double percent = 0.1 + (100 / sortedPageIdList.Count) / 100;
+            int count = 1;
+
+            foreach (var item in sortedPageIdList)
+            {
+                CustomBitmapImage cbi = new CustomBitmapImage();
+                BitmapImage b = createbitmapsource(getBlob(item));
+                cbi.OrginalImage = b;
+                savaBitmapimageToFile(b, count);
+                list.Add(cbi);
+                progressDialog.SetMessage("Seite: " + count + " wurde geladen");
+                progressDialog.SetProgress(0.99 / sortedPageIdList.Count * count);
+                await Task.Delay(50);
+                count++;
+            }           
+            progressDialog.SetMessage("fertig geladen");
+            progressDialog.SetProgress(1.0);
+            await Task.Delay(500);
+            caller.Images = list;
+            caller.onProjectOpenFinish();          
+            await Task.Delay(100);
+            await progressDialog.CloseAsync();
+            MessageBox.Show("asyn finished");
+        }
 
     }
 }

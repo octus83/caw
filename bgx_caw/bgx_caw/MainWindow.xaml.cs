@@ -17,6 +17,9 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Configuration;
 using MahApps.Metro.Controls.Dialogs;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Threading;
 
 namespace bgx_caw
 {
@@ -96,7 +99,30 @@ namespace bgx_caw
                 config.Save(ConfigurationSaveMode.Modified);
             }
         }
+        public String ProgrammPath
+        {
+            get
+            {
+                if (config.AppSettings.Settings["ProgrammPath"] == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return config.AppSettings.Settings["ProgrammPath"].Value;
+                }
+            }
+            set
+            {
+                if (config.AppSettings.Settings["ProgrammPath"] != null)
+                {
+                    config.AppSettings.Settings.Remove("ProgrammPath");
+                }
+                config.AppSettings.Settings.Add("ProgrammPath", value);
 
+                config.Save(ConfigurationSaveMode.Modified);
+            }
+        }
         private State _projectState;
         public State ProjectState
         {
@@ -121,8 +147,10 @@ namespace bgx_caw
                 if (this._images != null)
                 {
                     this._images.Clear();
+                   
                 }
                 this._images = value;
+                
             }
         }
         private int _maxPageNumber = -1;
@@ -148,7 +176,7 @@ namespace bgx_caw
             set
             {
              this._id = value;
-             this.data = new Data(value);
+             this.data = new Data(value,this);
              this.MaxPageNumber = data.getPageCout();
             }
         }
@@ -253,13 +281,18 @@ namespace bgx_caw
 
             if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
             {
+                //showImage.ImageSource = getBitmapSource();
                 if (_images.ElementAt((actualPageNumber - 1)).IsCustomImage)
                 {
                     showImage.ImageSource = _images.ElementAt((actualPageNumber - 1)).CustomImage;
                 }
                 else
-                {
+                {               
                     showImage.ImageSource = _images.ElementAt((actualPageNumber - 1)).OrginalImage;
+                   
+                  
+                    Console.WriteLine("Ausgabe Console ->");
+                    
                 }
                // showImage.RenderTransform = new ScaleTransform
                         //(1, 1, 0, 0);
@@ -308,15 +341,21 @@ namespace bgx_caw
             ProjectState = State.NoProjectSelected;
             this.actualPageNumber = -1;
             this.MaxPageNumber = -1;
-            this._images.Clear();
-            this._completedParts.Clear();
             this._id = null;
             this.drawState = DrawState.None;
         }
         public void onProjectOpen()
         {
-           getBitmapList();
-           ProjectState = State.ProjectSelected;          
+           ProjectState = State.ProjectSelected; 
+           //data.getBitmapList(this);
+         // getBitmapList();
+         //  goToPage(1);      
+           //data.creatAllPictures();
+          // getonePicture();
+         //  Task getPictures = new Task(new Action(getonePicture));
+        //   getPictures.Start();
+           Thread thread = new Thread(new ThreadStart(getonePicture));
+           thread.Start();
         }
 
         public void onProjectOpenFinish()
@@ -325,12 +364,11 @@ namespace bgx_caw
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
 
-        public async void getBitmapList( )
+        public async void getBitmapList()
         {
             List<String> sortedPageIdList = data.SortedPageIdList;
             List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-
-             MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
+            this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
             var progressDialog = await this.ShowProgressAsync("Schaltplan wird geladen ....", "");
             progressDialog.SetProgress(0.0);
 
@@ -342,21 +380,46 @@ namespace bgx_caw
             foreach (var item in sortedPageIdList)
             {
                 CustomBitmapImage cbi = new CustomBitmapImage();
-                cbi.OrginalImage = data.createbitmapsource(data.getBlob(item));
+                BitmapImage b = data.createbitmapsource(data.getBlob(item));
+                cbi.OrginalImage = b;
+                data.savaBitmapimageToFile(b, count);
+              
                 list.Add(cbi);
-                progressDialog.SetMessage("Seite: " + count + " wird geladen");
-                progressDialog.SetProgress(0.9 / sortedPageIdList.Count * count);
-
-                await Task.Delay(10);
+                progressDialog.SetMessage("Seite: " + count + " wurde geladen");
+                progressDialog.SetProgress(0.99 / sortedPageIdList.Count * count);
+                await Task.Delay(2000);
                 count++;
             }
-            Images = list;
-            onProjectOpenFinish();
+            progressDialog.SetMessage("fertig geladen");
             progressDialog.SetProgress(1.0);
-            await Task.Delay(100);
+            await Task.Delay(500);
             await progressDialog.CloseAsync();
+            this.Images = list;
+            this.onProjectOpenFinish();
         }
 
-    
+        public ImageSource getBitmapSource()
+        {
+           
+           return data.createbitmapsource( data.getBlob(data.getPIDFromPagenumber(actualPageNumber)));
+        }
+
+        public void getonePicture()
+        {
+            try
+            {
+                for (int i = 1; i < MaxPageNumber; i++)
+                {
+                    BitmapImage b = data.createbitmapsource(data.getBlob(data.getPIDFromPagenumber(i)));
+                    data.savaBitmapimageToFile(b, i);
+                }
+            }
+            catch (Exception ex)
+            {
+                // log errors
+            }
+           
+        }
+   
     }
 }

@@ -13,8 +13,11 @@ namespace bgx_caw
         public BitmapImage CustomImage
         {
             set{
-                this._customImage = value;
-                this._isCustomImage = true;
+                if (value != null)
+                {
+                    this._customImage = value;
+                    this._isCustomImage = true;
+                }
             }
             get{
                 return _customImage;
@@ -44,6 +47,30 @@ namespace bgx_caw
             get
             {
                 return this._isCustomImage;
+            }
+        }
+        private int _pageInDiagramm;
+        public int PageInDiagramm
+        {
+            set
+            {
+                this._pageInDiagramm = value;
+            }
+            get
+            {
+                return this._pageInDiagramm;
+            }
+        }
+        private String _p_Id;
+        public String P_id
+        {
+            set
+            {
+                this._p_Id = value;
+            }
+            get
+            {
+                return this._p_Id;
             }
         }
 
