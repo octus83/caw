@@ -116,7 +116,7 @@
             </StackPanel>
         </Controls:Flyout>
 
-        <Controls:Flyout Name="flo_bottom" Height="300"  Position="Bottom" IsModal="True">
+        <Controls:Flyout Name="flo_bottom" Height="300" Position="Bottom" IsModal="True">
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch">
                     <Label Content="Plan importieren" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
@@ -334,11 +334,11 @@
                    
                         <StackPanel Orientation="Horizontal">
                             <Label>Graustift drucken</Label>
-                            <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />
+                                <Controls:ToggleSwitch OnLabel="Yes" OffLabel="No" />                         
                         </StackPanel>
                     </StackPanel>
                     <Controls:Tile x:Name="flo_Print_tle_Print" Title="Print" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Print_tle_Print_Click">
-                        <Rectangle Width="20" Height="20">
+                        <Rectangle Width="30" Height="30">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
                             </Rectangle.Resources>
@@ -351,11 +351,12 @@
                 </StackPanel>
             </Controls:Flyout>
 
-            <Controls:Flyout Name="flo_Export" Header="Drucken" Position="Left" Width="450" IsModal="True">
+            <Controls:Flyout Name="flo_Export" Header="PDF Export" Position="Left" Width="450" IsModal="True" Padding="0,30">
                 <StackPanel Margin="30,0,30,0" VerticalAlignment="Center">
                     <Label FontSize="24">Allgemein</Label>
                     <StackPanel Background="Black">
 
+                        <StackPanel Height="30"></StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Width="100">Seriennummer</Label>
                             <Label Name="flo_Export_lbl_SerialNumber" Content="{Binding RecentDiagramm.SerialNumber}" />
@@ -380,9 +381,24 @@
                             <Label Width="100">Projektname</Label>
                             <Label Name="flo_Export_lbl_ProjectName" Content="{Binding RecentDiagramm.ProjectName}" />
                         </StackPanel>
+                        <StackPanel Height="30"></StackPanel>
                     </StackPanel>
-                    <Controls:Tile x:Name="flo_Export_tle_Export" Title="Export" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Export_tle_Export_Click">
-                        <Rectangle Width="20" Height="20">
+                    <Label FontSize="24">Optionen</Label>
+                    <StackPanel Background="#FF086F9E">
+                        <StackPanel Height="30"></StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Rotstift drucken</Label>
+                            <CheckBox></CheckBox>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Width="100">Ziel-Ordner</Label>
+                            <TextBox Text="{Binding ProgrammPath}"></TextBox>
+                            <Button>...</Button>
+                        </StackPanel>
+                        <StackPanel Height="30"></StackPanel>
+                    </StackPanel>
+                    <Controls:Tile x:Name="flo_Export_tle_Export" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="flo_Export_tle_Export_Click">
+                        <Rectangle Width="30" Height="30">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
                             </Rectangle.Resources>

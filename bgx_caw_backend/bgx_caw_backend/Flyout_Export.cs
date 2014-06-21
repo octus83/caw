@@ -28,11 +28,10 @@ namespace bgx_caw_backend
             progressDialog.SetProgress(0.1);
 
             //Create a new document
-            iTextSharp.text.Document Doc = new iTextSharp.text.Document();
-            Doc.SetPageSize(PageSize.A4.Rotate());
+            iTextSharp.text.Document Doc = new iTextSharp.text.Document(PageSize.A4.Rotate());
 
             //Store the document on the desktop
-            string PDFOutput = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), RecentDiagramm.ID+".pdf");
+            string PDFOutput = Path.Combine(ProgrammPath, RecentDiagramm.JobNumber + "_" + RecentDiagramm.SerialNumber + "_" + RecentDiagramm.FieldName + ".pdf");
             PdfWriter writer = PdfWriter.GetInstance(Doc, new FileStream(PDFOutput, FileMode.Create, FileAccess.Write, FileShare.Read));
 
             //Open the PDF for writing
@@ -42,7 +41,7 @@ namespace bgx_caw_backend
 
             await Task.Delay(10);
 
-            progressDialog.SetProgress(0.2);
+            progressDialog.SetProgress(0.1);
 
             using (DB_CAW db_caw = new DB_CAW())
             {               
@@ -51,9 +50,11 @@ namespace bgx_caw_backend
 
             progressDialog.SetMessage("Erstelle PDF");
 
-            await Task.Delay(10);
+            await Task.Delay(20);
 
             progressDialog.SetProgress(0.2);
+
+            int counter = 0;
 
             foreach (byte[] blob in blobList)
             {
@@ -62,18 +63,19 @@ namespace bgx_caw_backend
                 //Add image
                 iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(blob);
 
-                image.ScaleToFit(PageSize.A4.Rotate().Width-40, PageSize.A4.Rotate().Height-60);
+                image.ScaleToFit(PageSize.A4.Rotate().Width+55, PageSize.A4.Rotate().Height-50);
 
                 Doc.Add(new iTextSharp.text.Jpeg(image));
                 //byteArrayToImage(blob).Save("e:\\" + counter + ".jpg", System.Drawing.Imaging.ImageFormat.Jpeg);
                 //counter++;
 
-                progressDialog.SetProgress(0.2);
+                progressDialog.SetProgress(0.2+((0.8 / blobList.Count) * counter++));
+                await Task.Delay(20);
             }
-
             //Close the PDF
             Doc.Close();
 
+            progressDialog.SetProgress(1.0);
             await progressDialog.CloseAsync();
         }
 
