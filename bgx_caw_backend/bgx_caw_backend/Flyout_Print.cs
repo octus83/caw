@@ -11,7 +11,7 @@ namespace bgx_caw_backend
     {
         private void flo_Print_tle_Print_Click(object sender, RoutedEventArgs e)
         {
-            //GetPdfThumbnail("e:\\1.pdf", "e:\\");
+            
         }
     }
 }

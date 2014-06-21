@@ -112,7 +112,7 @@ namespace bgx_caw_backend
             }
         }
 
-        private PdfReader pdfReader;
+        //private PdfReader pdfReader;
         public PdfReader PDFReader
         {
             get;

@@ -42,9 +42,9 @@ namespace bgx_caw_backend
 
             try
             {
-                pdfReader = new PdfReader(PDFDialog.FileName);
+                PDFReader = new PdfReader(PDFDialog.FileName);
 
-                if (ImportDiagramm.pages_List.Count == pdfReader.NumberOfPages)
+                if (ImportDiagramm.pages_List.Count == PDFReader.NumberOfPages)
                 {
                     this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
                     var progressDialog = await this.ShowProgressAsync("Schaltplan wird importiert", "Diagram Ordner " + ImportDiagramm.ID + " wird erstellt");
@@ -54,7 +54,7 @@ namespace bgx_caw_backend
                     //Create DiagrammFolder (ID)                    
                     System.IO.Directory.CreateDirectory(diagrammPath);
 
-                    await Task.Delay(20);
+                    await Task.Delay(10);
 
                     int counter = 1;
 
@@ -63,6 +63,7 @@ namespace bgx_caw_backend
                     {
                         //Ordner
                         progressDialog.SetMessage("Page " + page.P_id + " wird erstellt");
+                        
                         pagePath = System.IO.Path.Combine(diagrammPath, page.P_id);
                         System.IO.Directory.CreateDirectory(pagePath);
 
@@ -72,7 +73,7 @@ namespace bgx_caw_backend
                         //Bild als Blob in Page-Objekt einfügen
                         page.Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
 
-                        await Task.Delay(0);
+                        await Task.Delay(10);
 
                         counter++;
                         progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
@@ -93,8 +94,6 @@ namespace bgx_caw_backend
                         db_caw.addDiagramm(ImportDiagramm);
                     }
 
-
-
                     await progressDialog.CloseAsync();
 
                     propertyChanged("DiagrammsList");
@@ -103,7 +102,7 @@ namespace bgx_caw_backend
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Das PDF hat " + pdfReader.NumberOfPages + " Seiten und das DXF " + ImportDiagramm.pages_List.Count);
+                    System.Windows.Forms.MessageBox.Show("Das PDF hat " + PDFReader.NumberOfPages + " Seiten und das DXF " + ImportDiagramm.pages_List.Count);
                 }
             }
             catch(Exception exc)
