@@ -43,8 +43,6 @@ namespace bgx_caw_backend
             {
                 if(file.Extension == ".dxf")
                 {
-                    MessageBox.Show(file.ToString());
-
                     StreamReader fileReader = new StreamReader(file.FullName);
                     String line;
                     List<String> fileRows = new List<String>();

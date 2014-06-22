@@ -112,7 +112,7 @@ namespace bgx_caw_backend
                     Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
                     ProductionPlace = data_reader["ProductionPlace"].ToString(),
                     IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                    SourceFolder = data_reader["SourceFolder"].ToString()
+                    //SourceFolder = data_reader["SourceFolder"].ToString()
                 };
             }
 
@@ -192,6 +192,46 @@ namespace bgx_caw_backend
             return result;
         }
 
+        public List<Byte[]> getAllBLOBFromDiagramm(String id)
+        {
+            sql_cmd = new SqlCommand("SELECT BLOB FROM dbo.tblPage WHERE D_ID ='" + id + "' ORDER BY PageInDiagramm");
+            sql_cmd.Connection = sql_connection;
+            
+            SqlDataReader data_reader = sql_cmd.ExecuteReader();
+            List<byte[]> result = new List<byte[]>();
+
+            while (data_reader.Read())
+            {
+                result.Add((byte[])data_reader["BLOB"]);
+
+                /*result = new Diagramm
+                {
+                    ID = data_reader["D_id"].ToString(),
+                    Customer = data_reader["Customer"].ToString(),
+                    EndCustomer = data_reader["EndCustomer"].ToString(),
+                    FieldName = data_reader["FieldName"].ToString(),
+                    JobNumber = data_reader["JobNumber"].ToString(),
+                    SerialNumber = data_reader["SerialNumber"].ToString(),
+                    ProjectNumber = data_reader["ProjectNumber"].ToString(),
+                    ProjectName = data_reader["ProjectName"].ToString(),
+                    AddressRow1 = data_reader["AddressRow1"].ToString(),
+                    AddressRow2 = data_reader["AddressRow2"].ToString(),
+                    AddressRow3 = data_reader["AddressRow3"].ToString(),
+                    Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
+                    Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
+                    ProductionPlace = data_reader["ProductionPlace"].ToString(),
+                    IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
+                    //SourceFolder = data_reader["SourceFolder"].ToString()
+                };*/
+            }
+
+            data_reader.Close();
+
+
+
+            return result;
+        }
+
         public void addDiagramm(Diagramm diagramm) //Fügt Diagramm-Objekt in Datenbank ein
         {
             sql_cmd = new SqlCommand();
@@ -212,13 +252,13 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
-            sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = System.IO.Path.Combine(config.AppSettings.Settings["ProgrammPath"].Value, diagramm.ID);
+            //sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = System.IO.Path.Combine(config.AppSettings.Settings["ProgrammPath"].Value, diagramm.ID);
 
             try //try to INSERT Diagrammdata, when not exists
             {
                 sql_cmd.CommandText =   "IF NOT EXISTS (SELECT * FROM dbo.tblDiagramm WHERE Serialnumber = @SerialNumber AND FieldName = @FieldName AND D_id = @Diagramm_ID) " +
-                                        "INSERT into dbo.tblDiagramm (D_id, Customer, EndCustomer, FieldName, JobNumber, SerialNumber, ProjectNumber, ProjectName, AddressRow1, AddressRow2, AddressRow3, Date_init, Date_lastChange, IsActive, SourceFolder) " +
-                                        "VALUES (@Diagramm_ID, @Customer, @EndCustomer, @FieldName, @JobNumber, @SerialNumber, @ProjectNumber, @ProjectName, @AddressRow1, @AddressRow2, @AddressRow3, @Date_init, @Date_lastChange, @IsActive, @SourceFolder)";
+                                        "INSERT into dbo.tblDiagramm (D_id, Customer, EndCustomer, FieldName, JobNumber, SerialNumber, ProjectNumber, ProjectName, AddressRow1, AddressRow2, AddressRow3, Date_init, Date_lastChange, IsActive) " +
+                                        "VALUES (@Diagramm_ID, @Customer, @EndCustomer, @FieldName, @JobNumber, @SerialNumber, @ProjectNumber, @ProjectName, @AddressRow1, @AddressRow2, @AddressRow3, @Date_init, @Date_lastChange, @IsActive)";
                                         
                 sql_cmd.ExecuteNonQuery();
             }
