@@ -30,41 +30,14 @@ namespace bgx_caw
         private DB_CAW db_caw;
         private MainWindow caller;
 
-        private List<String> _sortedPageIdList;
-        public List<String> SortedPageIdList
-        {
-            set
-            {
-                this._sortedPageIdList = value;
-            }
-            get
-            {
-                return this._sortedPageIdList;
-            }
-
-        }
+     
         public Data(String id, MainWindow caller)
         {
             this.caller = caller;
             db_caw = new DB_CAW();
-            this.diagramm = db_caw.getDiagramm(id);
-            this._sortedPageIdList = getSortedPageIdList();
+            this.diagramm = db_caw.getDiagramm(id);          
         }
-
-        public List<String> getSortedPageIdList()
-        {
-            List<String> list = new List<String>();
-            for (int i = 0; i < diagramm.pages_List.Count; i++)
-            {                        
-                foreach (var item in diagramm.pages_List)
-	            {
-		            if(item.PageInDiagramm ==i)
-                    list.Add(item.P_id);       
-	            }
-            }
-            return list;
-        }
-
+      
         public List<Potential> getPotentialFromPageNumber(int number)
         {
             //pages starts at 0
@@ -112,6 +85,21 @@ namespace bgx_caw
             }
             return list;
         }
+        public List<Page> getPagenumbersFromPartlNames(String name)
+        {
+            List<Page> list = new List<Page>();
+            foreach (var itemA in diagramm.pages_List)
+            {
+                foreach (var itemB in itemA.Parts_List)
+                {
+                    if (itemB.BMK.Equals(name))
+                    {
+                        list.Add(itemA);
+                    }
+                }
+            }
+            return list;
+        }
         public String getPIDFromPagenumber(int number)
         {
             number = number - 1;
@@ -143,31 +131,35 @@ namespace bgx_caw
 	        }
             return list;
         }
-        public byte[] getBlob(String id)
+
+        public CustomBitmapImage getBlob(String id)
         {
             return db_caw.getBLOB(id);
         }
-        public  BitmapImage createbitmapsource(byte[] imageBytes)
+        public CustomBitmapImage getBlobFast(String id)
         {
-            Console.WriteLine("Ausgabe Console ->"+imageBytes.Length);
-            var bitmapImage = new BitmapImage();
-            bitmapImage.BeginInit();
-            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            bitmapImage.StreamSource = new MemoryStream(imageBytes);
-            bitmapImage.EndInit();
-            return bitmapImage;
+            return db_caw.getBLOBFast(id);
         }
 
-        public void savaBitmapimageToFile(BitmapImage b, int page)
+
+        public void savaOrginalBitmapimageToFile(BitmapImage b, int page)
         {
+            String p_id = getPIDFromPagenumber(page);
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-            String diagrammPath = System.IO.Path.Combine("D:\\caw", caller.ID);
+            String diagrammPath = System.IO.Path.Combine(caller.ProgrammPath, caller.DiagrammId);
 
             if(!System.IO.Directory.Exists(diagrammPath))
             {
             System.IO.Directory.CreateDirectory(diagrammPath);
             }
-            String pagePath = System.IO.Path.Combine(diagrammPath, page+".jpg");
+            String pagePath = System.IO.Path.Combine(diagrammPath, p_id);
+          
+            if (!System.IO.Directory.Exists(pagePath))
+            {
+                System.IO.Directory.CreateDirectory(pagePath);
+            }
+
+            pagePath = System.IO.Path.Combine(pagePath, page + "orginal.jpg");
             if (!File.Exists(pagePath))
             {
                 encoder.Frames.Add(BitmapFrame.Create(b));
@@ -175,52 +167,36 @@ namespace bgx_caw
                 using (var filestream = new FileStream(pagePath, FileMode.Create))
                     encoder.Save(filestream);
             }
+           
+     
         }
 
-        public void creatAllPictures(){
-            List<CustomBitmapImage> list = db_caw.getAllBLOBs(diagramm.ID);
-            foreach (var item in list)
-            {
-                savaBitmapimageToFile(item.OrginalImage, item.PageInDiagramm);
-            }
-            
-        }
-
-        public async void getBitmapList(MainWindow caller)
+        public void savaCustomBitmapimageToFile(BitmapImage b, int page)
         {
-            List<String> sortedPageIdList = SortedPageIdList;
-            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-            caller.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-         
-            var progressDialog = await caller.ShowProgressAsync("Schaltplan wird geladen ....", "");
-            progressDialog.SetProgress(0.0);
+            String p_id = getPIDFromPagenumber(page);
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+            String diagrammPath = System.IO.Path.Combine(caller.ProgrammPath, caller.DiagrammId);
 
-            await Task.Delay(200);
-            
-            double percent = 0.1 + (100 / sortedPageIdList.Count) / 100;
-            int count = 1;
-
-            foreach (var item in sortedPageIdList)
+            if (!System.IO.Directory.Exists(diagrammPath))
             {
-                CustomBitmapImage cbi = new CustomBitmapImage();
-                BitmapImage b = createbitmapsource(getBlob(item));
-                cbi.OrginalImage = b;
-                savaBitmapimageToFile(b, count);
-                list.Add(cbi);
-                progressDialog.SetMessage("Seite: " + count + " wurde geladen");
-                progressDialog.SetProgress(0.99 / sortedPageIdList.Count * count);
-                await Task.Delay(50);
-                count++;
-            }           
-            progressDialog.SetMessage("fertig geladen");
-            progressDialog.SetProgress(1.0);
-            await Task.Delay(500);
-            caller.Images = list;
-            caller.onProjectOpenFinish();          
-            await Task.Delay(100);
-            await progressDialog.CloseAsync();
-            MessageBox.Show("asyn finished");
+                System.IO.Directory.CreateDirectory(diagrammPath);
+            }
+
+            String pagePathCustom = System.IO.Path.Combine(diagrammPath, p_id);
+            if (!System.IO.Directory.Exists(pagePathCustom))
+            {
+                System.IO.Directory.CreateDirectory(pagePathCustom);
+            }
+            pagePathCustom = System.IO.Path.Combine(pagePathCustom, page + "custom.jpg");
+            if (!File.Exists(pagePathCustom))
+            {
+                encoder.Frames.Add(BitmapFrame.Create(b));
+                using (var filestream = new FileStream(pagePathCustom, FileMode.Create))
+                    encoder.Save(filestream);
+            }
+
         }
+       
 
     }
 }

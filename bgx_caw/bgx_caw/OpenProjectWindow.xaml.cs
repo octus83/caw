@@ -76,10 +76,12 @@ namespace bgx_caw
                 if (caller.ProjectState == State.ProjectSelected)
                 {
                     caller.cleanProject();
-                    MessageBox.Show("project cleared");
+                    Console.WriteLine("Console -> old project cleared");
                 }
                 this.Close();
-                caller.ID = diagrammsList.ElementAt(projectList.SelectedIndex).ID;
+                Console.WriteLine("Console -> New Project opened");
+                caller.DiagrammId = diagrammsList.ElementAt(projectList.SelectedIndex).ID;
+                Console.WriteLine("Console -> with Diagramm ID: "+caller.DiagrammId);
                 caller.onProjectOpen();
             }
         }

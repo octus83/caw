@@ -126,15 +126,9 @@ namespace bgx_caw
                 bitmapImage.StreamSource = stream;
                 bitmapImage.EndInit();
             }
-      
 
-            for (int i = 0; i < 20; i++)
-			{
-                Images.ElementAt(actualPageNumber - 1).CustomImage = bitmapImage;
-			}
-           
-         
-            MessageBox.Show("erfolgreich gespeichert");
+            data.savaCustomBitmapimageToFile(bitmapImage, actualPageNumber);
+            Console.WriteLine("Bild erfolgreich gespeichert");
         }
     }
 }

@@ -350,47 +350,68 @@ namespace bgx_caw
 
         }
 
-        public byte[] getBLOB(String id)
+        public CustomBitmapImage getBLOB(String id)
         {
-            sql_connection.Close();
-            sql_connection.Open();
-            sql_cmd = new SqlCommand(
-               "Select dbo.tblPage.BLOB FROM dbo.tblPage Where dbo.tblPage.P_id = '" + id + "'");
-            sql_cmd.Connection = sql_connection;
-            SqlDataReader data_reader = sql_cmd.ExecuteReader();
-            byte[] b = null;
-            while (data_reader.Read())
-            {
 
-                b = (byte[])data_reader.GetValue(0);
-            }
-            data_reader.Close();
-            return b;
-        }
-        public List<CustomBitmapImage> getAllBLOBs(String d_id)
-        {
             sql_cmd = new SqlCommand(
-               "Select dbo.tblPage.P_id, dbo.tblPage.BLOB, dbo.tblPage.PageInDiagramm FROM dbo.tblPage Where dbo.tblPage.D_id = '" + d_id + "'");
+               "Select dbo.tblPage.P_id, dbo.tblPage.BLOB, dbo.tblPage.PageInDiagramm, dbo.tblPage.CustomBLOB FROM dbo.tblPage Where dbo.tblPage.P_id = '" + id + "'");
             sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
-            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-            byte[] b = null;
+            CustomBitmapImage cbi = new CustomBitmapImage();
             while (data_reader.Read())
             {
-                CustomBitmapImage cbi = new CustomBitmapImage();
-                cbi.OrginalImage = createbitmapImage((byte[])data_reader["BLOB"]);
+                cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);
+                try
+                {
+                  
+                    cbi.CustomImage = createbitmapsource((byte[])data_reader["CustomBLOB"]);
+                }
+                catch (Exception)
+                {
+                   
+                    cbi.CustomImage = null;
+                }
                 cbi.P_id = data_reader["P_id"].ToString();
-                cbi.PageInDiagramm = ((int)data_reader["PageInDiagramm"]+1);
-                Console.WriteLine("Ausgabe-> " + cbi.PageInDiagramm);
-                list.Add(cbi);
+                cbi.PageInDiagramm = ((int)(data_reader["PageInDiagramm"])+1);
             }
             data_reader.Close();
-            return list;
+            return cbi;
         }
 
-        public BitmapImage createbitmapImage(byte[] imageBytes)
+        public CustomBitmapImage getBLOBFast(String id)
         {
-         
+            SqlConnection single_sql_connection;
+            single_sql_connection = new SqlConnection(connection_string.ConnectionString);
+            single_sql_connection.Open();
+            SqlCommand single_sql_cmd;
+            single_sql_cmd = new SqlCommand(
+                 "Select dbo.tblPage.P_id, dbo.tblPage.BLOB, dbo.tblPage.PageInDiagramm, dbo.tblPage.CustomBLOB FROM dbo.tblPage Where dbo.tblPage.P_id = '" + id + "'");
+            single_sql_cmd.Connection = single_sql_connection;
+            SqlDataReader data_reader = single_sql_cmd.ExecuteReader();
+            CustomBitmapImage cbi = new CustomBitmapImage();
+            while (data_reader.Read())
+            {
+                cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);     
+                try
+                {
+                   
+                    cbi.CustomImage = createbitmapsource((byte[])data_reader["CustomBLOB"]);
+                }
+                catch (Exception)
+                {
+              
+                    cbi.CustomImage = null;
+                }
+                cbi.P_id = data_reader["P_id"].ToString();
+                cbi.PageInDiagramm = ((int)(data_reader["PageInDiagramm"]) + 1);
+            }
+            data_reader.Close();
+            single_sql_connection.Close();
+            return cbi;
+        }
+
+        private BitmapImage createbitmapsource(byte[] imageBytes)
+        {
             var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
             bitmapImage.CacheOption = BitmapCacheOption.OnLoad;

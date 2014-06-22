@@ -36,7 +36,10 @@ namespace bgx_caw
                 propertyChanged("DiagrammsList");
 
                 flo_Settings.IsOpen = false;
-            }           
+            }
+            Console.WriteLine("Ausgabe-> Programmpfad: " + ProgrammPath);
+            Console.WriteLine("Ausgabe-> Datenbank: " + InitialCatalog);
+            Console.WriteLine("Ausgabe-> Datasource: " + DataSource);
         }
 
         private void flo_Settings_tle_ccl_Click(object sender, RoutedEventArgs e)

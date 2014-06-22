@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Input;
 
 namespace bgx_caw
 {
@@ -69,6 +70,29 @@ namespace bgx_caw
                     txtAuto.Text = lbSuggestion.SelectedItem.ToString();
                 }
                 txtAuto.TextChanged += new TextChangedEventHandler(txtAuto_TextChanged);
+            }
+        }
+        private void rec_magni_MouseLeftButtonDown(Object sender, MouseEventArgs e)
+        {
+            stack_right_sites.Children.Clear();
+            List<Page> list = new List<Page>();
+            list = data.getPagenumbersFromPartlNames(txtAuto.Text);
+
+            closeAllRightFlyouts();
+
+            flo_right_sites.IsOpen = true;
+            foreach (var item in list)
+            {
+                int page = (item.PageInDiagramm + 1);
+                MyTile t1 = new MyTile();
+                t1.TitleFontSize = 15;
+                t1.Title = page.ToString() + " " + item.Title;
+                t1.Data = item;
+                t1.TiltFactor = 2;
+                t1.Width = 150;
+                t1.Height = 50;
+                t1.Click += new RoutedEventHandler(Tile_Site_Click);
+                stack_right_sites.Children.Add(t1);
             }
         }
     }

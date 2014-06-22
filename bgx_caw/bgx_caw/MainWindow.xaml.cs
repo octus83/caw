@@ -105,11 +105,13 @@ namespace bgx_caw
             {
                 if (config.AppSettings.Settings["ProgrammPath"] == null)
                 {
-                    return null;
+                    //return null;
+                    return "D:\\caw";
                 }
                 else
                 {
-                    return config.AppSettings.Settings["ProgrammPath"].Value;
+                   // return config.AppSettings.Settings["ProgrammPath"].Value;
+                    return "D:\\caw";
                 }
             }
             set
@@ -135,24 +137,7 @@ namespace bgx_caw
                 this._projectState = value;
             }
         }
-        private List<CustomBitmapImage> _images;
-        public List<CustomBitmapImage> Images
-        {
-            get
-        {
-            return this._images;
-        }
-            set
-            {
-                if (this._images != null)
-                {
-                    this._images.Clear();
-                   
-                }
-                this._images = value;
-                
-            }
-        }
+      
         private int _maxPageNumber = -1;
         public int MaxPageNumber
         {
@@ -166,18 +151,19 @@ namespace bgx_caw
             }
 
         }
-        private String _id;
-        public String ID
+        private String _diagrammId;
+        public String DiagrammId
         {
             get
             {
-                return this._id;
+                return this._diagrammId;
             }
             set
             {
-             this._id = value;
-             this.data = new Data(value,this);
-             this.MaxPageNumber = data.getPageCout();
+                this._diagrammId = value;
+                this.data = new Data(value,this);
+                this.MaxPageNumber = data.getPageCout();
+                Console.WriteLine("Console -> with Maxpagenumber : " + MaxPageNumber);
             }
         }
 
@@ -221,7 +207,7 @@ namespace bgx_caw
         {
             if (ProjectState == State.ProjectSelected)
             {
-                if (actualPageNumber <= this.MaxPageNumber)
+                if (actualPageNumber < this.MaxPageNumber)
                 {
                     actualPageNumber++;
                     updatePagenumberLabel(actualPageNumber.ToString());
@@ -276,31 +262,42 @@ namespace bgx_caw
 
         private void changePicture()
         {
-            // clear possible drawings
-            view.Children.Clear();
-
-            if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
+            if (ProjectState == State.ProjectSelected)
             {
-                //showImage.ImageSource = getBitmapSource();
-                if (_images.ElementAt((actualPageNumber - 1)).IsCustomImage)
+                // clear possible drawings
+                view.Children.Clear();
+
+                if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
                 {
-                    showImage.ImageSource = _images.ElementAt((actualPageNumber - 1)).CustomImage;
+
+                    if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
+                    {
+                        loadPictureToFileystemWithPriority(actualPageNumber);
+                    }
+                  
+                    if(checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
+                    {
+                     showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
+                    } else
+                    {
+                          showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                    }
+
                 }
                 else
-                {               
-                    showImage.ImageSource = _images.ElementAt((actualPageNumber - 1)).OrginalImage;
-                   
-                  
-                    Console.WriteLine("Ausgabe Console ->");
-                    
+                {
+                    MessageBox.Show("no pictures found");
                 }
-               // showImage.RenderTransform = new ScaleTransform
-                        //(1, 1, 0, 0);
             }
-            else
-            {
-                MessageBox.Show("no pictures found");
-            }
+        }
+
+        private BitmapImage getBitmapImageFromUri(String path)
+        {
+            BitmapImage myBitmapImage = new BitmapImage();
+            myBitmapImage.BeginInit();
+            myBitmapImage.UriSource = new Uri(path);
+            myBitmapImage.EndInit();
+            return myBitmapImage;
         }
 
         private void closeAllLeftFlyouts()
@@ -341,21 +338,15 @@ namespace bgx_caw
             ProjectState = State.NoProjectSelected;
             this.actualPageNumber = -1;
             this.MaxPageNumber = -1;
-            this._id = null;
+            this._diagrammId = null;
             this.drawState = DrawState.None;
         }
         public void onProjectOpen()
         {
            ProjectState = State.ProjectSelected; 
-           //data.getBitmapList(this);
-         // getBitmapList();
-         //  goToPage(1);      
-           //data.creatAllPictures();
-          // getonePicture();
-         //  Task getPictures = new Task(new Action(getonePicture));
-        //   getPictures.Start();
-           Thread thread = new Thread(new ThreadStart(getonePicture));
+           Thread thread = new Thread(new ThreadStart(getAllPictures));
            thread.Start();
+           goToPage(1);
         }
 
         public void onProjectOpenFinish()
@@ -364,61 +355,59 @@ namespace bgx_caw
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
 
-        public async void getBitmapList()
-        {
-            List<String> sortedPageIdList = data.SortedPageIdList;
-            List<CustomBitmapImage> list = new List<CustomBitmapImage>();
-            this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;
-            var progressDialog = await this.ShowProgressAsync("Schaltplan wird geladen ....", "");
-            progressDialog.SetProgress(0.0);
-
-            await Task.Delay(200);
-
-            double percent = 0.1 + (100 / sortedPageIdList.Count) / 100;
-            int count = 1;
-
-            foreach (var item in sortedPageIdList)
-            {
-                CustomBitmapImage cbi = new CustomBitmapImage();
-                BitmapImage b = data.createbitmapsource(data.getBlob(item));
-                cbi.OrginalImage = b;
-                data.savaBitmapimageToFile(b, count);
-              
-                list.Add(cbi);
-                progressDialog.SetMessage("Seite: " + count + " wurde geladen");
-                progressDialog.SetProgress(0.99 / sortedPageIdList.Count * count);
-                await Task.Delay(2000);
-                count++;
-            }
-            progressDialog.SetMessage("fertig geladen");
-            progressDialog.SetProgress(1.0);
-            await Task.Delay(500);
-            await progressDialog.CloseAsync();
-            this.Images = list;
-            this.onProjectOpenFinish();
-        }
-
-        public ImageSource getBitmapSource()
-        {
-           
-           return data.createbitmapsource( data.getBlob(data.getPIDFromPagenumber(actualPageNumber)));
-        }
-
-        public void getonePicture()
+        public void getAllPictures()
         {
             try
             {
-                for (int i = 1; i < MaxPageNumber; i++)
+                for (int i = 1; i <= MaxPageNumber; i++)
                 {
-                    BitmapImage b = data.createbitmapsource(data.getBlob(data.getPIDFromPagenumber(i)));
-                    data.savaBitmapimageToFile(b, i);
+                    if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
+                    {
+                        loadPictureToFilesystem(i);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                // log errors
+                Console.WriteLine(ex.ToString());
             }
            
+        }
+        public void loadPictureToFileystemWithPriority(int pagenumber)
+        {
+            Console.WriteLine("Ausgabe -> getting Picture " + pagenumber);
+            CustomBitmapImage cbi = data.getBlobFast(data.getPIDFromPagenumber(pagenumber));
+            data.savaOrginalBitmapimageToFile(cbi.OrginalImage, pagenumber);
+            if (cbi.IsCustomImage)
+            {
+                data.savaCustomBitmapimageToFile(cbi.CustomImage, pagenumber);
+            }
+        }
+
+        public void loadPictureToFilesystem(int pagenumber)
+        {
+            Console.WriteLine("Ausgabe -> getting Picture " + pagenumber);
+            CustomBitmapImage cbi = data.getBlob(data.getPIDFromPagenumber(pagenumber));
+            data.savaOrginalBitmapimageToFile(cbi.OrginalImage, pagenumber);
+            if (cbi.IsCustomImage)
+            {
+                data.savaCustomBitmapimageToFile(cbi.CustomImage, pagenumber);
+            }
+        }
+        public bool checkIfFileExist(String path)
+        {
+            if (File.Exists(path))
+                return true;
+            else
+                return false;
+        }
+        public String getOrginalPicturesPath(int pagenumber)
+        {
+            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "orginal.jpg"); ;
+        }
+        public String getCustomPicturesPath(int pagenumber)
+        {
+            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "custom.jpg"); ;
         }
    
     }

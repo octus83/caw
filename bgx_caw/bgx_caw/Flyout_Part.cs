@@ -39,7 +39,28 @@ namespace bgx_caw
         }
         private void Tile_Part_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Liste mit seiten");
+            stack_right_sites.Children.Clear();
+            MyTile tile = sender as MyTile;
+            Part p = (Part)tile.Data;
+            List<Page> list = new List<Page>();
+            list = data.getPagenumbersFromPartlNames(tile.Title);
+
+            closeAllRightFlyouts();
+
+            flo_right_sites.IsOpen = true;
+            foreach (var item in list)
+            {
+                int page = (item.PageInDiagramm + 1);
+                MyTile t1 = new MyTile();
+                t1.TitleFontSize = 15;
+                t1.Title = page.ToString() + " " + item.Title;
+                t1.Data = item;
+                t1.TiltFactor = 2;
+                t1.Width = 150;
+                t1.Height = 50;
+                t1.Click += new RoutedEventHandler(Tile_Site_Click);
+                stack_right_sites.Children.Add(t1);
+            }
         }
     }
 }

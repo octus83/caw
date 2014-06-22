@@ -162,14 +162,14 @@
             <controls:Flyout Header="Suche" Position="Left" Width="200" Name="flo_left_search">
                 <!-- Your custom content here -->
                 <ScrollViewer>
-                    <StackPanel Name="stack_left_search">
-                        <Grid>
+                    <StackPanel Name="stack_left_search" >
+                        <Grid >
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40*" />
                                 <RowDefinition Height="203*" />
                             </Grid.RowDefinitions>
                             <DockPanel Background="Gray" Width="150">
-                                <Rectangle Width="24" Height="21" HorizontalAlignment="Left">
+                                <Rectangle Width="24" Height="21" HorizontalAlignment="Left" Name="rec_magnifier" MouseLeftButtonDown="rec_magni_MouseLeftButtonDown"  >
                                     <Rectangle.Resources>
                                         <SolidColorBrush x:Key="BlackBrush"  />
                                     </Rectangle.Resources>

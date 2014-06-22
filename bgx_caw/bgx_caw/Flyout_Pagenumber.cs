@@ -17,7 +17,7 @@ namespace bgx_caw
         {
             MyTile tile = sender as MyTile;
             Page p = (Page)tile.Data;
-            goToPage(p.PageInDiagramm);
+            goToPage(p.PageInDiagramm+1);
         }
     }
 }
