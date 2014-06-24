@@ -105,13 +105,13 @@ namespace bgx_caw
             {
                 if (config.AppSettings.Settings["ProgrammPath"] == null)
                 {
-                    //return null;
-                    return "D:\\caw";
+                    return null;
+                  //  return "D:\\caw";
                 }
                 else
                 {
-                   // return config.AppSettings.Settings["ProgrammPath"].Value;
-                    return "D:\\caw";
+                    return config.AppSettings.Settings["ProgrammPath"].Value;
+                    //return "D:\\caw";
                 }
             }
             set
@@ -170,6 +170,7 @@ namespace bgx_caw
         public MainWindow()
         {
             InitializeComponent();
+            this.DataContext = this;
             ProjectState = State.NoProjectSelected;
            
         }           
@@ -351,7 +352,7 @@ namespace bgx_caw
 
         public void onProjectOpenFinish()
         {
-            goToPage(1);
+            goToPage(45);
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
 

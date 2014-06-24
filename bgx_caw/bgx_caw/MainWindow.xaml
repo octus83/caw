@@ -9,6 +9,13 @@
             <Button Name="win_Comm_btn_Settings" Content="Einstellungen" Click="win_Comm_btn_Settings_Click"/>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Icons.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top">
             <controls:Tile  Width="90" Height="30" Click="Button_open_project"  >
