@@ -352,7 +352,7 @@ namespace bgx_caw
 
         public void onProjectOpenFinish()
         {
-            goToPage(45);
+            goToPage(1);
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
 
@@ -362,7 +362,7 @@ namespace bgx_caw
             {
                 for (int i = 1; i <= MaxPageNumber; i++)
                 {
-                    if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
+                    if (!checkIfFileExist(getOrginalPicturesPath(i)))
                     {
                         loadPictureToFilesystem(i);
                     }
