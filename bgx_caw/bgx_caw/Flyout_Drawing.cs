@@ -129,6 +129,7 @@ namespace bgx_caw
 
             data.savaCustomBitmapimageToFile(bitmapImage, actualPageNumber);
             Console.WriteLine("Bild erfolgreich gespeichert");
+            data.saveCustomBLOBInDB(actualPageNumber);
         }
     }
 }

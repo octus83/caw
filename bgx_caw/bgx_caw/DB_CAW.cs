@@ -112,8 +112,7 @@ namespace bgx_caw
                     Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
                     Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
                     ProductionPlace = data_reader["ProductionPlace"].ToString(),
-                    IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                    SourceFolder = data_reader["SourceFolder"].ToString()
+                    IsActive = Boolean.Parse(data_reader["isActive"].ToString())               
                 };
             }
 
@@ -360,17 +359,19 @@ namespace bgx_caw
             CustomBitmapImage cbi = new CustomBitmapImage();
             while (data_reader.Read())
             {
+
                 cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);
-                try
+
+                if (!data_reader.IsDBNull(3))
                 {
-                  
+                    Console.WriteLine("Ausgabe -> Customimage was not null");
                     cbi.CustomImage = createbitmapsource((byte[])data_reader["CustomBLOB"]);
                 }
-                catch (Exception)
+                else
                 {
-                   
+                    Console.WriteLine("Ausgabe -> Customimage was null");
                     cbi.CustomImage = null;
-                }
+                }                        
                 cbi.P_id = data_reader["P_id"].ToString();
                 cbi.PageInDiagramm = ((int)(data_reader["PageInDiagramm"])+1);
             }
@@ -391,17 +392,19 @@ namespace bgx_caw
             CustomBitmapImage cbi = new CustomBitmapImage();
             while (data_reader.Read())
             {
-                cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);     
-                try
+                cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);
+
+                if (!data_reader.IsDBNull(3))
                 {
-                   
+                    Console.WriteLine("Ausgabe -> Customimage was not null");
                     cbi.CustomImage = createbitmapsource((byte[])data_reader["CustomBLOB"]);
                 }
-                catch (Exception)
+                else
                 {
-              
+                    Console.WriteLine("Ausgabe -> Customimage was null");
                     cbi.CustomImage = null;
-                }
+                }        
+                
                 cbi.P_id = data_reader["P_id"].ToString();
                 cbi.PageInDiagramm = ((int)(data_reader["PageInDiagramm"]) + 1);
             }
@@ -418,6 +421,25 @@ namespace bgx_caw
             bitmapImage.StreamSource = new MemoryStream(imageBytes);
             bitmapImage.EndInit();
             return bitmapImage;
+        }
+
+        public void writeCustomBlobToDatabase(byte[] b, String p_id)
+        {
+            sql_cmd = new SqlCommand();
+            sql_cmd.Connection = sql_connection;
+        
+            try//Schreibe Potential-Daten in DB, wenn nicht vorhanden
+            {
+                sql_cmd.Parameters.Add("@CustomBLOB", SqlDbType.Image).Value = b;
+                sql_cmd.CommandText = "UPDATE dbo.tblPage SET CustomBLOB= @CustomBLOB WHERE P_Id='" + p_id + "'";
+                sql_cmd.ExecuteNonQuery();
+                Console.WriteLine("Ausgabe -> Customblob write to DB ok");
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine("Ausgabe -> Customblob write to DB fehlgeschlagen");
+                Console.WriteLine(exc.Message);
+            }
         }
     }
 }

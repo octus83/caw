@@ -177,8 +177,21 @@ namespace bgx_caw
 
         private void Button_open_project(object sender, RoutedEventArgs e)
         {
-            OpenProjectWindow opw = new OpenProjectWindow(this);
-            opw.ShowDialog();
+            try
+            {
+                OpenProjectWindow opw = new OpenProjectWindow(this);
+                opw.ShowDialog();
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("Fehler beim Zugriff der Datenbank");
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
         }
 
         private void Button_next_page(object sender, RoutedEventArgs e)

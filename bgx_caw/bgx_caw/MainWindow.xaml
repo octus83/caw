@@ -35,7 +35,7 @@
             </controls:Tile>
 
         </DockPanel>
-        <Grid Name="renderContainer"  ClipToBounds="True" Margin="0,45,0,0">
+        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0">
             <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
                 <Canvas.Background>
                     <ImageBrush x:Name="showImage"/>

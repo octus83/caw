@@ -162,10 +162,20 @@ namespace bgx_caw
             pagePath = System.IO.Path.Combine(pagePath, page + "orginal.jpg");
             if (!File.Exists(pagePath))
             {
-                encoder.Frames.Add(BitmapFrame.Create(b));
-                Console.WriteLine(pagePath);
-                using (var filestream = new FileStream(pagePath, FileMode.Create))
-                    encoder.Save(filestream);
+                try
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(b));
+                    Console.WriteLine(pagePath);
+                    using (var filestream = new FileStream(pagePath, FileMode.Create))
+                        encoder.Save(filestream);
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine("Console -> IOException! Sleep for 500 ms and try again"); 
+                    System.Threading.Thread.Sleep(500);
+                    savaOrginalBitmapimageToFile(b, page);
+                }
+               
             }
            
      
@@ -196,8 +206,25 @@ namespace bgx_caw
             }
 
         }
-       
+        public void saveCustomBLOBInDB( int page)
+        {
+            String path = caller.getCustomPicturesPath(page);
+            String p_id = getPIDFromPagenumber(page);
+            db_caw.writeCustomBlobToDatabase(GetPhoto(path), p_id);
+        }
 
+        public static byte[] GetPhoto(string filePath)
+        {
+            FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(fs);
+
+            byte[] photo = br.ReadBytes((int)fs.Length);
+
+            br.Close();
+            fs.Close();
+
+            return photo;
+        }
     }
 }
 

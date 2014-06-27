@@ -28,10 +28,11 @@ namespace bgx_caw
             {
                 int page = (item.PageInDiagramm +1);
                 MyTile t1 = new MyTile();
-                t1.TitleFontSize = 15;
-                t1.Title = page.ToString() + " " + item.Title;
+              //  t1.TitleFontSize = 15;
+                t1.Title = item.Title;
+                t1.Content = page.ToString();
                 t1.Data = item;
-                t1.TiltFactor = 2;
+                //t1.TiltFactor = 2;
                 t1.Width = 150;
                 t1.Height = 50;
                 t1.Click += new RoutedEventHandler(Tile_Site_Click);
