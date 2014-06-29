@@ -21,12 +21,8 @@ namespace bgx_caw
         private Configuration config;
 
         private SqlConnection sql_connection;
-        private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder
-        {
-            DataSource = "UNKNOWN\\SQLEXPRESS",
-            InitialCatalog = "CAWFinal",
-            IntegratedSecurity = true
-        };
+        private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder();
+
 
 
         /// <summary>
@@ -34,6 +30,12 @@ namespace bgx_caw
         /// </summary>
         public DB_CAW()
         {
+            config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+
+            connection_string.DataSource = config.AppSettings.Settings["DataSource"].Value;
+            connection_string.InitialCatalog = config.AppSettings.Settings["InitialCatalog"].Value;
+            connection_string.IntegratedSecurity = true;
+
             sql_connection = new SqlConnection(connection_string.ConnectionString);
             sql_connection.Open();
         }

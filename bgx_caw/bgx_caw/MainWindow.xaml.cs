@@ -23,6 +23,9 @@ using System.Threading;
 
 namespace bgx_caw
 {
+    /// <summary>
+    /// Programm State
+    /// </summary>
     public  enum State
     {
         None,
@@ -34,24 +37,33 @@ namespace bgx_caw
     /// </summary>
     public partial class MainWindow :MetroWindow 
     {
-
+        /// <summary>
+        /// Aktuelle Seitenzahl wenn ein Schaltplan geöffnet ist
+        /// </summary>
         private int actualPageNumber = -1;     
+        /// <summary>
+        ///  Data Klasse referenz
+        /// </summary>
         private Data data;
 
+        /// <summary>
+        /// config für Datenbanknamen , Programm pfad und DatenbankAdresse
+        /// </summary>
         Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
+        /// <summary>
+        /// Datenbank Adresse
+        /// </summary>
         public String DataSource
         {
             get
             {
                 if (config.AppSettings.Settings["DataSource"] == null)
-                {
-                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;                   
+                {                 
                     return null;
                 }
                 else
                 {
-                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
                     return config.AppSettings.Settings["DataSource"].Value;
                 }
             }
@@ -74,6 +86,9 @@ namespace bgx_caw
                 }
             }
         }
+        /// <summary>
+        /// Datenbank Name
+        /// </summary>
         public String InitialCatalog
         {
             get
@@ -99,6 +114,10 @@ namespace bgx_caw
                 config.Save(ConfigurationSaveMode.Modified);
             }
         }
+        /// <summary>
+        /// Programm Pfad in dem das Programm arbeitet.
+        /// (Bilder aus der Datenbank dort hinein lädt)
+        /// </summary>
         public String ProgrammPath
         {
             get
@@ -106,12 +125,10 @@ namespace bgx_caw
                 if (config.AppSettings.Settings["ProgrammPath"] == null)
                 {
                     return null;
-                  //  return "D:\\caw";
                 }
                 else
                 {
                     return config.AppSettings.Settings["ProgrammPath"].Value;
-                    //return "D:\\caw";
                 }
             }
             set
@@ -173,9 +190,9 @@ namespace bgx_caw
             this.DataContext = this;
             ProjectState = State.NoProjectSelected;
            
-        }           
+        }
 
-        private void Button_open_project(object sender, RoutedEventArgs e)
+        private void win_Comm_btn_Project_Open_Click(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -193,6 +210,22 @@ namespace bgx_caw
             }
             
         }
+        private void openInfo()
+        {
+           
+            if (ProjectState == State.ProjectSelected)
+            {
+                if (! flo_right_info.IsOpen)
+                {
+                    closeAllRightFlyouts();
+                    flo_right_info.IsOpen = true;
+                }
+            }
+            else
+            {
+                MessageBox.Show("No Project selected");
+            }
+        }
 
         private void Button_next_page(object sender, RoutedEventArgs e)
         {
@@ -203,18 +236,22 @@ namespace bgx_caw
         {
             previousPage();
         }
+        private void renderContainer_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            openInfo();
+        }
 
         private void Button_open_info(object sender, RoutedEventArgs e)
         {
-            if (ProjectState == State.ProjectSelected)
-            {
-                flo_right_info.IsOpen = true;
-            }
-            else
-            {
-                MessageBox.Show("No Project selected");
-            }
 
+            openInfo();
+        }
+
+      
+        private void sitenumberLabel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            flo_bott_jump.IsOpen = true;
+            jump_to_page_textBox.Focus();
         }
 
         private void nextPage()
@@ -271,7 +308,7 @@ namespace bgx_caw
 
         private void updatePagenumberLabel(String update)
         {
-            sitenumberLabel.Content = "Seite " + update + " von " + this.MaxPageNumber;
+            sitenumberLabel.Content = update + "/" + this.MaxPageNumber;
         }
 
         private void changePicture()
@@ -327,6 +364,22 @@ namespace bgx_caw
             flo_right_sites.IsOpen = false;
         }
 
+        private void closeAllFlyouts()
+        {
+            closeAllLeftFlyouts();
+            closeAllRightFlyouts();
+            closeAllTopFlyouts();
+            closeAllBottomFlyouts();
+        }
+        private void closeAllTopFlyouts()
+        {
+            flo_up_draw.IsOpen = false;
+            flo_Settings.IsOpen = false;
+        }
+        private void closeAllBottomFlyouts()
+        {
+            flo_bott_jump.IsOpen = false;
+        }
         private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             /*   Point p = e.GetPosition(clipBorder);
@@ -360,12 +413,13 @@ namespace bgx_caw
            ProjectState = State.ProjectSelected; 
            Thread thread = new Thread(new ThreadStart(getAllPictures));
            thread.Start();
-           goToPage(1);
+           onProjectOpenFinish();
         }
 
         public void onProjectOpenFinish()
         {
             goToPage(1);
+            sitenumberLabel.Visibility = Visibility.Visible;
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
 
@@ -422,6 +476,30 @@ namespace bgx_caw
         public String getCustomPicturesPath(int pagenumber)
         {
             return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "custom.jpg"); ;
+        }
+
+        private void Tile_Jump_To_Page_Click(object sender, RoutedEventArgs e)
+        {
+            int page;
+            try
+            {
+                page = Convert.ToInt32(jump_to_page_textBox.Text);
+                if (page > 0 && page <= MaxPageNumber)
+                {
+                    goToPage(page);
+                    closeAllBottomFlyouts();
+                }
+                else
+                {
+                    MessageBox.Show("Falsche Seitenzahl eingabe");
+                }
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Falsche Seitenzahl eingabe");
+         
+            }
+            
         }
    
     }

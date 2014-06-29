@@ -5,10 +5,11 @@
         Title="Caw" Height="600" Width="1200" WindowState="Maximized"  Icon="CAWLogo.png">
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-            <Button Name="win_Comm_btn_Drawing" Content="Zeichnen" Click="win_Comm_btn_Drawing_Click" Visibility="Visible"/>
+            <Button Name="win_Comm_btn_Project_Open" Content="Projekt Öffnen" Click="win_Comm_btn_Project_Open_Click"/>
+            <Button Name="win_Comm_btn_Drawing" Content="Zeichnen" Click="win_Comm_btn_Drawing_Click" Visibility="Hidden"/>
             <Button Name="win_Comm_btn_Settings" Content="Einstellungen" Click="win_Comm_btn_Settings_Click"/>
         </controls:WindowCommands>
-    </controls:MetroWindow.RightWindowCommands>
+    </controls:MetroWindow.RightWindowCommands>  
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,30 +18,27 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top">
-            <controls:Tile  Width="90" Height="30" Click="Button_open_project"  >
-                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Projekt Öffnen</Label>
-            </controls:Tile>
-
-            <controls:Tile  Width="90" Height="30" Click="Button_next_page"  >
+        <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top" HorizontalAlignment="Center">          
+            <controls:Tile  Width="90" Height="30" Click="Button_next_page"  Visibility="Hidden">
                 <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Nächste Seite</Label>
             </controls:Tile>
-            <Label Content="Seite:  von   " Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10"></Label>
-            <controls:Tile  Width="90" Height="30" Click="Button_previous_page"  >
+            <Label BorderThickness="1" Content="0/0" Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10" FontSize="25" Visibility="Hidden" HorizontalAlignment="Center" MouseDown="sitenumberLabel_MouseDown" ></Label>
+            
+            <controls:Tile  Width="90" Height="30" Click="Button_previous_page" Visibility="Hidden" >
                 <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">vorherige Seite</Label>
             </controls:Tile>
 
-            <controls:Tile  Width="90" Height="30" Click="Button_open_info" HorizontalAlignment="Left" >
+            <controls:Tile  Width="90" Height="30" Click="Button_open_info" HorizontalAlignment="Left" Visibility="Hidden" >
                 <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Info</Label>
             </controls:Tile>
 
         </DockPanel>
-        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0">
+        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0"  MouseRightButtonDown="renderContainer_MouseRightButtonDown" MouseLeftButtonUp="renderContainer_MouseLeftUp" MouseLeftButtonDown="renderContainer_MouseLeftDown"  >
             <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
                 <Canvas.Background>
                     <ImageBrush x:Name="showImage"/>
                 </Canvas.Background>
-                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="3" ClipToBounds="True" MouseWheel="clipBorder_MouseWheel" Width="{Binding Path=ActualWidth, ElementName=view}" Height="{Binding Path=ActualHeight, ElementName=view}">
+                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="0" ClipToBounds="True" MouseWheel="clipBorder_MouseWheel" Width="{Binding Path=ActualWidth, ElementName=view}" Height="{Binding Path=ActualHeight, ElementName=view}">
 
                 </Border>
             </Canvas>
@@ -65,14 +63,23 @@
 
             <controls:Flyout Header="Potentiale" Position="Left" Width="200" Name="flo_left_potential">
                 <!-- Your custom content here -->
-                <ScrollViewer>
+                <ScrollViewer PanningMode="Both">
                     <StackPanel Name="stack_left_potential"></StackPanel>
                 </ScrollViewer>
             </controls:Flyout>
 
+            <controls:Flyout Position="Bottom" Height="150" Width="280" Name="flo_bott_jump">
+                <!-- Your custom content here -->
+                   
+                <DockPanel Width="180" Height="60" HorizontalAlignment="Center"> 
+                    <TextBox x:Name="jump_to_page_textBox" Width="80" Height="50" FontSize="25" ></TextBox>
+                    <controls:Tile Content="Jump!" FontSize="25" Width="80" Height="50" Click="Tile_Jump_To_Page_Click"  />
+                </DockPanel>
+            </controls:Flyout>
+
             <controls:Flyout Header="Bauteile" Position="Left" Width="200" Name="flo_left_parts">
                 <!-- Your custom content here -->
-                <ScrollViewer>
+                <ScrollViewer PanningMode="Both">
                     <StackPanel Name="stack_left_parts"></StackPanel>
                 </ScrollViewer>
             </controls:Flyout>
@@ -118,11 +125,11 @@
 
             <controls:Flyout Header="Seiten" Position="Right" Width="200" Name="flo_right_sites">
                 <!-- Your custom content here -->
-                <ScrollViewer>
+                <ScrollViewer PanningMode="Both">
                     <StackPanel Name="stack_right_sites"></StackPanel>
                 </ScrollViewer>
             </controls:Flyout>
-            <controls:Flyout Name="flo_Settings" Position="Top" Height="400" IsModal="True">
+            <controls:Flyout Name="flo_Settings" Position="Top" Height="400" >
                 <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,30,0,0">
                     <Label Content="Einstellungen" FontSize="36" Foreground="White" HorizontalAlignment="Center"></Label>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom">
@@ -168,26 +175,20 @@
 
             <controls:Flyout Header="Suche" Position="Left" Width="200" Name="flo_left_search">
                 <!-- Your custom content here -->
-                <ScrollViewer>
+                <ScrollViewer PanningMode="Both">
                     <StackPanel Name="stack_left_search" >
                         <Grid >
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40*" />
                                 <RowDefinition Height="203*" />
                             </Grid.RowDefinitions>
-                            <DockPanel Background="Gray" Width="150">
-                                <Rectangle Width="24" Height="21" HorizontalAlignment="Left" Name="rec_magnifier" MouseLeftButtonDown="rec_magni_MouseLeftButtonDown"  >
-                                    <Rectangle.Resources>
-                                        <SolidColorBrush x:Key="BlackBrush"  />
-                                    </Rectangle.Resources>
-                                    <Rectangle.Fill>
-                                        <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_magnify}" />
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                                <TextBox  TextChanged="txtAuto_TextChanged" BorderBrush="Gray" Background="Gray" Foreground="Black" Name="txtAuto" TextWrapping="NoWrap" Width="150" BorderThickness="0"/>
-
+                            <DockPanel Background="Gray"  Width="150">
+                                
+                                <TextBox  TextChanged="txtAuto_TextChanged" BorderBrush="Gray" Background="Gray" Foreground="Black" Name="txtAuto" TextWrapping="NoWrap" Width="105" Height="30" FontSize="20" BorderThickness="0"/>
+ 
+                                <controls:Tile Content="Go!" FontSize="18" TiltFactor="2" Width="40" Height="29" Click="Tile_Search_GO_Click"  />
                             </DockPanel>
-                            <ListBox  Height="200" Width="150" Name="lbSuggestion" Grid.Row="1" Visibility="Collapsed" SelectionChanged="lbSuggestion_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+                            <ListBox Height="600"   Width="150" Name="lbSuggestion" Grid.Row="1" Visibility="Collapsed" FontSize="20" ScrollViewer.PanningMode="Both" SelectionChanged="lbSuggestion_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

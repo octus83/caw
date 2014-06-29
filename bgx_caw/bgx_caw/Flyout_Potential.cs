@@ -21,20 +21,20 @@ namespace bgx_caw
             List<Page> list = new List<Page>();
             list = data.getPagenumbersFromPotentialNames(tile.Title);
 
-            closeAllRightFlyouts();
 
-            flo_right_sites.IsOpen = true;
+            if (!flo_right_sites.IsOpen)
+            {
+                closeAllRightFlyouts();
+                flo_right_sites.IsOpen = true;
+            }
             foreach (var item in list)
             {
                 int page = (item.PageInDiagramm +1);
                 MyTile t1 = new MyTile();
-              //  t1.TitleFontSize = 15;
-                t1.Title = item.Title;
-                t1.Content = page.ToString();
+                t1.Title =  page.ToString()+" | "+item.Title;
                 t1.Data = item;
-                //t1.TiltFactor = 2;
                 t1.Width = 150;
-                t1.Height = 50;
+                t1.Height = 80;
                 t1.Click += new RoutedEventHandler(Tile_Site_Click);
                 stack_right_sites.Children.Add(t1);
             }
@@ -44,8 +44,12 @@ namespace bgx_caw
             stack_left_potential.Children.Clear();
             if (actualPageNumber > 0)
             {
-                closeAllLeftFlyouts();
-                flo_left_potential.IsOpen = true;
+                if (!flo_left_potential.IsOpen)
+                {
+                    closeAllLeftFlyouts();
+                    flo_left_potential.IsOpen = true;
+                }
+
                 List<Potential> list = new List<Potential>();
                 list = data.getPotentialFromPageNumber(actualPageNumber);
                 foreach (var item in list)

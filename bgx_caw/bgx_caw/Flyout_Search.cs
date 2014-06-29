@@ -17,6 +17,7 @@ namespace bgx_caw
         {
             closeAllLeftFlyouts();
             flo_left_search.IsOpen = true;
+            txtAuto.Focus();
         }
 
         private void txtAuto_TextChanged(object sender, TextChangedEventArgs e)
@@ -91,6 +92,28 @@ namespace bgx_caw
                 t1.TiltFactor = 2;
                 t1.Width = 150;
                 t1.Height = 50;
+                t1.Click += new RoutedEventHandler(Tile_Site_Click);
+                stack_right_sites.Children.Add(t1);
+            }
+        }
+        private void Tile_Search_GO_Click(object sender, RoutedEventArgs e)
+        {
+            stack_right_sites.Children.Clear();
+            List<Page> list = new List<Page>();
+            list = data.getPagenumbersFromPartlNames(txtAuto.Text);
+
+            closeAllRightFlyouts();
+
+            flo_right_sites.IsOpen = true;
+            foreach (var item in list)
+            {
+                int page = (item.PageInDiagramm + 1);
+                MyTile t1 = new MyTile();
+                t1.Title = item.Title;
+                t1.Content = page.ToString();
+                t1.Data = item;
+                t1.Width = 150;                    
+                t1.Height = 80;
                 t1.Click += new RoutedEventHandler(Tile_Site_Click);
                 stack_right_sites.Children.Add(t1);
             }
