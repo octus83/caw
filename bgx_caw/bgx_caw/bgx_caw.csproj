@@ -88,7 +88,6 @@
     <Compile Include="Flyout_Search.cs" />
     <Compile Include="Flyout_Settings.cs" />
     <Compile Include="MyTile.cs" />
-    <Compile Include="Query.cs" />
     <Compile Include="Touch.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

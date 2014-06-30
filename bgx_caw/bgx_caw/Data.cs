@@ -54,6 +54,26 @@ namespace bgx_caw
             db_caw = new DB_CAW();
             this.diagramm = db_caw.getDiagramm(d_id);          
         }
+        /// <summary>
+        /// Sotiert eine Page List nach Seitenzahlen
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        private List<Page> orderPageList(List<Page> list)
+        {
+            List<Page> temp = new List<Page>();
+            for (int i = 0; i < getPageCout(); i++)
+            {
+                foreach (var item in list)
+                {
+                    if (item.PageInDiagramm == i)
+                    {
+                        temp.Add(item);
+                    }
+                }
+            }
+            return temp;
+        }
       /// <summary>
       /// Liefert die Liste aller Potentiale einer Seite zurück
       /// </summary>
@@ -109,8 +129,10 @@ namespace bgx_caw
                     }
                 }   
             }
-            return list;
+            
+            return orderPageList(list);
         }
+
         /// <summary>
         /// Liefert eine Liste mit allen Page Objekten
         /// von einem Bauteil Namen zurück
@@ -130,7 +152,7 @@ namespace bgx_caw
                     }
                 }
             }
-            return list;
+            return orderPageList(list);
         }
         /// <summary>
         /// Liefert die P_ID ( Primary Key) von einer
