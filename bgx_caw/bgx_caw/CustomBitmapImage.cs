@@ -7,9 +7,17 @@ using System.Windows.Media.Imaging;
 
 namespace bgx_caw
 {
+    /// <summary>
+    /// Eigene Klasse die Orginal und Custom BitmapImages verwalet
+    /// sowie einige informationen zu den Bildern Speichert
+    /// Wird für das Laden von Bildern aus der Datenbank verwendet
+    /// </summary>
     public class CustomBitmapImage 
     {
         private BitmapImage _customImage;
+        /// <summary>
+        /// Bild mit Makierungen
+        /// </summary>
         public BitmapImage CustomImage
         {
             set{
@@ -25,6 +33,9 @@ namespace bgx_caw
         }
 
         private BitmapImage _originalImage;
+        /// <summary>
+        /// OrginalBild ohne Makierungen
+        /// </summary>
         public BitmapImage OrginalImage
         {
             set
@@ -38,6 +49,9 @@ namespace bgx_caw
         }
 
         private bool _isCustomImage = false;
+        /// <summary>
+        /// Ist ein custom Bild vorhanden
+        /// </summary>
         public bool IsCustomImage
         {
             set
@@ -50,6 +64,9 @@ namespace bgx_caw
             }
         }
         private int _pageInDiagramm;
+        /// <summary>
+        /// Seite des Bildes im Projekt/Diagramm
+        /// </summary>
         public int PageInDiagramm
         {
             set
@@ -62,6 +79,9 @@ namespace bgx_caw
             }
         }
         private String _p_Id;
+        /// <summary>
+        /// Seiten ID (Primary Key) der Seite aus der Datenbank
+        /// </summary>
         public String P_id
         {
             set

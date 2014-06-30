@@ -18,37 +18,19 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top" HorizontalAlignment="Center">          
-            <controls:Tile  Width="90" Height="30" Click="Button_next_page"  Visibility="Hidden">
-                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Nächste Seite</Label>
-            </controls:Tile>
-            <Label BorderThickness="1" Content="0/0" Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10" FontSize="25" Visibility="Hidden" HorizontalAlignment="Center" MouseDown="sitenumberLabel_MouseDown" ></Label>
-            
-            <controls:Tile  Width="90" Height="30" Click="Button_previous_page" Visibility="Hidden" >
-                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">vorherige Seite</Label>
-            </controls:Tile>
-
-            <controls:Tile  Width="90" Height="30" Click="Button_open_info" HorizontalAlignment="Left" Visibility="Hidden" >
-                <Label FontFamily="Segoe UI, Lucida Sans Unicode, Verdana">Info</Label>
-            </controls:Tile>
-
+        <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top" HorizontalAlignment="Center">                      
+            <Label BorderThickness="1" Content="0/0" Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10" FontSize="25" Visibility="Hidden" HorizontalAlignment="Center" MouseDown="sitenumberLabel_MouseDown" ></Label>          
         </DockPanel>
-        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0"  MouseRightButtonDown="renderContainer_MouseRightButtonDown" MouseLeftButtonUp="renderContainer_MouseLeftUp" MouseLeftButtonDown="renderContainer_MouseLeftDown"  >
+        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0"  MouseRightButtonDown="renderContainer_MouseRightButtonDown" MouseLeftButtonUp="renderContainer_MouseLeftUp" MouseLeftButtonDown="renderContainer_MouseLeftDown" MouseWheel="clipBorder_MouseWheel" >
             <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
                 <Canvas.Background>
                     <ImageBrush x:Name="showImage"/>
                 </Canvas.Background>
-                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="0" ClipToBounds="True" MouseWheel="clipBorder_MouseWheel" Width="{Binding Path=ActualWidth, ElementName=view}" Height="{Binding Path=ActualHeight, ElementName=view}">
-
+                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="0" ClipToBounds="True"  Width="{Binding Path=ActualWidth, ElementName=view}" Height="{Binding Path=ActualHeight, ElementName=view}">
                 </Border>
             </Canvas>
         </Grid>
     </Grid>
-
-
-
-
-
 
     <controls:MetroWindow.Flyouts >
         <controls:FlyoutsControl>

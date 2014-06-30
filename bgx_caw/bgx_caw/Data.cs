@@ -24,20 +24,41 @@ using MahApps.Metro.Controls.Dialogs;
 
 namespace bgx_caw
 {
+    /// <summary>
+    /// Eigene Klasse die die Informationsdaten eines Projektes/Diagramms
+    /// verwaltet und mit der Datenbank Klasse kommuniziert
+    /// </summary>
     class Data
     {
+        /// <summary>
+        /// referenz auf ein diagramm object des aktuellen Projektes/Diagramms
+        /// </summary>
         private Diagramm diagramm;
+        /// <summary>
+        /// referenz auf die Datenbank Klasse
+        /// </summary>
         private DB_CAW db_caw;
+        /// <summary>
+        /// referenz auf die Hauptklasse (Main Window)
+        /// </summary>
         private MainWindow caller;
 
-     
-        public Data(String id, MainWindow caller)
+         /// <summary>
+         /// Constructor
+         /// </summary>
+         /// <param name="d_id">Projekt/Diagramm ID aus der Datenbank</param>
+         /// <param name="caller">referenz </param>
+        public Data(String d_id, MainWindow caller)
         {
             this.caller = caller;
             db_caw = new DB_CAW();
-            this.diagramm = db_caw.getDiagramm(id);          
+            this.diagramm = db_caw.getDiagramm(d_id);          
         }
-      
+      /// <summary>
+      /// Liefert die Liste aller Potentiale einer Seite zurück
+      /// </summary>
+      /// <param name="number">Seitenzahl</param>
+      /// <returns></returns>
         public List<Potential> getPotentialFromPageNumber(int number)
         {
             //pages starts at 0
@@ -49,13 +70,13 @@ namespace bgx_caw
                     return item.Potential_List;
                 }            
             }
-            return new List<Potential>();
-      /*      var erg = from pot in diagramm.pages_List
-                       where pot.PageInDiagramm == number
-                       select pot;    
-            return erg.ElementAt(0).Potential_List;*/     
+            return new List<Potential>();    
         }
-
+        /// <summary>
+        /// Liefert die Liste aller Bauteile einer Seite zurück
+        /// </summary>
+        /// <param name="number">Seitenzahl</param>
+        /// <returns></returns>
         public List<Part> getPartFomPageNumber(int number)
         {
             //pages starts at 0
@@ -69,7 +90,12 @@ namespace bgx_caw
             }
             return new List<Part>();
         }
-
+        /// <summary>
+        /// Liefert eine Liste mit allen Page Objekten  
+        /// von einem Potential Namen zurück
+        /// </summary>
+        /// <param name="name">Names des Potentials</param>
+        /// <returns></returns>
         public List<Page> getPagenumbersFromPotentialNames(String name)
         {
             List<Page> list = new List<Page>();
@@ -85,6 +111,12 @@ namespace bgx_caw
             }
             return list;
         }
+        /// <summary>
+        /// Liefert eine Liste mit allen Page Objekten
+        /// von einem Bauteil Namen zurück
+        /// </summary>
+        /// <param name="name">Name des Bauteils</param>
+        /// <returns></returns>
         public List<Page> getPagenumbersFromPartlNames(String name)
         {
             List<Page> list = new List<Page>();
@@ -100,6 +132,12 @@ namespace bgx_caw
             }
             return list;
         }
+        /// <summary>
+        /// Liefert die P_ID ( Primary Key) von einer
+        /// Seitenzahl eines Projektes/Diagramms zurück
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public String getPIDFromPagenumber(int number)
         {
             number = number - 1;
@@ -112,13 +150,20 @@ namespace bgx_caw
             }
             return "";
         }
-
+        /// <summary>
+        /// Liefert die Anzahl der Seiten eines Projektes/Diagramms zurück
+        /// </summary>
+        /// <returns></returns>
         public int getPageCout()
         {
             return diagramm.pages_List.Count;
         }
 
-
+        /// <summary>
+        /// Liefert eine Liste mit allen Bauteilen
+        /// eines Projektes/Diagramms zurück
+        /// </summary>
+        /// <returns></returns>
         public List<Part> getCompletePartList()
         {
             List<Part> list = new List<Part>();
@@ -131,17 +176,32 @@ namespace bgx_caw
 	        }
             return list;
         }
-
+        /// <summary>
+        /// Lädt ein CustomBitmapImage Objekt mit Orginal und Custom Bild
+        /// aus der Datenbank
+        /// </summary>
+        /// <param name="id">Seitenzahl ID</param>
+        /// <returns></returns>
         public CustomBitmapImage getBlob(String id)
         {
             return db_caw.getBLOB(id);
         }
+        /// <summary>
+        /// Lädt ein CustomBitmapImage Objekt mit Orginal und Custom Bild
+        /// aus der Datenbank mit Priorität
+        /// </summary>
+        /// <param name="id">Seitenzahl ID</param>
+        /// <returns></returns>
         public CustomBitmapImage getBlobFast(String id)
         {
             return db_caw.getBLOBFast(id);
         }
-
-
+        /// <summary>
+        /// Speichert das BitmapImage als orginal jpg Datei im Programmverzeichnis
+        /// in einem einzigartigen generierten Pfad
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="page"></param>
         public void savaOrginalBitmapimageToFile(BitmapImage b, int page)
         {
             String p_id = getPIDFromPagenumber(page);
@@ -180,7 +240,12 @@ namespace bgx_caw
            
      
         }
-
+        /// <summary>
+        /// Speichert das BitmapImage als custom jpg Datei im Programmverzeichnis
+        /// in einem einzigartigen generierten Pfad
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="page"></param>
         public void savaCustomBitmapimageToFile(BitmapImage b, int page)
         {
             String p_id = getPIDFromPagenumber(page);
@@ -206,13 +271,21 @@ namespace bgx_caw
             }
 
         }
+        /// <summary>
+        /// schreibt ein erzeugtes custom Bild zurück in die Datenbank
+        /// </summary>
+        /// <param name="page"></param>
         public void saveCustomBLOBInDB( int page)
         {
             String path = caller.getCustomPicturesPath(page);
             String p_id = getPIDFromPagenumber(page);
             db_caw.writeCustomBlobToDatabase(GetPhoto(path), p_id);
         }
-
+        /// <summary>
+        /// Liest eine Foto Datei in ein Byte Array
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public static byte[] GetPhoto(string filePath)
         {
             FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);

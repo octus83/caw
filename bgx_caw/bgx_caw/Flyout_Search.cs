@@ -8,18 +8,31 @@ using System.Windows;
 using System.Windows.Input;
 
 namespace bgx_caw
-{
+{/// <summary>
+    /// Logik des Suchen Flyouts
+    /// </summary>
     public partial class MainWindow
     {
-        private List<Part> _completedParts; 
-
+        /// <summary>
+        /// Liste mit allen Bauteilen eines Projektes/Diagramms
+        /// </summary>
+        private List<Part> _completedParts;
+        /// <summary>
+        /// Click Event des Suchen Tile aus dem Info Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tile_Search(object sender, EventArgs e)
         {
             closeAllLeftFlyouts();
             flo_left_search.IsOpen = true;
             txtAuto.Focus();
         }
-
+        /// <summary>
+        /// Event bei Änderung des Suchfeldes im suchen Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void txtAuto_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (ProjectState == State.ProjectSelected)
@@ -60,6 +73,12 @@ namespace bgx_caw
                 }
             }
         }
+        /// <summary>
+        /// Event für die Auswahl eines Elemtes
+        /// der vorschlags such elemte
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lbSuggestion_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lbSuggestion.ItemsSource != null)
@@ -73,50 +92,17 @@ namespace bgx_caw
                 txtAuto.TextChanged += new TextChangedEventHandler(txtAuto_TextChanged);
             }
         }
-        private void rec_magni_MouseLeftButtonDown(Object sender, MouseEventArgs e)
-        {
-            stack_right_sites.Children.Clear();
-            List<Page> list = new List<Page>();
-            list = data.getPagenumbersFromPartlNames(txtAuto.Text);
-
-            closeAllRightFlyouts();
-
-            flo_right_sites.IsOpen = true;
-            foreach (var item in list)
-            {
-                int page = (item.PageInDiagramm + 1);
-                MyTile t1 = new MyTile();
-                t1.TitleFontSize = 15;
-                t1.Title = page.ToString() + " " + item.Title;
-                t1.Data = item;
-                t1.TiltFactor = 2;
-                t1.Width = 150;
-                t1.Height = 50;
-                t1.Click += new RoutedEventHandler(Tile_Site_Click);
-                stack_right_sites.Children.Add(t1);
-            }
-        }
+        /// <summary>
+        /// Löst das Suchevent aus welches ein Seiten Flyout öffnen
+        /// und alle Seiten anzeigt auf die die suche zutrifft.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tile_Search_GO_Click(object sender, RoutedEventArgs e)
         {
-            stack_right_sites.Children.Clear();
             List<Page> list = new List<Page>();
             list = data.getPagenumbersFromPartlNames(txtAuto.Text);
-
-            closeAllRightFlyouts();
-
-            flo_right_sites.IsOpen = true;
-            foreach (var item in list)
-            {
-                int page = (item.PageInDiagramm + 1);
-                MyTile t1 = new MyTile();
-                t1.Title = item.Title;
-                t1.Content = page.ToString();
-                t1.Data = item;
-                t1.Width = 150;                    
-                t1.Height = 80;
-                t1.Click += new RoutedEventHandler(Tile_Site_Click);
-                stack_right_sites.Children.Add(t1);
-            }
+            buildPagenumberFlyout(list);         
         }
     }
 }

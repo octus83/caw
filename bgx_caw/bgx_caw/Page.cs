@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace bgx_caw
-{
+{    /// <summary>
+    /// Representiert eine Datenbank Page Tabelle als Objekt
+    /// </summary>
     public class Page
     {
        public int PageInDiagramm

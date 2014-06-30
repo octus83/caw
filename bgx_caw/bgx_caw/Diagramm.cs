@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 namespace bgx_caw
 {
     /// <summary>
-    /// struct that holds all the 
+    /// Representiert eine Datenbank Diagramm Tabelle als Objekt
     /// </summary>
     public class Diagramm
     {
         public List<Page> pages_List;
         private String _endCustomer = "";
-        private String _sourceFolder;
         private String _serialNumber;
 
         public String ID
@@ -266,7 +265,6 @@ namespace bgx_caw
 
         public Diagramm()
         {
-            //ID = Guid.NewGuid().ToString();
             SourceFolder = "c:\\caw\\" + ID + "\\";
             pages_List = new List<Page>();
         }

@@ -11,6 +11,9 @@ using System.Windows.Media.Imaging;
 
 namespace bgx_caw
 {
+    /// <summary>
+    /// Enum welches den Zeichnen Zustand beschreibt
+    /// </summary>
     public enum DrawState
     {
         None,
@@ -18,9 +21,15 @@ namespace bgx_caw
         red,
         mark
     }
+    /// <summary>
+    /// Teilklasse die die Logik des Zeichnen Flyouts beinhaltet
+    /// </summary>
     public partial class MainWindow
     {
         private DrawState _drawState = DrawState.None;
+        /// <summary>
+        /// Zeichnen zustand
+        /// </summary>
         public DrawState drawState
         {
             set
@@ -41,25 +50,49 @@ namespace bgx_caw
             }
 
         }
-
+        /// <summary>
+        /// Zeichnen Button Click Event 
+        /// Öffnet das Zeichnen Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void win_Comm_btn_Drawing_Click(object sender, EventArgs e)
         {
             closeAllRightFlyouts();
             closeAllLeftFlyouts();
             flo_up_draw.IsOpen = true;
         }
+        /// <summary>
+        /// Button Click Event für die Farbe Rotim Zeichnen Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toggle_btn_red_click(object sender, EventArgs e)
         {          
             this.drawState = DrawState.red;
         }
+        /// <summary>
+        /// Button Click Event für die Farbe Grün im Zeichnen Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toggle_btn_green_click(object sender, EventArgs e)
         {        
             this.drawState = DrawState.green;
         }
+        /// <summary>
+        /// Button Click Event für die Farbe Grau im Zeichnen Fylout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toggle_btn_mark_click(object sender, EventArgs e)
         {
             this.drawState = DrawState.mark;
         }
+        /// <summary>
+        /// Logik für die Hintergrundfarben der Farbbuttons
+        /// Es darf immer nur eine Farbe Aktiv sein
+        /// </summary>
         private void setToggleButtonBackgroundcolor()
         {
                 switch (drawState)
@@ -91,12 +124,19 @@ namespace bgx_caw
                         break;
                 }
         }
+        /// <summary>
+        /// Speichern eines Bildes Click Event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void canvas_click(object sender, EventArgs e)
         {
             saveCanvas();
-
         }
-
+        /// <summary>
+        /// Speichert das Aktuelle Bild
+        /// 
+        /// </summary>
         public void saveCanvas()
         {
             closeAllTopFlyouts();
@@ -108,7 +148,6 @@ namespace bgx_caw
 
             // Get the size of canvas
             Size size = new Size(view.ActualWidth, view.ActualHeight);
-            Size customSize = new Size(1920.0, 1080.0);
             // Measure and arrange the surface
             // VERY IMPORTANT
             view.Measure(size);
@@ -134,14 +173,17 @@ namespace bgx_caw
                 bitmapImage.StreamSource = stream;
                 bitmapImage.EndInit();
             }
-
+            //Speichert das Bild als File
             data.savaCustomBitmapimageToFile(bitmapImage, actualPageNumber);
             Console.WriteLine("Bild erfolgreich gespeichert");
             showCustomPicturesSaveDialog();
             data.saveCustomBLOBInDB(actualPageNumber);
            
         }
-
+        /// <summary>
+        /// Asynchrone Funktion die die Bild Speicherung Visuell darstellt
+        /// Hat nicht mit der wirklichen Bildspeicher dauer zu tun
+        /// </summary>
         public async void showCustomPicturesSaveDialog()
         {
             this.MetroDialogOptions.ColorScheme = MetroDialogColorScheme.Accented;

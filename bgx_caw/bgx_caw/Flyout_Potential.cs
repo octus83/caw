@@ -6,39 +6,34 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace bgx_caw
-{
+{ /// <summary>
+    /// Logik des Potential Flyouts
+    /// </summary>
     public partial class MainWindow
-    {
+    {  /// <summary>
+        /// Click Event des Potential Tile aus dem Info Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tile_Potential(object sender, RoutedEventArgs e)
         {
             buildPotentialFlyout();
         }
+        /// <summary>
+        /// Click Event eines Tile aus dem Potential Flyouts
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tile_Potential_Click(object sender, EventArgs e)
         {
-            stack_right_sites.Children.Clear();
             MyTile tile = sender as MyTile;
-            Potential p = (Potential)tile.Data;
             List<Page> list = new List<Page>();
             list = data.getPagenumbersFromPotentialNames(tile.Title);
-
-
-            if (!flo_right_sites.IsOpen)
-            {
-                closeAllRightFlyouts();
-                flo_right_sites.IsOpen = true;
-            }
-            foreach (var item in list)
-            {
-                int page = (item.PageInDiagramm +1);
-                MyTile t1 = new MyTile();
-                t1.Title =  page.ToString()+" | "+item.Title;
-                t1.Data = item;
-                t1.Width = 150;
-                t1.Height = 80;
-                t1.Click += new RoutedEventHandler(Tile_Site_Click);
-                stack_right_sites.Children.Add(t1);
-            }
+            buildPagenumberFlyout(list);
         }
+        /// <summary>
+        /// Erzeugt das Potential Fylout anhand der aktuellen Seitenzahl
+        /// </summary>
         private void buildPotentialFlyout()
         {
             stack_left_potential.Children.Clear();

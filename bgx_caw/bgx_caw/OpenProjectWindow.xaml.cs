@@ -17,25 +17,40 @@ using System.IO;
 namespace bgx_caw
 {
     /// <summary>
-    /// Interaction logic for OpenProjectWindow.xaml
+    /// Klasse die ein Fenster öffnet um ein 
+    /// Projekt/Diagramm auszuwählen
     /// </summary>
     public partial class OpenProjectWindow : Window
     {
+        /// <summary>
+        /// Liste aller gefunden Projekte/Diagramme der Datenbank
+        /// </summary>
         private List<Diagramm> diagrammsList;
+        /// <summary>
+        /// Referenz auf das Hauptfenster
+        /// </summary>
         private MainWindow caller;
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public OpenProjectWindow()
         {
             InitializeComponent();
             refreshDiagrammList();
         }
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="caller"></param>
         public OpenProjectWindow(MainWindow caller)
         {
             InitializeComponent();
             refreshDiagrammList();
             this.caller = caller;
         }
-
+        /// <summary>
+        /// Erzeugt die Projekt/Diagramm Liste
+        /// </summary>
         private void refreshDiagrammList()
         {
             try
@@ -54,7 +69,7 @@ namespace bgx_caw
             }
         }
         /// <summary>
-        /// produces the List for the ListBox out of the diagrammList
+        /// Erzeugt die Liste der Projekte/Diagramme
         /// </summary>
         /// <param name="list"></param>
         /// <returns></returns>
@@ -67,7 +82,11 @@ namespace bgx_caw
             }
             return listBoxString;
         }
-
+        /// <summary>
+        /// Click Event dess Projekt/Diagramm Öffnen Buttons
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_OpenProject(object sender, RoutedEventArgs e)
         {
             if (projectList.SelectedIndex != -1)

@@ -350,7 +350,12 @@ namespace bgx_caw
             sql_cmd.ExecuteNonQuery();
 
         }
-
+        /// <summary>
+        /// Liest die Bilder (Orginal und Custom BLOBS) und entsprechende Informationen dazu aus der
+        /// Datenbank und speichert sie als CustomBitmapImage
+        /// </summary>
+        /// <param name="id">Seiten ID</param>
+        /// <returns></returns>
         public CustomBitmapImage getBLOB(String id)
         {
 
@@ -363,7 +368,7 @@ namespace bgx_caw
             {
 
                 cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);
-
+                //Falls kein custom Bild exestiert
                 if (!data_reader.IsDBNull(3))
                 {
                     Console.WriteLine("Ausgabe -> Customimage was not null");
@@ -380,7 +385,12 @@ namespace bgx_caw
             data_reader.Close();
             return cbi;
         }
-
+        /// <summary>
+        /// Liest die Bilder (Orginal und Custom BLOBS) und entsprechende Informationen dazu aus der
+        /// Datenbank und speichert sie als CustomBitmapImage mit Priorität als eigenständige Verbindung
+        /// </summary>
+        /// <param name="id">Seiten ID</param>
+        /// <returns></returns>
         public CustomBitmapImage getBLOBFast(String id)
         {
             SqlConnection single_sql_connection;
@@ -414,7 +424,11 @@ namespace bgx_caw
             single_sql_connection.Close();
             return cbi;
         }
-
+        /// <summary>
+        /// Erzeugt aus einem ByteArray ein BitmapImage
+        /// </summary>
+        /// <param name="imageBytes"></param>
+        /// <returns></returns>
         private BitmapImage createbitmapsource(byte[] imageBytes)
         {
             var bitmapImage = new BitmapImage();
@@ -424,13 +438,17 @@ namespace bgx_caw
             bitmapImage.EndInit();
             return bitmapImage;
         }
-
+        /// <summary>
+        /// Schreibt ein ByteArray in die Page Tabelle ins CustomBLOB feld 
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="p_id"></param>
         public void writeCustomBlobToDatabase(byte[] b, String p_id)
         {
             sql_cmd = new SqlCommand();
             sql_cmd.Connection = sql_connection;
         
-            try//Schreibe Potential-Daten in DB, wenn nicht vorhanden
+            try
             {
                 sql_cmd.Parameters.Add("@CustomBLOB", SqlDbType.Image).Value = b;
                 sql_cmd.CommandText = "UPDATE dbo.tblPage SET CustomBLOB= @CustomBLOB WHERE P_Id='" + p_id + "'";

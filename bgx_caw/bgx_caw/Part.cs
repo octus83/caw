@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace bgx_caw
 {
+    /// <summary>
+    /// Representiert eine Datenbank Part Tabelle als Objekt
+    /// </summary>
     public class Part
     {
         private String _p_id;

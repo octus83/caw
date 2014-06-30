@@ -142,7 +142,11 @@ namespace bgx_caw
                 config.Save(ConfigurationSaveMode.Modified);
             }
         }
+
         private State _projectState;
+        /// <summary>
+        /// Programmzustand 
+        /// </summary>
         public State ProjectState
         {
             get
@@ -156,6 +160,9 @@ namespace bgx_caw
         }
       
         private int _maxPageNumber = -1;
+        /// <summary>
+        /// Maximale Seizenzahl eines Diagramms
+        /// </summary>
         public int MaxPageNumber
         {
             get
@@ -169,6 +176,9 @@ namespace bgx_caw
 
         }
         private String _diagrammId;
+        /// <summary>
+        /// Diagramm ID (Primary Key) eines Diagramms aus der Datenbank
+        /// </summary>
         public String DiagrammId
         {
             get
@@ -183,7 +193,9 @@ namespace bgx_caw
                 Console.WriteLine("Console -> with Maxpagenumber : " + MaxPageNumber);
             }
         }
-
+        /// <summary>
+        /// Constructor 
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
@@ -191,7 +203,11 @@ namespace bgx_caw
             ProjectState = State.NoProjectSelected;
            
         }
-
+        /// <summary>
+        /// Projekt Öffnen Button event
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void win_Comm_btn_Project_Open_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -210,50 +226,68 @@ namespace bgx_caw
             }
             
         }
-        private void openInfo()
-        {
-           
-            if (ProjectState == State.ProjectSelected)
-            {
-                if (! flo_right_info.IsOpen)
-                {
-                    closeAllRightFlyouts();
-                    flo_right_info.IsOpen = true;
-                }
-            }
-            else
-            {
-                MessageBox.Show("No Project selected");
-            }
-        }
+      
 
-        private void Button_next_page(object sender, RoutedEventArgs e)
-        {
-            nextPage();
-        }
-
-        private void Button_previous_page(object sender, RoutedEventArgs e)
-        {
-            previousPage();
-        }
+      /// <summary>
+      /// Rechte Maus Taste Event auf dem Anzeige Container
+      /// Öffnet das Info Flyout
+      /// </summary>
+      /// <param name="sender"></param>
+      /// <param name="e"></param>
         private void renderContainer_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             openInfo();
         }
-
-        private void Button_open_info(object sender, RoutedEventArgs e)
-        {
-
-            openInfo();
-        }
-
       
+        /// <summary>
+        /// Click auf dem Seitenzahl Label Event
+        /// Öffnet das Jump to Page Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void sitenumberLabel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             flo_bott_jump.IsOpen = true;
             jump_to_page_textBox.Focus();
         }
 
+        /// <summary>
+        /// Mausrad event für Seitenwechsel
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (ProjectState == State.ProjectSelected)
+            {
+                if (e.Delta > 0)
+                {
+                    previousPage();
+                }
+                else if (e.Delta < 0)
+                {
+                    nextPage();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Öffnet das Info Flyout auf der rechten Seite
+        /// </summary>
+        private void openInfo()
+        {
+            if (ProjectState == State.ProjectSelected)
+            {
+                if (!flo_right_info.IsOpen)
+                {
+                    closeAllRightFlyouts();
+                    flo_right_info.IsOpen = true;
+                }
+            }
+        }
+        /// <summary>
+        /// Nächste Seite eines Diagramms
+        /// </summary>
         private void nextPage()
         {
             if (ProjectState == State.ProjectSelected)
@@ -267,7 +301,9 @@ namespace bgx_caw
                 }
             }
         }
-
+        /// <summary>
+        /// vorherige Seite eines Diagramms
+        /// </summary>
         private void previousPage()
         {
             if (ProjectState == State.ProjectSelected)
@@ -281,6 +317,10 @@ namespace bgx_caw
                 }
             }
         }
+        /// <summary>
+        /// Spring zu Seite X eines Diagramms
+        /// </summary>
+        /// <param name="page"></param>
         private void goToPage(int page)
         {
             if (ProjectState == State.ProjectSelected)
@@ -294,6 +334,10 @@ namespace bgx_caw
                 }
             }
         }
+        /// <summary>
+        /// Überprüft welches Flyout offen ist und 
+        /// erstellt dementsprechend die Informationen
+        /// </summary>
         private void checkWhichFlyoutIsOpen()
         {
             if (flo_left_parts.IsOpen)
@@ -305,12 +349,17 @@ namespace bgx_caw
                 buildPotentialFlyout();
             }
         }
-
+        /// <summary>
+        /// Aktualisierung der Seitenzahl  
+        /// </summary>
+        /// <param name="update"></param>
         private void updatePagenumberLabel(String update)
         {
             sitenumberLabel.Content = update + "/" + this.MaxPageNumber;
         }
-
+        /// <summary>
+        /// Wechsel eines Bildes anhand der Aktuellen Seitenzhal
+        /// </summary>
         private void changePicture()
         {
             if (ProjectState == State.ProjectSelected)
@@ -320,18 +369,19 @@ namespace bgx_caw
 
                 if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
                 {
-
+                    // Überprüfung ob eine Orginal Bilddatei vorhanden ist
+                    // ansonsten wird sie nachgeladen
                     if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
                     {
                         loadPictureToFileystemWithPriority(actualPageNumber);
-                    }
-                  
+                    }                 
                     if(checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
                     {
-                     showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
-                    } else
+                        showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
+                    } 
+                    else
                     {
-                          showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                        showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
                     }
 
                 }
@@ -341,7 +391,11 @@ namespace bgx_caw
                 }
             }
         }
-
+        /// <summary>
+        /// Erzeugt ein BitmapImage aus einem Dateipfad
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private BitmapImage getBitmapImageFromUri(String path)
         {
             BitmapImage myBitmapImage = new BitmapImage();
@@ -350,20 +404,26 @@ namespace bgx_caw
             myBitmapImage.EndInit();
             return myBitmapImage;
         }
-
+        /// <summary>
+        /// Schließt alle Flyouts die sich links öffnen
+        /// </summary>
         private void closeAllLeftFlyouts()
         {
             flo_left_potential.IsOpen = false;
             flo_left_search.IsOpen = false;
             flo_left_parts.IsOpen = false;
         }
-
+        /// <summary>
+        /// schließt alle Fylouts die sich rechts öffnen
+        /// </summary>
         private void closeAllRightFlyouts()
         {
             flo_right_info.IsOpen = false;
             flo_right_sites.IsOpen = false;
         }
-
+        /// <summary>
+        /// schließt alle Fylouts 
+        /// </summary>
         private void closeAllFlyouts()
         {
             closeAllLeftFlyouts();
@@ -371,26 +431,26 @@ namespace bgx_caw
             closeAllTopFlyouts();
             closeAllBottomFlyouts();
         }
+        /// <summary>
+        /// schließt alle Flyouts die sich oben öffnen
+        /// </summary>
         private void closeAllTopFlyouts()
         {
             flo_up_draw.IsOpen = false;
             flo_Settings.IsOpen = false;
         }
+        /// <summary>
+        /// schließt alle Fylouts die sich unten öffnen
+        /// </summary>
         private void closeAllBottomFlyouts()
         {
             flo_bott_jump.IsOpen = false;
         }
-        private void clipBorder_MouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            /*   Point p = e.GetPosition(clipBorder);
-               var st = (ScaleTransform)showImage.RenderTransform;
-               double zoom = e.Delta > 0 ? .2 : -.2;
-               st.ScaleX += zoom;
-               st.ScaleY += zoom;
-               st.CenterX = p.X;
-               st.CenterY = p.Y;*/
-        }
-
+       
+        /// <summary>
+        /// 2 Way Databinding zwischen View und Model
+        /// </summary>
+        /// <param name="name"></param>
         protected void propertyChanged(String name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -400,6 +460,11 @@ namespace bgx_caw
             }
         }
 //---------------------Public functions -----------------------------------------------
+
+        /// <summary>
+        /// setzt das Programm auf default Einstellungen 
+        /// bevor  ein neues Projekt geöffnet wird
+        /// </summary>
         public void cleanProject()
         {
             ProjectState = State.NoProjectSelected;
@@ -407,7 +472,11 @@ namespace bgx_caw
             this.MaxPageNumber = -1;
             this._diagrammId = null;
             this.drawState = DrawState.None;
+            closeAllFlyouts();
         }
+        /// <summary>
+        /// Öffnet ein neues Projekt/Diagramm
+        /// </summary>
         public void onProjectOpen()
         {
            ProjectState = State.ProjectSelected; 
@@ -415,14 +484,20 @@ namespace bgx_caw
            thread.Start();
            onProjectOpenFinish();
         }
-
+        /// <summary>
+        /// Wenn ein neues Projekt/Diagramm geöffnet wurde
+        /// </summary>
         public void onProjectOpenFinish()
         {
             goToPage(1);
             sitenumberLabel.Visibility = Visibility.Visible;
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
         }
-
+        /// <summary>
+        /// Lädt alle Bilder aus der Datenbank in das
+        /// Programmverzeichnis falls sie noch nicht 
+        /// vorhanden sind
+        /// </summary>
         public void getAllPictures()
         {
             try
@@ -441,6 +516,10 @@ namespace bgx_caw
             }
            
         }
+        /// <summary>
+        /// Lädt Bild X mit priorität ins Programmverzeichnis
+        /// </summary>
+        /// <param name="pagenumber"></param>
         public void loadPictureToFileystemWithPriority(int pagenumber)
         {
             Console.WriteLine("Ausgabe -> getting Picture " + pagenumber);
@@ -451,7 +530,10 @@ namespace bgx_caw
                 data.savaCustomBitmapimageToFile(cbi.CustomImage, pagenumber);
             }
         }
-
+        /// <summary>
+        /// Lädt Bild X ins Programmverzeichnis
+        /// </summary>
+        /// <param name="pagenumber"></param>
         public void loadPictureToFilesystem(int pagenumber)
         {
             Console.WriteLine("Ausgabe -> getting Picture " + pagenumber);
@@ -462,6 +544,11 @@ namespace bgx_caw
                 data.savaCustomBitmapimageToFile(cbi.CustomImage, pagenumber);
             }
         }
+        /// <summary>
+        /// Überprüfung ob ein Bild schon vorhanden ist
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public bool checkIfFileExist(String path)
         {
             if (File.Exists(path))
@@ -469,15 +556,30 @@ namespace bgx_caw
             else
                 return false;
         }
+        /// <summary>
+        /// Generierung eines Dateipfades für ein Orginalbild
+        /// </summary>
+        /// <param name="pagenumber"></param>
+        /// <returns></returns>
         public String getOrginalPicturesPath(int pagenumber)
         {
             return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "orginal.jpg"); ;
         }
+        /// <summary>
+        /// Generierung eines Dateipfades für ein custom Bild
+        /// </summary>
+        /// <param name="pagenumber"></param>
+        /// <returns></returns>
         public String getCustomPicturesPath(int pagenumber)
         {
             return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "custom.jpg"); ;
         }
-
+        /// <summary>
+        /// Jump to Page Button Click Event
+        /// Versuch zu Seite X des Projektes/Diagramms zu springen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tile_Jump_To_Page_Click(object sender, RoutedEventArgs e)
         {
             int page;

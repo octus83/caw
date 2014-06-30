@@ -6,14 +6,37 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace bgx_caw
-{
+{   /// <summary>
+    /// Logik des Part Flyouts
+    /// </summary>
     public partial class MainWindow
     {
+        /// <summary>
+        /// Click Event des Part Tile aus dem Info Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Tile_Part(Object sender, EventArgs e)
         {
             buildPartFlyout();
         }
-
+        /// <summary>
+        /// Click Event eines Tile aus dem Part Flyout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Tile_Part_Click(object sender, EventArgs e)
+        {
+            stack_right_sites.Children.Clear();
+            MyTile tile = sender as MyTile;         
+            List<Page> list = new List<Page>();
+            list = data.getPagenumbersFromPartlNames(tile.Title);
+            buildPagenumberFlyout(list);        
+        }
+        /// <summary>
+        /// Erzeugt das PartFylout anhand der aktuellen Seitenzahl
+        /// 
+        /// </summary>
         private void buildPartFlyout()
         {
             stack_left_parts.Children.Clear();
@@ -40,32 +63,6 @@ namespace bgx_caw
                 }
             }
         }
-        private void Tile_Part_Click(object sender, EventArgs e)
-        {
-            stack_right_sites.Children.Clear();
-            MyTile tile = sender as MyTile;
-            Part p = (Part)tile.Data;
-            List<Page> list = new List<Page>();
-            list = data.getPagenumbersFromPartlNames(tile.Title);
-
-            if (!flo_right_sites.IsOpen)
-            {
-                closeAllRightFlyouts();
-                flo_right_sites.IsOpen = true;
-            }
-
-            foreach (var item in list)
-            {
-                int page = (item.PageInDiagramm + 1);
-                MyTile t1 = new MyTile();
-                t1.Title = item.Title;
-                t1.Content = page.ToString();
-                t1.Data = item;
-                t1.Width = 150;
-                t1.Height = 80;
-                t1.Click += new RoutedEventHandler(Tile_Site_Click);
-                stack_right_sites.Children.Add(t1);
-            }
-        }
+        
     }
 }
