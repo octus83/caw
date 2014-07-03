@@ -47,6 +47,12 @@ namespace bgx_caw
         private Data data;
 
         /// <summary>
+        /// Setzt ein lock auf die Aktuelle Seite die grade aus
+        /// der Datenbank geholt wird
+        /// </summary>
+        private int lockPage = -1;
+
+        /// <summary>
         /// config für Datenbanknamen , Programm pfad und DatenbankAdresse
         /// </summary>
         Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -377,30 +383,39 @@ namespace bgx_caw
         {
             if (ProjectState == State.ProjectSelected)
             {
-                // clear possible drawings
-                view.Children.Clear();
-
-                if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
+                if (actualPageNumber != lockPage)
                 {
-                    // Überprüfung ob eine Orginal Bilddatei vorhanden ist
-                    // ansonsten wird sie nachgeladen
-                    if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
+                    // clear possible drawings
+                    view.Children.Clear();
+
+                    if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
                     {
-                        loadPictureToFileystemWithPriority(actualPageNumber);
-                    }                 
-                    if(checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
-                    {
-                        showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
-                    } 
+                        // Überprüfung ob eine Orginal Bilddatei vorhanden ist
+                        // ansonsten wird sie nachgeladen
+                        if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
+                        {
+                            loadPictureToFileystemWithPriority(actualPageNumber);
+                        }
+                        if (checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
+                        {
+                            showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
+                        }
+                        else
+                        {
+                            showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                        }
+
+                    }
                     else
                     {
-                        showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                        MessageBox.Show("no pictures found");
                     }
-
                 }
                 else
                 {
-                    MessageBox.Show("no pictures found");
+                    Console.Write("LOCK PAGE Ausgeführt");
+                    Thread.Sleep(1000);
+                    changePicture();
                 }
             }
         }
@@ -519,7 +534,9 @@ namespace bgx_caw
                 {
                     if (!checkIfFileExist(getOrginalPicturesPath(i)))
                     {
+                        lockPage = i;
                         loadPictureToFilesystem(i);
+                        lockPage = -1;
                     }
                 }
             }
