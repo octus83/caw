@@ -79,10 +79,6 @@ namespace bgx_caw_backend
                         progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
                     }
 
-                    //Kopiere pdf in project - Ordner
-                    //progressDialog.SetMessage("PDF wird kopiert");
-                    //System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
-
                     progressDialog.SetProgress(0.9);
 
                     progressDialog.SetMessage("Diagramm in Datenbank anlegen");

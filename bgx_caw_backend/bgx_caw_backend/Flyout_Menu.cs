@@ -68,7 +68,7 @@ namespace bgx_caw_backend
                     db_caw.deleteDiagramm(RecentDiagramm.ID);
                 }
 
-                Directory.Delete(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID), true);
+                //Directory.Delete(System.IO.Path.Combine(ProgrammPath, RecentDiagramm.ID), true);
 
 
                 await progressDialog.CloseAsync();
