@@ -10,13 +10,14 @@ namespace bgx_caw_backend
 {
     class DXF_Parser
     {
+        private int pageCounter = 0;
+
         public Diagramm Diagramm
         {
             private set;
             get;
         }
-        private int pageCounter = 0;
-
+        
         private static bool FindAttribute(String attr)
         {
             if (attr == "AcDbAttribute")
@@ -31,8 +32,6 @@ namespace bgx_caw_backend
 
         public DXF_Parser(DirectoryInfo folderPath)
         {
-            //Diagramm = new Diagramm(Guid.NewGuid());
-
             Diagramm = new Diagramm {   
                                         ID = Guid.NewGuid().ToString(),
                                         Date_Init = DateTime.Now,
@@ -76,16 +75,16 @@ namespace bgx_caw_backend
             }            
         }
 
+        /// <summary>
+        /// Parses the MainData from first Page of DXF-Diagramm
+        /// </summary>
+        /// <param name="rowsList">List of String to check for Blocks</param>
         private void getMainData(List<String> rowsList)
         {
             for (int i = 1; i < rowsList.Count; i++)
             {
                 switch (rowsList[i])
                 {
-                    case "EPLAN420": //Eigenschaftsplazierung.Anschlussbezeichnung
-                        break;
-                    case "EPLAN442": //Eigenschaftsplazierung.Abbruchstellenplatzierung
-                        break;
                     case "EPLAN451": //Sondertexte.Projekte
 
                         if (int.Parse(rowsList[i + 1]) == 62) //wenn echter block und nicht definition
@@ -198,6 +197,10 @@ namespace bgx_caw_backend
             }
         }
 
+        /// <summary>
+        /// Parses the Information about Parts and Potentials from regular Pages
+        /// </summary>
+        /// <param name="rowsList">List of String to check for Blocks</param>
         private void getBlocks(List<String> rowsList)
         {
             for(int i = 1; i < rowsList.Count; i++)
@@ -260,13 +263,6 @@ namespace bgx_caw_backend
                             }
                         }
                         
-                        break;
-
-                    case "EPLAN420":
-                        break;
-                    case "EPLAN442":
-                        break;
-                    case "EPLAN451":
                         break;
                     case "EPLAN452":
                         if (rowsList[i + 1] == " 62") //wenn echter block und nicht definition

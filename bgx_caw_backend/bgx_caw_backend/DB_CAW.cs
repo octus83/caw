@@ -53,7 +53,11 @@ namespace bgx_caw_backend
     {
         SqlCommand sql_cmd;
 
-        public List<Diagramm> getDiagramms() //Liste mit allen Diagrammen, allerdings nur "Grunddaten" ohne Seiten/Potentiale/Bauteile etc
+        /// <summary>
+        /// Retrieves Diagramm-Objekt, but only with MainData
+        /// </summary>
+        /// <returns>Diagramm</returns>
+        public List<Diagramm> getDiagramms()
         {
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm");
             sql_cmd.Connection = sql_connection;
@@ -82,10 +86,14 @@ namespace bgx_caw_backend
 
             result_list.Reverse();
 
-            return result_list;
-            
+            return result_list;            
         }
 
+        /// <summary>
+        /// Retrieves a whole Diagramm-Objekt from Database
+        /// </summary>
+        /// <param name="id">Diagramm-ID to get</param>
+        /// <returns>Diagramm</returns>
         public Diagramm getDiagramm(String id) //Ein komplettes Diagramm-Objekt
         {
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tbldiagramm WHERE D_ID ='" + id + "'");
@@ -194,7 +202,7 @@ namespace bgx_caw_backend
         /// Returns all BLOB-Images from a given Diagramm
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>List of byte[]</returns>
         public List<Byte[]> getAllBLOBFromDiagramm(String id, Boolean withCustom)
         {
             List<byte[]> result = new List<byte[]>();
@@ -241,7 +249,10 @@ namespace bgx_caw_backend
         }
 
 
-
+        /// <summary>
+        /// Adds Diagramm to Database
+        /// </summary>
+        /// <param name="diagramm">Diagramm to add</param>
         public void addDiagramm(Diagramm diagramm) //Fügt Diagramm-Objekt in Datenbank ein
         {
             sql_cmd = new SqlCommand();
@@ -358,7 +369,11 @@ namespace bgx_caw_backend
             }
         }
 
-        public void deleteDiagramm(String id) //Löscht alle Einträge zu einer Diagramm ID
+        /// <summary>
+        /// Deletes all DB-Entries depending to given Diagramm-ID
+        /// </summary>
+        /// <param name="id">Diagramm-ID to delete</param>
+        public void deleteDiagramm(String id)
         {
             List<String> pages = new List<String>();
 

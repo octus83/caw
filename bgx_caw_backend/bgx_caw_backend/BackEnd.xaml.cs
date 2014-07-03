@@ -33,10 +33,15 @@ namespace bgx_caw_backend
     /// </summary>
     public partial class BackEnd : INotifyPropertyChanged
     {
+        #region Properties
         public event PropertyChangedEventHandler PropertyChanged;
-        Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        public Configuration config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-        private DXF_Parser dxf_parser;
+        private DXF_Parser DXF_parser
+        {
+            get;
+            set;
+        }
 
         public BindingList<Diagramm> DiagrammsList
         {
@@ -221,6 +226,9 @@ namespace bgx_caw_backend
             }
         }
 
+        #endregion
+
+        #region Constructors
         public BackEnd()
         {
             InitializeComponent();
@@ -231,7 +239,14 @@ namespace bgx_caw_backend
                 flo_Settings.IsOpen = true;
             }            
         }
+        #endregion
 
+        #region Functions
+
+        /// <summary>
+        /// Fires new PropertyChangedEvent
+        /// </summary>
+        /// <param name="name">Property to Update</param>
         protected void propertyChanged(String name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -242,6 +257,11 @@ namespace bgx_caw_backend
             }
         }
 
+        /// <summary>
+        /// Gets called by click on Toolbar-Button Import
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void win_Comm_btn_Import_Click(object sender, RoutedEventArgs e)
         {
             flo_Menu.IsOpen = false;
@@ -250,6 +270,11 @@ namespace bgx_caw_backend
             flo_bottom.IsOpen ^= true;
         }
 
+        /// <summary>
+        /// Gets called by click on Toolbar-Button Einstellungen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void win_Comm_btn_Settings_Click(object sender, RoutedEventArgs e)
         {
             flo_Menu.IsOpen = false;
@@ -258,6 +283,12 @@ namespace bgx_caw_backend
             flo_Settings.IsOpen ^= true;
         }
 
+        /// <summary>
+        /// Gets called when Listselection has changed
+        /// Opens Flyout-Menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dgd_diagrammsList_Select(object sender, SelectionChangedEventArgs e)
         {
             if (dgd_diagrammsList.SelectedItem != null)
@@ -275,6 +306,12 @@ namespace bgx_caw_backend
             }
         }
 
+        /// <summary>
+        /// Gets called when MouseLeftButton on List
+        /// Opens Flyout-Menu
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void dgd_diagrammsList_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (dgd_diagrammsList.SelectedItem != null)
@@ -291,8 +328,7 @@ namespace bgx_caw_backend
                 flo_Menu.IsOpen = false;
             }
         }
-
-        
+      
         #region ScaleValue Depdency Property
         public static readonly DependencyProperty ScaleValueProperty = DependencyProperty.Register("ScaleValue", typeof(double), typeof(BackEnd), new UIPropertyMetadata(1.0, new PropertyChangedCallback(OnScaleValueChanged), new CoerceValueCallback(OnCoerceScaleValue)));
 
@@ -344,8 +380,6 @@ namespace bgx_caw_backend
         {
 
         }
-       
-        #endregion
 
         private void StackPanel_SizeChanged(object sender, EventArgs e)
         {
@@ -360,37 +394,8 @@ namespace bgx_caw_backend
             ScaleValue = (double)OnCoerceScaleValue(stp_Main, value);
         }
 
-        private async void showMessage()
-        {
-            await this.ShowMessageAsync("Fehler", "");
-        }
-
-        private static void GetPdfThumbnail(String sourcePdfFilePath, String destinationPngFilePath, int pageNo)
-        {
-            // Use GhostscriptSharp to convert the pdf to a png
-            GhostscriptWrapper.GenerateOutput(sourcePdfFilePath, destinationPngFilePath,
-                new GhostscriptSettings
-                {
-                    Device = GhostscriptDevices.jpeg,
-                    Page = new GhostscriptPages
-                    {
-                        Start = pageNo,
-                        End = pageNo
-                    },
-                    Resolution = new System.Drawing.Size
-                    {
-                        // Render at 300x300 dpi
-                        Height = 300,
-                        Width = 300
-                    },
-                    Size = new GhostscriptPageSize
-                    {
-                        // The dimentions of the incoming PDF must be
-                        // specified.
-                        Native = GhostscriptPageSizes.a4
-                    }
-                }
-            );
-        }                     
+        #endregion      
+  
+        #endregion
     }
 }
