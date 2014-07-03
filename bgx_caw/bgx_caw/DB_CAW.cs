@@ -367,12 +367,12 @@ namespace bgx_caw
             while (data_reader.Read())
             {
 
-                cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);
+                cbi.OrginalImage = createbitmapImage((byte[])data_reader["BLOB"]);
                 //Falls kein custom Bild exestiert
                 if (!data_reader.IsDBNull(3))
                 {
                     Console.WriteLine("Ausgabe -> Customimage was not null");
-                    cbi.CustomImage = createbitmapsource((byte[])data_reader["CustomBLOB"]);
+                    cbi.CustomImage = createbitmapImage((byte[])data_reader["CustomBLOB"]);
                 }
                 else
                 {
@@ -404,12 +404,12 @@ namespace bgx_caw
             CustomBitmapImage cbi = new CustomBitmapImage();
             while (data_reader.Read())
             {
-                cbi.OrginalImage = createbitmapsource((byte[])data_reader["BLOB"]);
+                cbi.OrginalImage = createbitmapImage((byte[])data_reader["BLOB"]);
 
                 if (!data_reader.IsDBNull(3))
                 {
                     Console.WriteLine("Ausgabe -> Customimage was not null");
-                    cbi.CustomImage = createbitmapsource((byte[])data_reader["CustomBLOB"]);
+                    cbi.CustomImage = createbitmapImage((byte[])data_reader["CustomBLOB"]);
                 }
                 else
                 {
@@ -429,7 +429,7 @@ namespace bgx_caw
         /// </summary>
         /// <param name="imageBytes"></param>
         /// <returns></returns>
-        private BitmapImage createbitmapsource(byte[] imageBytes)
+        private BitmapImage createbitmapImage(byte[] imageBytes)
         {
             var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();

@@ -58,6 +58,13 @@ namespace bgx_caw
         /// <param name="e"></param>
         private void win_Comm_btn_Drawing_Click(object sender, EventArgs e)
         {
+            openDrawFlyout();
+        }
+        /// <summary>
+        /// Öffnet das Zeichnen Flyout
+        /// </summary>
+        private void openDrawFlyout()
+        {
             closeAllRightFlyouts();
             closeAllLeftFlyouts();
             flo_up_draw.IsOpen = true;
