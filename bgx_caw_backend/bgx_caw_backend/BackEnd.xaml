@@ -81,7 +81,7 @@
                         </Rectangle>
                     </Controls:Tile>
                     
-                    <Controls:Tile x:Name="flo_Menu_tle_Print" Title="Drucken" Margin="10,10,10,10" Height="80" Width="80" Click="flo_Menu_tle_Print_Click">
+                    <!--<Controls:Tile x:Name="flo_Menu_tle_Print" Title="Drucken" Margin="10,10,10,10" Height="80" Width="80" Click="flo_Menu_tle_Print_Click">
                         <Rectangle Width="28" Height="25">
                             <Rectangle.Resources>
                                 <SolidColorBrush x:Key="BlackBrush" Color="White" />
@@ -90,7 +90,7 @@
                                 <VisualBrush Stretch="Fill" Visual="{StaticResource appbar_printer}" />
                             </Rectangle.Fill>
                         </Rectangle>                       
-                    </Controls:Tile>
+                    </Controls:Tile>-->
                     
                     <Controls:Tile x:Name="flo_Menu_tle_Export" Title="Export" Margin="10,10,10,10" Height="80" Width="80" Click="flo_Menu_tle_Export_Click">
                         <Rectangle Width="28" Height="25">

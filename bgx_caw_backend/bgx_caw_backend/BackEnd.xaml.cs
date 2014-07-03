@@ -363,14 +363,14 @@ namespace bgx_caw_backend
                     },
                     Resolution = new System.Drawing.Size
                     {
-                        // Render at 72x72 dpi
+                        // Render at 300x300 dpi
                         Height = 300,
                         Width = 300
                     },
                     Size = new GhostscriptPageSize
                     {
                         // The dimentions of the incoming PDF must be
-                        // specified. The example PDF is US Letter sized.
+                        // specified.
                         Native = GhostscriptPageSizes.a4
                     }
                 }

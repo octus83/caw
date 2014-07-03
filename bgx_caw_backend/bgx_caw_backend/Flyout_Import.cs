@@ -80,8 +80,8 @@ namespace bgx_caw_backend
                     }
 
                     //Kopiere pdf in project - Ordner
-                    progressDialog.SetMessage("PDF wird kopiert");
-                    System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
+                    //progressDialog.SetMessage("PDF wird kopiert");
+                    //System.IO.File.Copy(PDFDialog.FileName, System.IO.Path.Combine(diagrammPath, ImportDiagramm.ID + ".pdf"));
 
                     progressDialog.SetProgress(0.9);
 
@@ -97,6 +97,8 @@ namespace bgx_caw_backend
                     await progressDialog.CloseAsync();
 
                     propertyChanged("DiagrammsList");
+
+                    Directory.Delete(diagrammPath, true);
 
                     flo_bottom.IsOpen = false;
                 }
