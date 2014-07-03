@@ -62,7 +62,7 @@ namespace bgx_caw_backend
                     //Create DiagrammFolder (ID)                    
                     System.IO.Directory.CreateDirectory(diagrammPath);
 
-                    await Task.Delay(10);
+                    await Task.Delay(1);
 
                     int counter = 1;
 
@@ -81,7 +81,7 @@ namespace bgx_caw_backend
                         //Bild als Blob in Page-Objekt einfügen
                         page.Image = GetPhoto(System.IO.Path.Combine(pagePath, counter + ".jpg"));
 
-                        await Task.Delay(10);
+                        await Task.Delay(1);
 
                         counter++;
                         progressDialog.SetProgress((0.7 / ImportDiagramm.pages_List.Count) * counter);
