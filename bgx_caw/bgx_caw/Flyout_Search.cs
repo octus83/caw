@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
+using System.Globalization;
 
 namespace bgx_caw
 {/// <summary>
@@ -14,9 +15,9 @@ namespace bgx_caw
     public partial class MainWindow
     {
         /// <summary>
-        /// Liste mit allen Bauteilen eines Projektes/Diagramms
+        /// Liste mit allen Bauteilen,Potentialname und Seitentitel eines Projektes/Diagramms
         /// </summary>
-        private List<Part> _completedParts;
+        private List<String> completeSearchSuggestionList;
         /// <summary>
         /// Click Event des Suchen Tile aus dem Info Flyout
         /// </summary>
@@ -37,21 +38,21 @@ namespace bgx_caw
         {
             if (ProjectState == State.ProjectSelected)
             {
-                if (_completedParts == null)
+                if (completeSearchSuggestionList == null)
                 {
-                    _completedParts = data.getCompletePartList();
+                    completeSearchSuggestionList = data.generateCompleteSearchSuggestionList();
                 }
                 string typedString = txtAuto.Text;
                 List<String> autoList = new List<String>();
                 autoList.Clear();
 
-                foreach (var item in _completedParts)
+                foreach (var item in completeSearchSuggestionList)
                 {
                     if (!string.IsNullOrEmpty(txtAuto.Text))
                     {
-                        if (item.BMK.StartsWith(typedString))
+                        if (item.StartsWith(typedString,true,null))
                         {
-                            autoList.Add(item.BMK);
+                            autoList.Add(item);
 
                         }
                     }
@@ -102,6 +103,8 @@ namespace bgx_caw
         {
             List<Page> list = new List<Page>();
             list = data.getPagenumbersFromPartlNames(txtAuto.Text);
+            list.AddRange(data.getPagenumbersFromPotentialNames(txtAuto.Text));
+            list.AddRange(data.getPagenumbersFromSiteTitle(txtAuto.Text));
             buildPagenumberFlyout(list);         
         }
     }

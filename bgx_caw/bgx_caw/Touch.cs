@@ -30,7 +30,11 @@ namespace bgx_caw
         private void renderContainer_MouseLeftDown(object sender, MouseButtonEventArgs e)
         {
             touchPointStart = e.GetPosition(view);
-            Console.WriteLine("Ausgabe -> Touchpointstart : (" + touchPointStart.X + ", " + touchPointStart.Y + ")");
+            if (! (drawState == DrawState.None))
+            {
+                closeAllFlyouts();
+            }
+          //  Console.WriteLine("Ausgabe -> Touchpointstart : (" + touchPointStart.X + ", " + touchPointStart.Y + ")");
         }
         /// <summary>
         /// Mouse up oder loslassen der berührung Event
@@ -40,7 +44,7 @@ namespace bgx_caw
         private void renderContainer_MouseLeftUp(object sender, MouseButtonEventArgs e)
         {
             touchPointEnd = e.GetPosition(view);
-            Console.WriteLine("Ausgabe -> Touchpointstart : (" + touchPointEnd.X + ", " + touchPointEnd.Y + ")");
+           // Console.WriteLine("Ausgabe -> Touchpointstart : (" + touchPointEnd.X + ", " + touchPointEnd.Y + ")");
             checkTouchGesture();
         }
         /// <summary>

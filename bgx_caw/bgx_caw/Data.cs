@@ -154,6 +154,18 @@ namespace bgx_caw
             }
             return orderPageList(list);
         }
+        public List<Page> getPagenumbersFromSiteTitle(String name)
+        {
+            List<Page> list = new List<Page>();
+            foreach (var item in diagramm.pages_List)
+            {
+                if (item.Title.Equals(name))
+                {
+                    list.Add(item);
+                }
+            }
+            return orderPageList(list);
+        }
         /// <summary>
         /// Liefert die P_ID ( Primary Key) von einer
         /// Seitenzahl eines Projektes/Diagramms zurück
@@ -199,6 +211,49 @@ namespace bgx_caw
             return list;
         }
         /// <summary>
+        /// Liefert eine Liste mit allen Potentiale
+        /// eines Projektes/Diagramms zurück
+        /// </summary>
+        /// <returns></returns>
+        public List<Potential> getCompletePotentialList()
+        {
+            List<Potential> list = new List<Potential>();
+            foreach (var itemA in  diagramm.pages_List)
+            {
+                foreach (var itemB in itemA.Potential_List)
+                {
+                    list.Add(itemB);
+                }
+            }
+            return list;
+        }
+        /// <summary>
+        /// Generiert eine Liste mit allen Potentialname, Bauteilen und Seitentitel
+        /// </summary>
+        /// <returns></returns>
+        public List<String> generateCompleteSearchSuggestionList()
+        {
+            List<String> list = new List<String>();       
+            List<Part> tempPartList= getCompletePartList();
+            List<Potential> tempPotentialList = getCompletePotentialList();
+            foreach (var item in tempPartList)
+	        {
+                list.Add(item.BMK);
+	        }
+            foreach (var item in tempPotentialList)
+            {
+                list.Add(item.Name);
+            }
+            foreach (var item in diagramm.pages_List)
+            {
+                list.Add(item.Title);
+            }
+            List<String> distincList = new List<String>();
+            distincList.AddRange(list.Distinct());
+
+            return distincList;
+        }
+        /// <summary>
         /// Lädt ein CustomBitmapImage Objekt mit Orginal und Custom Bild
         /// aus der Datenbank
         /// </summary>
@@ -228,6 +283,7 @@ namespace bgx_caw
         {
             String p_id = getPIDFromPagenumber(page);
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
+           // GifBitmapEncoder encoder = new GifBitmapEncoder();
             String diagrammPath = System.IO.Path.Combine(caller.ProgrammPath, caller.DiagrammId);
 
             if(!System.IO.Directory.Exists(diagrammPath))

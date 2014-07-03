@@ -236,7 +236,17 @@ namespace bgx_caw
       /// <param name="e"></param>
         private void renderContainer_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            openInfo();
+            if (ProjectState == State.ProjectSelected)
+            {
+                if (drawState == DrawState.None)
+                {
+                    openInfo();
+                }
+                else
+                {
+                    openDrawFlyout();
+                }
+            }
         }
       
         /// <summary>
@@ -260,13 +270,16 @@ namespace bgx_caw
         {
             if (ProjectState == State.ProjectSelected)
             {
-                if (e.Delta > 0)
+                if (drawState == DrawState.None)
                 {
-                    previousPage();
-                }
-                else if (e.Delta < 0)
-                {
-                    nextPage();
+                    if (e.Delta > 0)
+                    {
+                        previousPage();
+                    }
+                    else if (e.Delta < 0)
+                    {
+                        nextPage();
+                    }
                 }
             }
         }
