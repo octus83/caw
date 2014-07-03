@@ -92,7 +92,7 @@ namespace bgx_caw_backend
             sql_cmd.Connection = sql_connection;
             SqlDataReader data_reader = sql_cmd.ExecuteReader();
             Diagramm result = new Diagramm();
-
+            
             while (data_reader.Read())
             {
                 result = new Diagramm
@@ -112,12 +112,10 @@ namespace bgx_caw_backend
                     Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
                     ProductionPlace = data_reader["ProductionPlace"].ToString(),
                     IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                    //SourceFolder = data_reader["SourceFolder"].ToString()
                 };
             }
 
             data_reader.Close();
-
 
             sql_cmd = new SqlCommand("SELECT * FROM dbo.tblPage WHERE D_id = '" + id + "'");
             sql_cmd.Connection = sql_connection;
@@ -136,7 +134,6 @@ namespace bgx_caw_backend
                                                     PrePreFix = data_reader["PrePreFix"].ToString(),
                                                     Title = data_reader["Title"].ToString(),
                                                     PageInDiagramm = Int32.Parse(data_reader["PageInDiagramm"].ToString()),
-                                                    /*Version = Int32.Parse(data_reader["Version"].ToString())*/
                                                 });                    
             }
 
@@ -192,45 +189,58 @@ namespace bgx_caw_backend
             return result;
         }
 
-        public List<Byte[]> getAllBLOBFromDiagramm(String id)
+
+        /// <summary>
+        /// Returns all BLOB-Images from a given Diagramm
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<Byte[]> getAllBLOBFromDiagramm(String id, Boolean withCustom)
         {
-            sql_cmd = new SqlCommand("SELECT BLOB FROM dbo.tblPage WHERE D_ID ='" + id + "' ORDER BY PageInDiagramm");
-            sql_cmd.Connection = sql_connection;
-            
-            SqlDataReader data_reader = sql_cmd.ExecuteReader();
             List<byte[]> result = new List<byte[]>();
 
-            while (data_reader.Read())
+            if (withCustom)
             {
-                result.Add((byte[])data_reader["BLOB"]);
+                sql_cmd = new SqlCommand("SELECT CustomBLOB, BLOB FROM dbo.tblPage WHERE D_ID ='" + id + "'  ORDER BY PageInDiagramm ");
 
-                /*result = new Diagramm
+                sql_cmd.Connection = sql_connection;
+
+                SqlDataReader data_reader = sql_cmd.ExecuteReader();
+                
+                while (data_reader.Read())
                 {
-                    ID = data_reader["D_id"].ToString(),
-                    Customer = data_reader["Customer"].ToString(),
-                    EndCustomer = data_reader["EndCustomer"].ToString(),
-                    FieldName = data_reader["FieldName"].ToString(),
-                    JobNumber = data_reader["JobNumber"].ToString(),
-                    SerialNumber = data_reader["SerialNumber"].ToString(),
-                    ProjectNumber = data_reader["ProjectNumber"].ToString(),
-                    ProjectName = data_reader["ProjectName"].ToString(),
-                    AddressRow1 = data_reader["AddressRow1"].ToString(),
-                    AddressRow2 = data_reader["AddressRow2"].ToString(),
-                    AddressRow3 = data_reader["AddressRow3"].ToString(),
-                    Date_Init = DateTime.Parse(data_reader["Date_Init"].ToString()),
-                    Date_LastChange = DateTime.Parse(data_reader["Date_Lastchange"].ToString()),
-                    ProductionPlace = data_reader["ProductionPlace"].ToString(),
-                    IsActive = Boolean.Parse(data_reader["isActive"].ToString()),
-                    //SourceFolder = data_reader["SourceFolder"].ToString()
-                };*/
+                    try
+                    {
+                        result.Add((byte[])data_reader["CustomBLOB"]);
+                    }
+                    catch
+                    {
+                        result.Add((byte[])data_reader["BLOB"]);
+                    }                    
+                }
+
+                data_reader.Close();
             }
+            else
+            {
+                sql_cmd = new SqlCommand("SELECT BLOB FROM dbo.tblPage WHERE D_ID ='" + id + "' ORDER BY PageInDiagramm");
 
-            data_reader.Close();
+                sql_cmd.Connection = sql_connection;
 
+                SqlDataReader data_reader = sql_cmd.ExecuteReader();
 
+                while (data_reader.Read())
+                {
+                    result.Add((byte[])data_reader["BLOB"]);
+                }
+
+                data_reader.Close();
+            }
 
             return result;
         }
+
+
 
         public void addDiagramm(Diagramm diagramm) //Fügt Diagramm-Objekt in Datenbank ein
         {
@@ -252,7 +262,6 @@ namespace bgx_caw_backend
             sql_cmd.Parameters.Add("@Date_Init", SqlDbType.DateTime2).Value = diagramm.Date_Init;
             sql_cmd.Parameters.Add("@Date_LastChange", SqlDbType.DateTime2).Value = diagramm.Date_LastChange;
             sql_cmd.Parameters.Add("@IsActive", SqlDbType.Bit, 50).Value = diagramm.IsActive;
-            //sql_cmd.Parameters.Add("@SourceFolder", SqlDbType.VarChar, 50).Value = System.IO.Path.Combine(config.AppSettings.Settings["ProgrammPath"].Value, diagramm.ID);
 
             try //try to INSERT Diagrammdata, when not exists
             {
@@ -317,7 +326,6 @@ namespace bgx_caw_backend
                     }
                     catch(Exception exc)
                     {
-                        //throw;
                         //Delete all Data to this Diagramm
                         MessageBox.Show(exc.Message);
                     }
@@ -343,7 +351,6 @@ namespace bgx_caw_backend
                     }
                     catch(Exception exc)
                     {
-                        //throw;
                         //Delete all Data to this Diagramm
                         MessageBox.Show(exc.Message);
                     }

@@ -98,6 +98,25 @@ namespace bgx_caw_backend
             }
         }
 
+        private FolderBrowserDialog _exportDialog;
+        public FolderBrowserDialog ExportDialog
+        {
+            get
+            {
+                if(_exportDialog == null)
+                {
+                    _exportDialog = new FolderBrowserDialog();
+                    _exportDialog.SelectedPath = ProgrammPath;
+                }
+                return _exportDialog;
+            }
+            set
+            {
+                _exportDialog = value;
+                propertyChanged("ExportDialog");
+            }
+        }
+
         private OpenFileDialog _pdfdialog;
         public OpenFileDialog PDFDialog
         {
@@ -112,7 +131,6 @@ namespace bgx_caw_backend
             }
         }
 
-        //private PdfReader pdfReader;
         public PdfReader PDFReader
         {
             get;
@@ -124,13 +142,11 @@ namespace bgx_caw_backend
             get
             {
                 if (config.AppSettings.Settings["DataSource"] == null)
-                {
-                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Black;                   
+                {                   
                     return null;
                 }
                 else
                 {
-                    //flo_Settings_tbx_dsc.BorderBrush = Brushes.Red;
                     return config.AppSettings.Settings["DataSource"].Value;
                 }
             }
@@ -375,7 +391,6 @@ namespace bgx_caw_backend
                     }
                 }
             );
-        }
-                      
+        }                     
     }
 }
