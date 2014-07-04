@@ -25,6 +25,7 @@ namespace bgx_caw
         /// <param name="e"></param>
         private void Tile_Search(object sender, EventArgs e)
         {
+            closeAllRightFlyouts();
             closeAllLeftFlyouts();
             flo_left_search.IsOpen = true;
             txtAuto.Focus();

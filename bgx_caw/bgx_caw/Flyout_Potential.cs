@@ -17,6 +17,7 @@ namespace bgx_caw
         /// <param name="e"></param>
         private void Tile_Potential(object sender, RoutedEventArgs e)
         {
+            closeAllRightFlyouts();
             buildPotentialFlyout();
         }
         /// <summary>
@@ -43,7 +44,7 @@ namespace bgx_caw
                 {
                     closeAllLeftFlyouts();
                     flo_left_potential.IsOpen = true;
-                  //  renderContainer.Margin = new Thickness(200, 45, 200, 0);
+                    renderContainer.Margin = new Thickness(205, 45, 205, 0);
                 }
 
                 List<Potential> list = new List<Potential>();

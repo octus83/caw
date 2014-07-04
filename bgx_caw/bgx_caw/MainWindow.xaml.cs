@@ -440,6 +440,7 @@ namespace bgx_caw
             flo_left_potential.IsOpen = false;
             flo_left_search.IsOpen = false;
             flo_left_parts.IsOpen = false;
+            renderContainer.Margin = new Thickness(75, 45, 75, 0);
         }
         /// <summary>
         /// schließt alle Fylouts die sich rechts öffnen
@@ -633,6 +634,8 @@ namespace bgx_caw
             }
             
         }
+
+
    
     }
 }

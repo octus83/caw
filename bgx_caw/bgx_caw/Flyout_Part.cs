@@ -18,6 +18,7 @@ namespace bgx_caw
         /// <param name="e"></param>
         private void Tile_Part(Object sender, EventArgs e)
         {
+            closeAllRightFlyouts();
             buildPartFlyout();
         }
         /// <summary>
@@ -46,6 +47,7 @@ namespace bgx_caw
                 {
                     closeAllLeftFlyouts();
                     flo_left_parts.IsOpen = true;
+                    renderContainer.Margin = new Thickness(205, 45, 205, 0);
                 }
                 List<Part> list = new List<Part>();
                 list = data.getPartFomPageNumber(actualPageNumber);
