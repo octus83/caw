@@ -8,21 +8,25 @@ namespace bgx_caw_backend
 {
     public class Page
     {
+        public String D_id;
+        public String Title;
+        public String OriginNumber;
+        public List<Part> Parts_List;
+        public List<Potential> Potential_List;
+        public byte[] Image;
+
         public int PageInDiagramm
         {
             get;
             set;
         }
-
-        private String _author;
-        public String D_id;
+       
         public String P_id
         {
             get;
             set;
         }
-        public String Title;
-
+        
         private String _prePreFix;
         public String PrePreFix
         {
@@ -62,7 +66,8 @@ namespace bgx_caw_backend
                 _preFix = value;
             }
         }
-        public String OriginNumber;
+        
+        private String _author;
         public String Author
         {
             get
@@ -79,26 +84,18 @@ namespace bgx_caw_backend
                 _author = value;
             }
         }
-        public String Source_Green;
-        public String Source_Grey;
-        public String Source_Red;
-        public int Version;
+
         public DateTime Date_Init
         {
             get;
             set;
         }
+
         public DateTime Date_LastChange
         {
             get;
             set;
         }
-
-        public List<Part> Parts_List;
-        public List<Potential> Potential_List;
-
-        public byte[] Image;
-
 
         public Page()
         {

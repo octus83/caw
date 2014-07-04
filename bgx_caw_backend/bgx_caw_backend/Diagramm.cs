@@ -14,7 +14,6 @@ namespace bgx_caw_backend
     {
         public List<Page> pages_List;       
         private String _endCustomer = "";
-        private String _sourceFolder;
         private String _serialNumber;
 
         public String ID
@@ -257,25 +256,11 @@ namespace bgx_caw_backend
             }
         }
 
-        public Diagramm(DirectoryInfo directory)
-        {
-            ID = Guid.NewGuid().ToString();
-            SourceFolder = "c:\\caw\\" + ID + "\\";
-            pages_List = new List<Page>();
-        }
-
         public Diagramm()
         {
             //ID = Guid.NewGuid().ToString();
-            SourceFolder = "c:\\caw\\" + ID + "\\";
             pages_List = new List<Page>();
         }
 
-        public Diagramm(Guid id)
-        {
-            ID = id.ToString();
-            SourceFolder = "c:\\caw\\" + ID + "\\";
-            pages_List = new List<Page>();
-        }
     }
 }

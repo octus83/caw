@@ -16,23 +16,9 @@ namespace bgx_caw_backend
             flo_details.IsOpen = true;
         }
 
-        private void flo_Menu_tle_Print_Click(object sender, RoutedEventArgs e)
-        {
-            flo_Print.IsOpen = true;
-        }
-
         private void flo_Menu_tle_Export_Click(object sender, RoutedEventArgs e)
         {
             flo_Export.IsOpen = true;
-
-            
-
-            /*var result = await this.ShowInputAsync("Hello!", "What is your name?");
-
-            if (result == null) //user pressed cancel
-                return;
-
-            await this.ShowMessageAsync("Hello", "Hello " + result + "!");*/
         }
 
         private async void flo_Menu_tle_Delete_Click(object sender, RoutedEventArgs e)

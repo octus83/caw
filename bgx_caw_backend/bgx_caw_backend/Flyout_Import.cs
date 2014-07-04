@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using GhostscriptSharp;
+using GhostscriptSharp.Settings;
 using iTextSharp.text.pdf;
 using MahApps.Metro.Controls.Dialogs;
 
@@ -20,8 +22,8 @@ namespace bgx_caw_backend
             if (DXFDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 propertyChanged("DXFDialog");
-                dxf_parser = new DXF_Parser(new DirectoryInfo(DXFDialog.SelectedPath));
-                ImportDiagramm = dxf_parser.Diagramm;
+                DXF_parser = new DXF_Parser(new DirectoryInfo(DXFDialog.SelectedPath));
+                ImportDiagramm = DXF_parser.Diagramm;
             }
         }
 
@@ -37,6 +39,12 @@ namespace bgx_caw_backend
 
         private async void flo_import_tle_import_Click(object sender, RoutedEventArgs e)
         {
+            if (ImportDiagramm == null || PDFDialog == null)
+            {
+                await this.ShowMessageAsync("Fehler", "Es muss ein DXF-Ordner und ein PDF-File ausgewählt sein");
+                return;
+            }
+
             String diagrammPath = System.IO.Path.Combine(ProgrammPath, ImportDiagramm.ID);
             String pagePath;
 
@@ -110,7 +118,7 @@ namespace bgx_caw_backend
             finally
             {
                 ImportDiagramm = null;
-                dxf_parser = null;
+                DXF_parser = null;
                 DXFDialog = null;
                 PDFDialog = null;
             }
@@ -130,6 +138,34 @@ namespace bgx_caw_backend
 
             return photo;
         }
+
+        private static void GetPdfThumbnail(String sourcePdfFilePath, String destinationPngFilePath, int pageNo)
+        {
+            // Use GhostscriptSharp to convert the pdf to a png
+            GhostscriptWrapper.GenerateOutput(sourcePdfFilePath, destinationPngFilePath,
+                new GhostscriptSettings
+                {
+                    Device = GhostscriptDevices.jpeg,
+                    Page = new GhostscriptPages
+                    {
+                        Start = pageNo,
+                        End = pageNo
+                    },
+                    Resolution = new System.Drawing.Size
+                    {
+                        // Render at 300x300 dpi
+                        Height = 300,
+                        Width = 300
+                    },
+                    Size = new GhostscriptPageSize
+                    {
+                        // The dimentions of the incoming PDF must be
+                        // specified.
+                        Native = GhostscriptPageSizes.a4
+                    }
+                }
+            );
+        }                    
 
         private void flo_import_tle_del_Click(object sender, RoutedEventArgs e)
         {
