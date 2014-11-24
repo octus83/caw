@@ -44,7 +44,8 @@ namespace bgx_caw
                 {
                     closeAllLeftFlyouts();
                     flo_left_potential.IsOpen = true;
-                    renderContainer.Margin = new Thickness(205, 45, 205, 0);
+                    //Flyout wird kleiner
+                   // renderContainer.Margin = new Thickness(205, 45, 205, 0);
                 }
 
                 List<Potential> list = new List<Potential>();
