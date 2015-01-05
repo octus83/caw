@@ -37,7 +37,7 @@
             <controls:Flyout Header="Info" Position="Right" Width="200" Name="flo_right_info" >
                 <!-- Your custom content here -->
                 <StackPanel Name="stack_right_info">
-                    <controls:Tile Title="Potentiale!" TiltFactor="2" Width="150" Height="50" Click="Tile_Potential" />
+                    <controls:Tile Title="Potentiale!" TiltFactor="2" Width="150" Height="50" Click="Tile_Potential"   />
                     <controls:Tile Title="Bauteile!"  TiltFactor="2"  Width="150" Height="50" Click="Tile_Part" />
                     <controls:Tile Title="Suche!" TiltFactor="2" Width="150" Height="50" Click="Tile_Search" />
                 </StackPanel>

@@ -24,6 +24,20 @@ namespace bgx_caw
             }
         }
 
+        private int _pagenumber;
+
+        public int pagenumber
+        {
+            get
+            {
+                return this._pagenumber;
+            }
+            set
+            {
+                this._pagenumber = value;
+            }
+        }
+
         public MyTile()
         {
             

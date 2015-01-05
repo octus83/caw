@@ -40,11 +40,18 @@ namespace bgx_caw
         /// <summary>
         /// Aktuelle Seitenzahl wenn ein Schaltplan geöffnet ist
         /// </summary>
-        private int actualPageNumber = -1;     
+        private int actualPageNumber = -1;
+        /// <summary>
+        /// Vorherige Seite
+        /// </summary>
+        private int lastActualPageNumber = -1;
+
         /// <summary>
         ///  Data Klasse referenz
         /// </summary>
         private Data data;
+
+        private Logger logger = new Logger();
 
         /// <summary>
         /// Setzt ein lock auf die Aktuelle Seite die grade aus
@@ -313,10 +320,11 @@ namespace bgx_caw
             {
                 if (actualPageNumber < this.MaxPageNumber)
                 {
-                    actualPageNumber++;
+                    setActualPageNumber(actualPageNumber + 1);
                     updatePagenumberLabel(actualPageNumber.ToString());
                     changePicture();
                     checkWhichFlyoutIsOpen();
+                    findTileToActualPagenumber();
                 }
             }
         }
@@ -329,10 +337,11 @@ namespace bgx_caw
             {
                 if (actualPageNumber > 1)
                 {
-                    actualPageNumber--;
+                    setActualPageNumber(actualPageNumber - 1);
                     updatePagenumberLabel(actualPageNumber.ToString());
                     changePicture();
                     checkWhichFlyoutIsOpen();
+                    findTileToActualPagenumber();
                 }
             }
         }
@@ -346,12 +355,19 @@ namespace bgx_caw
             {
                 if (page <= this.MaxPageNumber && page > 0)
                 {
-                    actualPageNumber = page;
+                    setActualPageNumber(page);
                     updatePagenumberLabel(actualPageNumber.ToString());
                     changePicture();
                     checkWhichFlyoutIsOpen();
+                    findTileToActualPagenumber();
                 }
             }
+        }
+
+        private void setActualPageNumber(int page)
+        {
+            lastActualPageNumber = actualPageNumber;
+            actualPageNumber = page;
         }
         /// <summary>
         /// Überprüft welches Flyout offen ist und 
@@ -459,6 +475,14 @@ namespace bgx_caw
             closeAllRightFlyouts();
             closeAllTopFlyouts();
             closeAllBottomFlyouts();
+        }
+
+        private void closeSitesFlyout()
+        {
+            if (flo_right_sites.IsOpen)
+            {
+                flo_right_sites.IsOpen = false;
+            }
         }
         /// <summary>
         /// schließt alle Flyouts die sich oben öffnen

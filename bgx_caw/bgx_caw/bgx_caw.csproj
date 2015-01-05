@@ -90,6 +90,7 @@
     <Compile Include="Flyout_Potential.cs" />
     <Compile Include="Flyout_Search.cs" />
     <Compile Include="Flyout_Settings.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MyTile.cs" />
     <Compile Include="Touch.cs" />
     <Page Include="MainWindow.xaml">
