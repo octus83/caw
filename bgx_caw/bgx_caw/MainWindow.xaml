@@ -166,7 +166,7 @@
                             </Grid.RowDefinitions>
                             <DockPanel Background="Gray"  Width="150">
                                 
-                                <TextBox  TextChanged="txtAuto_TextChanged" BorderBrush="Gray" Background="Gray" Foreground="Black" Name="txtAuto" TextWrapping="NoWrap" Width="105" Height="30" FontSize="20" BorderThickness="0"/>
+                                <TextBox  TextChanged="txtAuto_TextChanged" BorderBrush="Gray" Background="Gray" Foreground="Black" Name="txtAuto" TextWrapping="NoWrap" Width="105" Height="30" FontSize="20" BorderThickness="0" PreviewMouseDown="Search_Textbox_PreviewMouseDown" MouseLeave="Search_Textbox_MouseLeave" />
  
                                 <controls:Tile Content="Go!" FontSize="18" TiltFactor="2" Width="40" Height="29" Click="Tile_Search_GO_Click"  />
                             </DockPanel>

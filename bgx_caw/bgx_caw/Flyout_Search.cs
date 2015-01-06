@@ -29,6 +29,17 @@ namespace bgx_caw
             closeAllLeftFlyouts();
             flo_left_search.IsOpen = true;
             txtAuto.Focus();
+            openOnScreenKeyboard();
+        }
+
+        private void Search_Textbox_PreviewMouseDown(object sender, MouseEventArgs e)
+        {
+            logger.log("Preview Mouse Down Event ausgeführt", "Flyout_Search");
+        }
+
+        private void Search_Textbox_MouseLeave(object sender, MouseEventArgs e)
+        {
+            logger.log("Search Text Box Mouse Leave Event ausgeführt", "Flyout_Search");
         }
         /// <summary>
         /// Event bei Änderung des Suchfeldes im suchen Flyout

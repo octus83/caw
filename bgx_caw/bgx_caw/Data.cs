@@ -87,7 +87,7 @@ namespace bgx_caw
             {
                 if (item.PageInDiagramm == (number))
                 {
-                    return item.Potential_List;
+                    return item.Potential_List.OrderBy(x => x.Name).ToList() ;
                 }            
             }
             return new List<Potential>();    
@@ -105,7 +105,7 @@ namespace bgx_caw
             {
                 if (item.PageInDiagramm == number)
                 {
-                    return item.Parts_List;
+                    return item.Parts_List.OrderBy(x => x.BMK).ToList();
                 }
             }
             return new List<Part>();

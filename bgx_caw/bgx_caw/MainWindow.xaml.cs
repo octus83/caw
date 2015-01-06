@@ -658,8 +658,25 @@ namespace bgx_caw
             }
             
         }
+        /// <summary>
+        /// Öffnet die Keyboard Tastatur 
+        /// </summary>
+        private static void openOnScreenKeyboard()
+        {
+            System.Diagnostics.Process.Start("C:\\Program Files\\Common Files\\Microsoft shared\\ink\\TabTip.exe");
+        }
+        /// <summary>
+        /// schließt die Keyboard Tastatur
+        /// </summary>
+        private static void killOnScreenKeyboard()
+        {
+            if (System.Diagnostics.Process.GetProcessesByName("TabTip").Count() > 0)
+            {
+                System.Diagnostics.Process asd = System.Diagnostics.Process.GetProcessesByName("TabTip").First();
+                asd.Kill();
+            }
 
-
+        }
    
     }
 }
