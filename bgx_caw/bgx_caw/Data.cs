@@ -344,37 +344,15 @@ namespace bgx_caw
                 System.IO.Directory.CreateDirectory(pagePathCustom);
             }
 
-            pagePathCustom =generatePictureName(pagePathCustom);
+            pagePathCustom = System.IO.Path.Combine(pagePathCustom, page + "custom.jpg");
             encoder.Frames.Add(BitmapFrame.Create(b));
                 using (var filestream = new FileStream(pagePathCustom, FileMode.Create))
                 encoder.Save(filestream);
 
                 return pagePathCustom;
-
         }
 
-        public String generatePictureName(String path)
-        {
-            bool nameSearch = true;
-            int counter = 1;
-            String filename ;
-            do
-            {
-                filename = "custom-" + counter + ".jpg";              
-                if (File.Exists(System.IO.Path.Combine(path, filename)))
-                {
-                    counter++;
-                }
-                else
-                {
-                     nameSearch = false;
-                }
-            }while(nameSearch);
-
-            logger.log("Find new Name for saved Picture: " + System.IO.Path.Combine(path, filename), "Data.cs");
-            return  System.IO.Path.Combine(path, filename);
-
-        }
+       
         /// <summary>
         /// schreibt ein erzeugtes custom Bild zurück in die Datenbank
         /// </summary>

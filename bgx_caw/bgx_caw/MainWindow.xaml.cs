@@ -214,9 +214,7 @@ namespace bgx_caw
         {
             InitializeComponent();
             this.DataContext = this;
-            ProjectState = State.NoProjectSelected;
-            viewHidden.Background = showImageHidden;
-           
+            ProjectState = State.NoProjectSelected;          
         }
         /// <summary>
         /// Projekt Öffnen Button event
@@ -327,7 +325,6 @@ namespace bgx_caw
                     changePicture();
                     checkWhichFlyoutIsOpen();
                     findTileToActualPagenumber();
-
                 }
             }
         }
@@ -407,11 +404,11 @@ namespace bgx_caw
                 {
                     // clear possible drawings
                     view.Children.Clear();
-                    newViewHidden();
-
+                    viewHidden.Children.Clear();
                     if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
                     {
-                        
+                        //Speicher aufräumen da das cachen von bild dateien sonst zu viel Arbeitsspeicher frisst
+                        GC.Collect();
                         // Überprüfung ob eine Orginal Bilddatei vorhanden ist
                         // ansonsten wird sie nachgeladen
                         if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
@@ -421,16 +418,16 @@ namespace bgx_caw
                             lockPage = -1;
                             
                         }
-                        
+                        BitmapImage laodedImage;
                         if (checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
                         {
                             if (showImage.ImageSource != null)
                             {
                                 showImage.ImageSource = null;
                             }
-                            showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
-                            showImageHidden.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
-                            
+                            laodedImage = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
+                            showImage.ImageSource = laodedImage;
+                            showImageHidden.ImageSource = laodedImage;
                         }
                         else
                         {
@@ -438,8 +435,9 @@ namespace bgx_caw
                             {
                                 showImage.ImageSource = null;
                             }
-                            showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
-                            showImageHidden.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                            laodedImage = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                            showImage.ImageSource = laodedImage;
+                            showImageHidden.ImageSource = laodedImage;
                             
                         }
 
@@ -460,18 +458,29 @@ namespace bgx_caw
 
         /// <summary>
         /// Erzeugt ein BitmapImage aus einem Dateipfad
+        /// Cached das Bild damit kein lock auf das Bild entsteht
+        /// (Prozess der auf das Bild zugreift)
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         private BitmapImage getBitmapImageFromUri(String path)
         {
-            try
+           try
             {
-                BitmapImage myBitmapImage = new BitmapImage();
-                myBitmapImage.BeginInit();
-                myBitmapImage.UriSource = new Uri(path);
-                myBitmapImage.EndInit();
-                return myBitmapImage;
+                BitmapImage myRetVal = null;
+                if (path != null)
+                {
+                    BitmapImage image = new BitmapImage();
+                    using (FileStream stream = File.OpenRead(path))
+                    {
+                        image.BeginInit();
+                        image.CacheOption = BitmapCacheOption.OnLoad;
+                        image.StreamSource = stream;
+                        image.EndInit();
+                    }
+                    myRetVal = image;
+                }
+                return myRetVal;
             }
             catch (Exception ex)
             {
@@ -480,7 +489,6 @@ namespace bgx_caw
                 MessageBox.Show("Fehler beim Laden der Seite: " + actualPageNumber);
                 throw;
             }
-
         }
         /// <summary>
         /// Schließt alle Flyouts die sich links öffnen
@@ -510,7 +518,9 @@ namespace bgx_caw
             closeAllTopFlyouts();
             closeAllBottomFlyouts();
         }
-
+        /// <summary>
+        /// schließt den Seiten Flyout
+        /// </summary>
         private void closeSitesFlyout()
         {
             if (flo_right_sites.IsOpen)
@@ -533,9 +543,6 @@ namespace bgx_caw
         {
             flo_bott_jump.IsOpen = false;
         }
-
-
-
         /// <summary>
         /// 2 Way Databinding zwischen View und Model
         /// </summary>
@@ -581,8 +588,7 @@ namespace bgx_caw
             goToPage(1);
             setPicturesSize();
             sitenumberLabel.Visibility = Visibility.Visible;
-            win_Comm_btn_Drawing.Visibility = Visibility.Visible;
-            
+            win_Comm_btn_Drawing.Visibility = Visibility.Visible;          
         }
         /// <summary>
         /// Lädt alle Bilder aus der Datenbank in das
@@ -669,51 +675,7 @@ namespace bgx_caw
         public String getCustomPicturesPath(int pagenumber)
         {
             return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "custom.jpg"); 
-        }
-        /// <summary>
-        /// Generierung eines Dateipfades für ein temporäres Custom Bild
-        /// (Wird angelegt bei Speicherung eines Veränderten Custom Bild)
-        /// 
-        /// </summary>
-        /// <param name="pagenumber"></param>
-        /// <returns></returns>
-        public String getCustomPictureTempPath(int pagenumber) 
-        {
-            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "customTMP.jpg"); 
-        }
-        /// <summary>
-        /// Pfad für ein Backup eines custom pictures
-        /// </summary>
-        /// <param name="pagenumber"></param>
-        /// <returns></returns>
-        public String getCustomPictureBackupPath(int pagenumber)
-        {
-            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "backup.jpg"); 
-        }
-
-        public String getLatestPictureFilename(int pagenumber)
-        {
-            String path = System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber));
-            List<String> filenames = getAllFileNamesFromDirectory(path);
-            if (filenames.Count == 1)
-            {
-                return filenames.ElementAt(0);
-            }
-
-            return filenames.ElementAt((filenames.Count - 1));               
-        }
-
-        public List<String> getAllFileNamesFromDirectory(String path)
-        {
-            List<String> filenames = new List<String>();
-            foreach (string s in Directory.GetFiles(path, "*.jpg").Select(System.IO.Path.GetFileName))
-            {
-                Console.WriteLine(s);
-                filenames.Add(s);
-            }
-            //sotiert die Liste und gibt das letze Element zurück
-            return filenames.OrderBy(q => q).ToList();
-        }
+        }      
         /// <summary>
         /// Jump to Page Button Click Event
         /// Versuch zu Seite X des Projektes/Diagramms zu springen
@@ -761,9 +723,6 @@ namespace bgx_caw
                 asd.Kill();
             }
 
-        }
-
-       
-   
+        }     
     }
 }

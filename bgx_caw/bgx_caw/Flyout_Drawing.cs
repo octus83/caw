@@ -314,6 +314,9 @@ namespace bgx_caw
            customPictureHeight = (int)((double)h / faktor);
            customPictureWidth = maxPixelWidth;
            logger.log("Setting CustomPictureHeight to: " + customPictureHeight + " and customPictureWidth to: " + customPictureWidth, "Flyout_Drawing.cs");
+           viewHidden.Background = showImageHidden;
+           viewHidden.Height = customPictureHeight;
+           viewHidden.Width = customPictureWidth;        
         }
                 
        

@@ -18,10 +18,10 @@ namespace bgx_caw
     /// </summary>
     public partial class MainWindow
     {
-
-       // public Canvas viewHidden; 
-       // public ImageBrush showImageHidden; 
-
+        /// <summary>
+        /// Boolean der dafür sorgt, dass ein sizeChangeEvent alle x sekunden ausgelöst wird
+        /// </summary>
+        Boolean sizeChangedEventBreak = true;
         /// <summary>
         /// speichert einen aktuellen Punkt
         /// </summary>
@@ -55,7 +55,6 @@ namespace bgx_caw
                     Line hiddenLine = new Line();
                     line.StrokeThickness = 4;
                     hiddenLine.StrokeThickness = 6;
-
                     if (drawState == DrawState.green)
                     {
                         line.Stroke = Brushes.LightGreen;
@@ -83,50 +82,42 @@ namespace bgx_caw
                     hiddenLine.Y2 = e.GetPosition(view).Y;
 
                     currentPoint = e.GetPosition(view);
-
                     transformLine(hiddenLine);
-
                     view.Children.Add(line);    
                     viewHidden.Children.Add(hiddenLine);
                 }
             }
         }
-        Boolean sizeChangedEventBreak = true;
+        
+        /// <summary>
+        /// Sizechange Event Handler
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void view_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-           
+        {       
             if(sizeChangedEventBreak)
             {
                 logger.log("SIZE CHANGE TO : Height: " + view.ActualHeight + " Width: " + view.ActualWidth, "Drawing.cs");
                 sizeChangedEventBreak = false;
                 Thread workerThread = new Thread(sizeChangedBreak);
                 workerThread.Start();
-            }
-            
+            }           
         }
-
+        /// <summary>
+        /// Sizechange Event soll nur jede Sekunde ausgelöst werden und nicht öfters
+        /// </summary>
         private void sizeChangedBreak()
-        {
-          
+        {          
             Thread.Sleep(1000);
             sizeChangedEventBreak = true;
         }
 
-        private void newViewHidden()
-        {
-         //   viewHidden = null;
-        //    viewHidden = new Canvas();
-        //    showImageHidden = null;
-     //       showImageHidden = new ImageBrush();
-            viewHidden.Children.Clear();
-          //  viewHidden.Background = showImageHidden;
-            viewHidden.Height = customPictureHeight;
-            viewHidden.Width = customPictureWidth;
-           
-        }
-
-        
-
+        /// <summary>
+        /// Transformiert Linien auf die Auflösung des Hidden Canvas
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
         private Line transformLine(Line line)
         {
             Double faktorHeight = customPictureHeight / view.ActualHeight;
