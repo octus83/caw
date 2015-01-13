@@ -37,6 +37,7 @@ namespace bgx_caw
     /// </summary>
     public partial class MainWindow :MetroWindow 
     {
+
         /// <summary>
         /// Aktuelle Seitenzahl wenn ein Schaltplan geöffnet ist
         /// </summary>
@@ -214,6 +215,7 @@ namespace bgx_caw
             InitializeComponent();
             this.DataContext = this;
             ProjectState = State.NoProjectSelected;
+            viewHidden.Background = showImageHidden;
            
         }
         /// <summary>
@@ -325,6 +327,7 @@ namespace bgx_caw
                     changePicture();
                     checkWhichFlyoutIsOpen();
                     findTileToActualPagenumber();
+
                 }
             }
         }
@@ -355,6 +358,7 @@ namespace bgx_caw
             {
                 if (page <= this.MaxPageNumber && page > 0)
                 {
+                    flo_up_draw.IsOpen = false;
                     setActualPageNumber(page);
                     updatePagenumberLabel(actualPageNumber.ToString());
                     changePicture();
@@ -393,7 +397,7 @@ namespace bgx_caw
             sitenumberLabel.Content = update + "/" + this.MaxPageNumber;
         }
         /// <summary>
-        /// Wechsel eines Bildes anhand der Aktuellen Seitenzhal
+        /// Wechsel eines Bildes anhand der Aktuellen Seitenzahl
         /// </summary>
         private void changePicture()
         {
@@ -403,22 +407,40 @@ namespace bgx_caw
                 {
                     // clear possible drawings
                     view.Children.Clear();
+                    newViewHidden();
 
                     if (actualPageNumber <= this.MaxPageNumber && actualPageNumber > 0)
                     {
+                        
                         // Überprüfung ob eine Orginal Bilddatei vorhanden ist
                         // ansonsten wird sie nachgeladen
                         if (!checkIfFileExist(getOrginalPicturesPath(actualPageNumber)))
                         {
+                            lockPage = actualPageNumber;
                             loadPictureToFileystemWithPriority(actualPageNumber);
+                            lockPage = -1;
+                            
                         }
+                        
                         if (checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
                         {
+                            if (showImage.ImageSource != null)
+                            {
+                                showImage.ImageSource = null;
+                            }
                             showImage.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
+                            showImageHidden.ImageSource = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber));
+                            
                         }
                         else
                         {
+                            if (showImage.ImageSource != null)
+                            {
+                                showImage.ImageSource = null;
+                            }
                             showImage.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                            showImageHidden.ImageSource = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber));
+                            
                         }
 
                     }
@@ -435,6 +457,7 @@ namespace bgx_caw
                 }
             }
         }
+
         /// <summary>
         /// Erzeugt ein BitmapImage aus einem Dateipfad
         /// </summary>
@@ -442,11 +465,22 @@ namespace bgx_caw
         /// <returns></returns>
         private BitmapImage getBitmapImageFromUri(String path)
         {
-            BitmapImage myBitmapImage = new BitmapImage();
-            myBitmapImage.BeginInit();
-            myBitmapImage.UriSource = new Uri(path);
-            myBitmapImage.EndInit();
-            return myBitmapImage;
+            try
+            {
+                BitmapImage myBitmapImage = new BitmapImage();
+                myBitmapImage.BeginInit();
+                myBitmapImage.UriSource = new Uri(path);
+                myBitmapImage.EndInit();
+                return myBitmapImage;
+            }
+            catch (Exception ex)
+            {
+                logger.log("Fehler beim Laden der Seite: " + actualPageNumber, "MainWindows.Xaml.cs -> getBitmapImageFromUri");
+                logger.log(ex.ToString(), "MainWindows.Xaml.cs -> getBitmapImageFromUri");
+                MessageBox.Show("Fehler beim Laden der Seite: " + actualPageNumber);
+                throw;
+            }
+
         }
         /// <summary>
         /// Schließt alle Flyouts die sich links öffnen
@@ -499,7 +533,9 @@ namespace bgx_caw
         {
             flo_bott_jump.IsOpen = false;
         }
-       
+
+
+
         /// <summary>
         /// 2 Way Databinding zwischen View und Model
         /// </summary>
@@ -535,7 +571,7 @@ namespace bgx_caw
            ProjectState = State.ProjectSelected; 
            Thread thread = new Thread(new ThreadStart(getAllPictures));
            thread.Start();
-           onProjectOpenFinish();
+            onProjectOpenFinish();
         }
         /// <summary>
         /// Wenn ein neues Projekt/Diagramm geöffnet wurde
@@ -543,8 +579,10 @@ namespace bgx_caw
         public void onProjectOpenFinish()
         {
             goToPage(1);
+            setPicturesSize();
             sitenumberLabel.Visibility = Visibility.Visible;
             win_Comm_btn_Drawing.Visibility = Visibility.Visible;
+            
         }
         /// <summary>
         /// Lädt alle Bilder aus der Datenbank in das
@@ -559,9 +597,12 @@ namespace bgx_caw
                 {
                     if (!checkIfFileExist(getOrginalPicturesPath(i)))
                     {
+                        if (i != lockPage)
+                        { 
                         lockPage = i;
                         loadPictureToFilesystem(i);
                         lockPage = -1;
+                        }
                     }
                 }
             }
@@ -605,7 +646,7 @@ namespace bgx_caw
         /// <param name="path"></param>
         /// <returns></returns>
         public bool checkIfFileExist(String path)
-        {
+        {           
             if (File.Exists(path))
                 return true;
             else
@@ -618,7 +659,7 @@ namespace bgx_caw
         /// <returns></returns>
         public String getOrginalPicturesPath(int pagenumber)
         {
-            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "orginal.jpg"); ;
+            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "orginal.jpg"); 
         }
         /// <summary>
         /// Generierung eines Dateipfades für ein custom Bild
@@ -627,7 +668,51 @@ namespace bgx_caw
         /// <returns></returns>
         public String getCustomPicturesPath(int pagenumber)
         {
-            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "custom.jpg"); ;
+            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "custom.jpg"); 
+        }
+        /// <summary>
+        /// Generierung eines Dateipfades für ein temporäres Custom Bild
+        /// (Wird angelegt bei Speicherung eines Veränderten Custom Bild)
+        /// 
+        /// </summary>
+        /// <param name="pagenumber"></param>
+        /// <returns></returns>
+        public String getCustomPictureTempPath(int pagenumber) 
+        {
+            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "customTMP.jpg"); 
+        }
+        /// <summary>
+        /// Pfad für ein Backup eines custom pictures
+        /// </summary>
+        /// <param name="pagenumber"></param>
+        /// <returns></returns>
+        public String getCustomPictureBackupPath(int pagenumber)
+        {
+            return System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber), pagenumber + "backup.jpg"); 
+        }
+
+        public String getLatestPictureFilename(int pagenumber)
+        {
+            String path = System.IO.Path.Combine(ProgrammPath, DiagrammId, data.getPIDFromPagenumber(pagenumber));
+            List<String> filenames = getAllFileNamesFromDirectory(path);
+            if (filenames.Count == 1)
+            {
+                return filenames.ElementAt(0);
+            }
+
+            return filenames.ElementAt((filenames.Count - 1));               
+        }
+
+        public List<String> getAllFileNamesFromDirectory(String path)
+        {
+            List<String> filenames = new List<String>();
+            foreach (string s in Directory.GetFiles(path, "*.jpg").Select(System.IO.Path.GetFileName))
+            {
+                Console.WriteLine(s);
+                filenames.Add(s);
+            }
+            //sotiert die Liste und gibt das letze Element zurück
+            return filenames.OrderBy(q => q).ToList();
         }
         /// <summary>
         /// Jump to Page Button Click Event
@@ -677,6 +762,8 @@ namespace bgx_caw
             }
 
         }
+
+       
    
     }
 }

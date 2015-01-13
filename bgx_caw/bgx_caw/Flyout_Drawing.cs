@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -26,6 +28,17 @@ namespace bgx_caw
     /// </summary>
     public partial class MainWindow
     {
+        Canvas viewHidden = new Canvas();
+        ImageBrush showImageHidden = new ImageBrush();
+
+        private int maxPixelWidth = 4000;
+        /// <summary>
+        /// Maximale Custom picture With
+        /// Speicher Canvas kann nicht höher als 4000 pixel speichern
+        /// </summary>
+        private int customPictureWidth = 4000;
+        private int customPictureHeight;
+
         private DrawState _drawState = DrawState.None;
         /// <summary>
         /// Zeichnen zustand
@@ -144,8 +157,9 @@ namespace bgx_caw
         /// Speichert das Aktuelle Bild
         /// 
         /// </summary>
-        public void saveCanvas()
+  /*      public void saveCanvas()
         {
+            
             closeAllTopFlyouts();
             this.drawState = DrawState.None;
             // Save current canvas transform
@@ -186,7 +200,55 @@ namespace bgx_caw
             showCustomPicturesSaveDialog();
             data.saveCustomBLOBInDB(actualPageNumber);
            
+        } */
+
+
+       public void saveCanvas()
+        {
+
+            closeAllTopFlyouts();
+            this.drawState = DrawState.None;
+            // Save current canvas transform
+            Transform transform = view.LayoutTransform;
+            // reset current transform (in case it is scaled or rotated)
+            viewHidden.LayoutTransform = null;
+
+            // Get the size of canvas
+            Size size = new Size(customPictureWidth, customPictureHeight);
+            // Measure and arrange the surface
+            // VERY IMPORTANT
+            viewHidden.Measure(size);
+            viewHidden.Arrange(new Rect(size));
+            logger.log("Size: X: " + size.Width + " Y: " + size.Height, "Flyout_drawings.cs");
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)size.Width,
+           (int)size.Height, 96d, 96d, System.Windows.Media.PixelFormats.Default);
+            rtb.Render(viewHidden);
+
+            var bitmapImage = new BitmapImage();
+            var bitmapEncoder = new PngBitmapEncoder();
+            bitmapEncoder.Frames.Add(BitmapFrame.Create(rtb));
+
+            using (var stream = new MemoryStream())
+            {
+                bitmapEncoder.Save(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+
+                bitmapImage.BeginInit();
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.StreamSource = stream;
+                bitmapImage.EndInit();
+            }
+            //Speichert das Bild als File
+
+            String path= data.savaCustomBitmapimageToFile(bitmapImage, actualPageNumber);
+            Console.WriteLine("Bild erfolgreich gespeichert");
+          //  showCustomPicturesSaveDialog();
+            data.saveCustomBLOBInDB(actualPageNumber, path);
+
         }
+
+
+
         /// <summary>
         /// Asynchrone Funktion die die Bild Speicherung Visuell darstellt
         /// Hat nicht mit der wirklichen Bildspeicher dauer zu tun
@@ -209,6 +271,52 @@ namespace bgx_caw
             await Task.Delay(1000);
             await progressDialog.CloseAsync();
         }
+
+        public int getHeightofPicture()
+        {
+            int h = 5;
+
+            if (checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
+            {
+               h =  getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber)).PixelHeight;
+            }
+            else
+            {
+              h =  getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber)).PixelHeight;
+
+            }
+            logger.log("Höhe: " + h, "Flyout_Drawing.cs");
+            return h;
+        }
+
+        public int getWidthofPicture()
+        {
+            int w = 5;
+
+            if (checkIfFileExist(getCustomPicturesPath(actualPageNumber)))
+            {
+                w = getBitmapImageFromUri(getCustomPicturesPath(actualPageNumber)).PixelWidth;
+            }
+            else
+            {
+                w = getBitmapImageFromUri(getOrginalPicturesPath(actualPageNumber)).PixelWidth;
+
+            }
+            logger.log("Breite: " + w, "Flyout_Drawing.cs");
+            return w;
+        }
+
+        private void setPicturesSize()
+        {
+           int h = getHeightofPicture();
+           int w  =getWidthofPicture();
+           double faktor = (double)w / maxPixelWidth;
+           customPictureHeight = (int)((double)h / faktor);
+           customPictureWidth = maxPixelWidth;
+           logger.log("Setting CustomPictureHeight to: " + customPictureHeight + " and customPictureWidth to: " + customPictureWidth, "Flyout_Drawing.cs");
+        }
+                
+       
 
        
     }

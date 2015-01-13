@@ -22,7 +22,7 @@
             <Label BorderThickness="1" Content="0/0" Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10" FontSize="25" Visibility="Hidden" HorizontalAlignment="Center" MouseDown="sitenumberLabel_MouseDown" ></Label>          
         </DockPanel>
         <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0"  MouseRightButtonDown="renderContainer_MouseRightButtonDown" MouseLeftButtonUp="renderContainer_MouseLeftUp" MouseLeftButtonDown="renderContainer_MouseLeftDown" MouseWheel="clipBorder_MouseWheel" >
-            <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" >
+            <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" SizeChanged="view_SizeChanged" >
                 <Canvas.Background>
                     <ImageBrush x:Name="showImage"/>
                 </Canvas.Background>

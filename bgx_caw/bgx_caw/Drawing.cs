@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -16,6 +18,10 @@ namespace bgx_caw
     /// </summary>
     public partial class MainWindow
     {
+
+       // public Canvas viewHidden; 
+       // public ImageBrush showImageHidden; 
+
         /// <summary>
         /// speichert einen aktuellen Punkt
         /// </summary>
@@ -46,26 +52,91 @@ namespace bgx_caw
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     Line line = new Line();
+                    Line hiddenLine = new Line();
                     line.StrokeThickness = 4;
-                    if (drawState == DrawState.green)
-                        line.Stroke = Brushes.LightGreen;
-                    else if (drawState == DrawState.red)
-                        line.Stroke = Brushes.Red;
-                    else if (drawState == DrawState.mark)
-                        line.Stroke = Brushes.Gray;
+                    hiddenLine.StrokeThickness = 6;
 
+                    if (drawState == DrawState.green)
+                    {
+                        line.Stroke = Brushes.LightGreen;
+                        hiddenLine.Stroke = Brushes.LightGreen;
+                    }                       
+                    else if (drawState == DrawState.red)
+                    {
+                        line.Stroke = Brushes.Red;
+                        hiddenLine.Stroke = Brushes.Red;
+                    }                      
+                    else if (drawState == DrawState.mark)
+                    {
+                        line.Stroke = Brushes.Gray;
+                        hiddenLine.Stroke = Brushes.Gray;
+                    }
+                      
                     line.X1 = currentPoint.X;
                     line.Y1 = currentPoint.Y;
                     line.X2 = e.GetPosition(view).X;
                     line.Y2 = e.GetPosition(view).Y;
 
+                    hiddenLine.X1 = currentPoint.X;
+                    hiddenLine.Y1 = currentPoint.Y;
+                    hiddenLine.X2 = e.GetPosition(view).X;
+                    hiddenLine.Y2 = e.GetPosition(view).Y;
+
                     currentPoint = e.GetPosition(view);
 
-                    view.Children.Add(line);
+                    transformLine(hiddenLine);
+
+                    view.Children.Add(line);    
+                    viewHidden.Children.Add(hiddenLine);
                 }
             }
         }
-       
+        Boolean sizeChangedEventBreak = true;
+        private void view_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+           
+            if(sizeChangedEventBreak)
+            {
+                logger.log("SIZE CHANGE TO : Height: " + view.ActualHeight + " Width: " + view.ActualWidth, "Drawing.cs");
+                sizeChangedEventBreak = false;
+                Thread workerThread = new Thread(sizeChangedBreak);
+                workerThread.Start();
+            }
+            
+        }
+
+        private void sizeChangedBreak()
+        {
+          
+            Thread.Sleep(1000);
+            sizeChangedEventBreak = true;
+        }
+
+        private void newViewHidden()
+        {
+         //   viewHidden = null;
+        //    viewHidden = new Canvas();
+        //    showImageHidden = null;
+     //       showImageHidden = new ImageBrush();
+            viewHidden.Children.Clear();
+          //  viewHidden.Background = showImageHidden;
+            viewHidden.Height = customPictureHeight;
+            viewHidden.Width = customPictureWidth;
+           
+        }
+
+        
+
+        private Line transformLine(Line line)
+        {
+            Double faktorHeight = customPictureHeight / view.ActualHeight;
+            Double faktorWidth = customPictureWidth / view.ActualWidth;
+            line.X1 = line.X1 * faktorWidth;
+            line.X2 = line.X2 * faktorWidth;
+            line.Y1 = line.Y1 * faktorHeight;
+            line.Y2 = line.Y2 * faktorHeight;
+            return line;
+        }
         
     }
 }

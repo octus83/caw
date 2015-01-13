@@ -30,6 +30,7 @@ namespace bgx_caw
     /// </summary>
     class Data
     {
+        Logger logger;
         /// <summary>
         /// referenz auf ein diagramm object des aktuellen Projektes/Diagramms
         /// </summary>
@@ -52,7 +53,8 @@ namespace bgx_caw
         {
             this.caller = caller;
             db_caw = new DB_CAW();
-            this.diagramm = db_caw.getDiagramm(d_id);          
+            this.diagramm = db_caw.getDiagramm(d_id);
+            logger  = new Logger();
         }
         /// <summary>
         /// Sotiert eine Page List nach Seitenzahlen
@@ -324,7 +326,7 @@ namespace bgx_caw
         /// </summary>
         /// <param name="b"></param>
         /// <param name="page"></param>
-        public void savaCustomBitmapimageToFile(BitmapImage b, int page)
+        public String savaCustomBitmapimageToFile(BitmapImage b, int page)
         {
             String p_id = getPIDFromPagenumber(page);
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
@@ -336,26 +338,50 @@ namespace bgx_caw
             }
 
             String pagePathCustom = System.IO.Path.Combine(diagrammPath, p_id);
+
             if (!System.IO.Directory.Exists(pagePathCustom))
             {
                 System.IO.Directory.CreateDirectory(pagePathCustom);
             }
-            pagePathCustom = System.IO.Path.Combine(pagePathCustom, page + "custom.jpg");
-            if (!File.Exists(pagePathCustom))
-            {
-                encoder.Frames.Add(BitmapFrame.Create(b));
+
+            pagePathCustom =generatePictureName(pagePathCustom);
+            encoder.Frames.Add(BitmapFrame.Create(b));
                 using (var filestream = new FileStream(pagePathCustom, FileMode.Create))
-                    encoder.Save(filestream);
-            }
+                encoder.Save(filestream);
+
+                return pagePathCustom;
+
+        }
+
+        public String generatePictureName(String path)
+        {
+            bool nameSearch = true;
+            int counter = 1;
+            String filename ;
+            do
+            {
+                filename = "custom-" + counter + ".jpg";              
+                if (File.Exists(System.IO.Path.Combine(path, filename)))
+                {
+                    counter++;
+                }
+                else
+                {
+                     nameSearch = false;
+                }
+            }while(nameSearch);
+
+            logger.log("Find new Name for saved Picture: " + System.IO.Path.Combine(path, filename), "Data.cs");
+            return  System.IO.Path.Combine(path, filename);
 
         }
         /// <summary>
         /// schreibt ein erzeugtes custom Bild zurück in die Datenbank
         /// </summary>
         /// <param name="page"></param>
-        public void saveCustomBLOBInDB( int page)
+        public void saveCustomBLOBInDB( int page, String path)
         {
-            String path = caller.getCustomPicturesPath(page);
+            //String path = caller.getCustomPicturesPath(page);
             String p_id = getPIDFromPagenumber(page);
             db_caw.writeCustomBlobToDatabase(GetPhoto(path), p_id);
         }
