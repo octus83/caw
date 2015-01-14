@@ -50,13 +50,15 @@ namespace bgx_caw
 
                 flo_Settings.IsOpen = false;
             }
-            Console.WriteLine("Ausgabe-> Programmpfad: " + ProgrammPath);
-            Console.WriteLine("Ausgabe-> Datenbank: " + InitialCatalog);
-            Console.WriteLine("Ausgabe-> Datasource: " + DataSource);
+            logger.log("Change settings", "Flyout_Settings.cs -> flo_Settings_tle_sve_Click");
+            logger.log("Programmpfad: " + ProgrammPath,"Flyout_Settings.cs -> flo_Settings_tle_sve_Click");
+            logger.log("Datenbank: " + InitialCatalog,"Flyout_Settings.cs -> flo_Settings_tle_sve_Click");
+            logger.log("Datasource: " + DataSource,"Flyout_Settings.cs -> flo_Settings_tle_sve_Click");
         }
 
         private void flo_Settings_tle_ccl_Click(object sender, RoutedEventArgs e)
         {
+           
             flo_Settings_tbx_dsc.Text = this.DataSource;
             flo_Settings_tbx_inc.Text = this.InitialCatalog;
         }

@@ -204,7 +204,6 @@ namespace bgx_caw
                 this._diagrammId = value;
                 this.data = new Data(value,this);
                 this.MaxPageNumber = data.getPageCout();
-                Console.WriteLine("Console -> with Maxpagenumber : " + MaxPageNumber);
             }
         }
         /// <summary>
@@ -263,12 +262,12 @@ namespace bgx_caw
         }
       
         /// <summary>
-        /// Click auf dem Seitenzahl Label Event
+        /// Click auf dem jump to page tile im info flyout
         /// Öffnet das Jump to Page Flyout
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void sitenumberLabel_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Tile_JumpToPageOpen(object sender, RoutedEventArgs e)
         {
             flo_bott_jump.IsOpen = true;
             jump_to_page_textBox.Focus();
@@ -391,7 +390,7 @@ namespace bgx_caw
         /// <param name="update"></param>
         private void updatePagenumberLabel(String update)
         {
-            sitenumberLabel.Content = update + "/" + this.MaxPageNumber;
+            //sitenumberLabel.Content = update + "/" + this.MaxPageNumber;
         }
         /// <summary>
         /// Wechsel eines Bildes anhand der Aktuellen Seitenzahl
@@ -449,7 +448,6 @@ namespace bgx_caw
                 }
                 else
                 {
-                    Console.Write("LOCK PAGE Ausgeführt");
                     Thread.Sleep(1000);
                     changePicture();
                 }
@@ -498,7 +496,7 @@ namespace bgx_caw
             flo_left_potential.IsOpen = false;
             flo_left_search.IsOpen = false;
             flo_left_parts.IsOpen = false;
-            renderContainer.Margin = new Thickness(75, 45, 75, 0);
+           // renderContainer.Margin = new Thickness(75, 45, 75, 0);
         }
         /// <summary>
         /// schließt alle Fylouts die sich rechts öffnen
@@ -587,8 +585,10 @@ namespace bgx_caw
         {
             goToPage(1);
             setPicturesSize();
-            sitenumberLabel.Visibility = Visibility.Visible;
-            win_Comm_btn_Drawing.Visibility = Visibility.Visible;          
+            //sitenumberLabel.Visibility = Visibility.Visible;
+            win_Comm_btn_Drawing.Visibility = Visibility.Visible;
+            btn_next.Visibility = Visibility.Visible;
+            btn_previous.Visibility = Visibility.Visible;
         }
         /// <summary>
         /// Lädt alle Bilder aus der Datenbank in das
@@ -614,7 +614,8 @@ namespace bgx_caw
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                logger.log("Error beim laden aller Bilder", "MainWindows.xaml.cs -> getAllPictures");
+                logger.log(ex.ToString(),"MainWindow.xaml.cs -> getAllPictures");
             }
            
         }
@@ -624,7 +625,7 @@ namespace bgx_caw
         /// <param name="pagenumber"></param>
         public void loadPictureToFileystemWithPriority(int pagenumber)
         {
-            Console.WriteLine("Ausgabe -> getting Picture " + pagenumber);
+            logger.log("load pictures number " + pagenumber + " with priority to Filesystem", "MainWindow.xaml.cs -> loadPicturesToFilesystemWithPriority");
             CustomBitmapImage cbi = data.getBlobFast(data.getPIDFromPagenumber(pagenumber));
             data.savaOrginalBitmapimageToFile(cbi.OrginalImage, pagenumber);
             if (cbi.IsCustomImage)
@@ -638,7 +639,7 @@ namespace bgx_caw
         /// <param name="pagenumber"></param>
         public void loadPictureToFilesystem(int pagenumber)
         {
-            Console.WriteLine("Ausgabe -> getting Picture " + pagenumber);
+            logger.log("load pictures number " + pagenumber + "  to Filesystem", "MainWindow.xaml.cs -> loadPictureToFilesystem");
             CustomBitmapImage cbi = data.getBlob(data.getPIDFromPagenumber(pagenumber));
             data.savaOrginalBitmapimageToFile(cbi.OrginalImage, pagenumber);
             if (cbi.IsCustomImage)
@@ -723,6 +724,16 @@ namespace bgx_caw
                 asd.Kill();
             }
 
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            previousPage();
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            nextPage();
         }     
     }
 }

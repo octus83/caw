@@ -47,7 +47,6 @@ namespace bgx_caw
                 t1.Width = 150;
                 t1.Height = 80;
                 t1.Click += new RoutedEventHandler(Tile_Site_Click);
-                Console.WriteLine("Console -> t1 number: "+ page);
                 t1.pagenumber  = page;
                 if (page == this.actualPageNumber)
                 {

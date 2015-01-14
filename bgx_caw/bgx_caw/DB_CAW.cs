@@ -23,7 +23,7 @@ namespace bgx_caw
         private SqlConnection sql_connection;
         private SqlConnectionStringBuilder connection_string = new SqlConnectionStringBuilder();
 
-
+        private Logger logger;
 
         /// <summary>
         /// calls SqlConnection.Open to open connection to database
@@ -31,7 +31,7 @@ namespace bgx_caw
         public DB_CAW()
         {
             config = ConfigurationManager.OpenExeConfiguration(System.Reflection.Assembly.GetExecutingAssembly().Location);
-
+            logger = new Logger();
             connection_string.DataSource = config.AppSettings.Settings["DataSource"].Value;
             connection_string.InitialCatalog = config.AppSettings.Settings["InitialCatalog"].Value;
             connection_string.IntegratedSecurity = true;
@@ -371,12 +371,10 @@ namespace bgx_caw
                 //Falls kein custom Bild exestiert
                 if (!data_reader.IsDBNull(3))
                 {
-                    Console.WriteLine("Ausgabe -> Customimage was not null");
                     cbi.CustomImage = createbitmapImage((byte[])data_reader["CustomBLOB"]);
                 }
                 else
                 {
-                    Console.WriteLine("Ausgabe -> Customimage was null");
                     cbi.CustomImage = null;
                 }                        
                 cbi.P_id = data_reader["P_id"].ToString();
@@ -408,12 +406,10 @@ namespace bgx_caw
 
                 if (!data_reader.IsDBNull(3))
                 {
-                    Console.WriteLine("Ausgabe -> Customimage was not null");
                     cbi.CustomImage = createbitmapImage((byte[])data_reader["CustomBLOB"]);
                 }
                 else
                 {
-                    Console.WriteLine("Ausgabe -> Customimage was null");
                     cbi.CustomImage = null;
                 }        
                 
@@ -453,12 +449,12 @@ namespace bgx_caw
                 sql_cmd.Parameters.Add("@CustomBLOB", SqlDbType.Image).Value = b;
                 sql_cmd.CommandText = "UPDATE dbo.tblPage SET CustomBLOB= @CustomBLOB WHERE P_Id='" + p_id + "'";
                 sql_cmd.ExecuteNonQuery();
-                Console.WriteLine("Ausgabe -> Customblob write to DB ok");
+                logger.log("successfully write custom blob to db", "DB_CAW.cs -> writeCustomBlobToDatabase");             
             }
             catch (Exception exc)
             {
-                Console.WriteLine("Ausgabe -> Customblob write to DB fehlgeschlagen");
-                Console.WriteLine(exc.Message);
+                logger.log("Customblob write to DB fehlgeschlagen", "DB_CAW.cs -> writeCustomBlobToDatabase");
+                logger.log(exc.Message, "DB_CAW.cs -> writeCustomBlobToDatabase");
             }
         }
     }

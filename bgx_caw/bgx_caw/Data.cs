@@ -285,9 +285,7 @@ namespace bgx_caw
         {
             String p_id = getPIDFromPagenumber(page);
             JpegBitmapEncoder encoder = new JpegBitmapEncoder();
-           // GifBitmapEncoder encoder = new GifBitmapEncoder();
             String diagrammPath = System.IO.Path.Combine(caller.ProgrammPath, caller.DiagrammId);
-
             if(!System.IO.Directory.Exists(diagrammPath))
             {
             System.IO.Directory.CreateDirectory(diagrammPath);
@@ -298,20 +296,19 @@ namespace bgx_caw
             {
                 System.IO.Directory.CreateDirectory(pagePath);
             }
-
             pagePath = System.IO.Path.Combine(pagePath, page + "orginal.jpg");
             if (!File.Exists(pagePath))
             {
                 try
                 {
                     encoder.Frames.Add(BitmapFrame.Create(b));
-                    Console.WriteLine(pagePath);
+                    logger.log("write Orginal Picture to File: "+pagePath,"Data.cs -> saveOrginalBitmapimageToFile");
                     using (var filestream = new FileStream(pagePath, FileMode.Create))
                         encoder.Save(filestream);
                 }
                 catch (IOException)
                 {
-                    Console.WriteLine("Console -> IOException! Sleep for 500 ms and try again"); 
+                    logger.log("IOException Sleep for 500 ms and try again", "Data.cs -> saveOrginalBitmapimageToFile");
                     System.Threading.Thread.Sleep(500);
                     savaOrginalBitmapimageToFile(b, page);
                 }

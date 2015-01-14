@@ -9,7 +9,7 @@
             <Button Name="win_Comm_btn_Drawing" Content="Zeichnen" Click="win_Comm_btn_Drawing_Click" Visibility="Hidden"/>
             <Button Name="win_Comm_btn_Settings" Content="Einstellungen" Click="win_Comm_btn_Settings_Click"/>
         </controls:WindowCommands>
-    </controls:MetroWindow.RightWindowCommands>  
+    </controls:MetroWindow.RightWindowCommands>
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,18 +18,37 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
-        <DockPanel  Margin="367,0" Height="40" VerticalAlignment="Top" HorizontalAlignment="Center">                      
-            <Label BorderThickness="1" Content="0/0" Name="sitenumberLabel" Canvas.Left="738" Canvas.Top="10" FontSize="25" Visibility="Hidden" HorizontalAlignment="Center" MouseDown="sitenumberLabel_MouseDown" ></Label>          
-        </DockPanel>
-        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,45,75,0"  MouseRightButtonDown="renderContainer_MouseRightButtonDown" MouseLeftButtonUp="renderContainer_MouseLeftUp" MouseLeftButtonDown="renderContainer_MouseLeftDown" MouseWheel="clipBorder_MouseWheel" >
+        <Button x:Name="btn_previous" Background="#FF534C4C" HorizontalAlignment="Left" Width="75" Click="Button_Click" Visibility="Hidden" BorderBrush="#FF534C4C">
+            <Path Stroke="Black" StrokeThickness="5">
+                <Path.Data>
+                    <GeometryGroup>
+                        <LineGeometry StartPoint="65,0" EndPoint="0,50" />
+                        <LineGeometry StartPoint="0,50" EndPoint="65,100" />
+                        <LineGeometry StartPoint="63,100" EndPoint="63,0" />
+                    </GeometryGroup>
+                </Path.Data>
+            </Path>
+        </Button>
+        <Button x:Name="btn_next" Background="#FF534C4C" HorizontalAlignment="Right" Width="75" Click="Button_Click_1" Visibility="Hidden" BorderBrush="#FF534C4C">
+            <Path Stroke="Black" StrokeThickness="5">
+                <Path.Data>
+                    <GeometryGroup>
+                        <LineGeometry StartPoint="0,0" EndPoint="63,50" />
+                        <LineGeometry StartPoint="63,50" EndPoint="0,100" />
+                        <LineGeometry StartPoint="0,100" EndPoint="0,0" />
+                    </GeometryGroup>
+                </Path.Data>
+            </Path>
+        </Button>
+        <Grid Name="renderContainer"  ClipToBounds="True" Margin="75,0"  MouseRightButtonDown="renderContainer_MouseRightButtonDown" MouseLeftButtonUp="renderContainer_MouseLeftUp" MouseLeftButtonDown="renderContainer_MouseLeftDown" MouseWheel="clipBorder_MouseWheel" >
             <Canvas x:Name="view" MouseDown="Canvas_MouseDown_1" MouseMove="Canvas_MouseMove_1" SizeChanged="view_SizeChanged" >
                 <Canvas.Background>
                     <ImageBrush x:Name="showImage"/>
                 </Canvas.Background>
-                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="0" ClipToBounds="True"  Width="{Binding Path=ActualWidth, ElementName=view}" Height="{Binding Path=ActualHeight, ElementName=view}">
-                </Border>
+                <Border x:Name="clipBorder" BorderBrush="Blue" Background="Transparent" BorderThickness="0" ClipToBounds="True"  Width="{Binding Path=ActualWidth, ElementName=view}" Height="524"/>
             </Canvas>
         </Grid>
+
     </Grid>
 
     <controls:MetroWindow.Flyouts >
@@ -40,6 +59,7 @@
                     <controls:Tile Title="Potentiale!" TiltFactor="2" Width="150" Height="50" Click="Tile_Potential"   />
                     <controls:Tile Title="Bauteile!"  TiltFactor="2"  Width="150" Height="50" Click="Tile_Part" />
                     <controls:Tile Title="Suche!" TiltFactor="2" Width="150" Height="50" Click="Tile_Search" />
+                    <controls:Tile Title="Jump To Page" TiltFactor="2" Width="150" Height="50" Click="Tile_JumpToPageOpen" />
                 </StackPanel>
             </controls:Flyout>
 
@@ -52,8 +72,8 @@
 
             <controls:Flyout Position="Bottom" Height="150" Width="280" Name="flo_bott_jump">
                 <!-- Your custom content here -->
-                   
-                <DockPanel Width="180" Height="60" HorizontalAlignment="Center"> 
+
+                <DockPanel Width="180" Height="60" HorizontalAlignment="Center">
                     <TextBox x:Name="jump_to_page_textBox" Width="80" Height="50" FontSize="25" ></TextBox>
                     <controls:Tile Content="Jump!" FontSize="25" Width="80" Height="50" Click="Tile_Jump_To_Page_Click"  />
                 </DockPanel>
@@ -89,7 +109,7 @@
                     <StackPanel Margin="50,0,0,0" >
                         <Label FontSize="16">Speichern</Label>
                         <Border  HorizontalAlignment="Left" BorderThickness="2" BorderBrush="White">
-                            
+
                             <controls:Tile x:Name="canvas_save" Margin="10,10,10,10" Background="#FF007ACC" Height="60" Width="60" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Click="canvas_click">
                                 <Rectangle Width="30" Height="30">
                                     <Rectangle.Resources>
@@ -165,9 +185,9 @@
                                 <RowDefinition Height="203*" />
                             </Grid.RowDefinitions>
                             <DockPanel Background="Gray"  Width="150">
-                                
+
                                 <TextBox  TextChanged="txtAuto_TextChanged" BorderBrush="Gray" Background="Gray" Foreground="Black" Name="txtAuto" TextWrapping="NoWrap" Width="105" Height="30" FontSize="20" BorderThickness="0" PreviewMouseDown="Search_Textbox_PreviewMouseDown" MouseLeave="Search_Textbox_MouseLeave" />
- 
+
                                 <controls:Tile Content="Go!" FontSize="18" TiltFactor="2" Width="40" Height="29" Click="Tile_Search_GO_Click"  />
                             </DockPanel>
                             <ListBox Height="600"   Width="150" Name="lbSuggestion" Grid.Row="1" Visibility="Collapsed" FontSize="20" ScrollViewer.PanningMode="Both" SelectionChanged="lbSuggestion_SelectionChanged" ScrollViewer.VerticalScrollBarVisibility="Visible"/>

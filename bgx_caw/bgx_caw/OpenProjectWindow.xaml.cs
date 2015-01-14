@@ -22,6 +22,8 @@ namespace bgx_caw
     /// </summary>
     public partial class OpenProjectWindow : Window
     {
+
+        Logger logger;
         /// <summary>
         /// Liste aller gefunden Projekte/Diagramme der Datenbank
         /// </summary>
@@ -44,6 +46,7 @@ namespace bgx_caw
         /// <param name="caller"></param>
         public OpenProjectWindow(MainWindow caller)
         {
+            logger = new Logger();
             InitializeComponent();
             refreshDiagrammList();
             this.caller = caller;
@@ -95,12 +98,12 @@ namespace bgx_caw
                 if (caller.ProjectState == State.ProjectSelected)
                 {
                     caller.cleanProject();
-                    Console.WriteLine("Console -> old project cleared");
+                    logger.log("old project cleared", "OpenProjectWindow.xaml.cs -> Button_OpenProject");
                 }
                 this.Close();
-                Console.WriteLine("Console -> New Project opened");
+                logger.log("New Project opened", "OpenProjectWindow.xaml.cs -> Button_OpenProject");
                 caller.DiagrammId = diagrammsList.ElementAt(projectList.SelectedIndex).ID;
-                Console.WriteLine("Console -> with Diagramm ID: "+caller.DiagrammId);
+                logger.log("with Diagramm ID: " + caller.DiagrammId, "OpenProjectWindow.xaml.cs -> Button_OpenProject");
                 caller.onProjectOpen();
             }
         }

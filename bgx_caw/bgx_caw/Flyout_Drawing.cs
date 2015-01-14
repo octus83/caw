@@ -239,10 +239,9 @@ namespace bgx_caw
                 bitmapImage.EndInit();
             }
             //Speichert das Bild als File
-
             String path= data.savaCustomBitmapimageToFile(bitmapImage, actualPageNumber);
-            Console.WriteLine("Bild erfolgreich gespeichert");
-          //  showCustomPicturesSaveDialog();
+            logger.log("Bild erfolgreich gespeichert","Flyout_Drawing.cs -> saveCanvas");
+          //showCustomPicturesSaveDialog();
             data.saveCustomBLOBInDB(actualPageNumber, path);
 
         }
